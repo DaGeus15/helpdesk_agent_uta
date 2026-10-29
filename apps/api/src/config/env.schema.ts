@@ -21,7 +21,7 @@ export const envSchema = z
     ),
     LLM_PROVIDER: z.enum(['gemini']).default('gemini'),
     GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required'),
-    GEMINI_MODEL: z.string().min(1).default('gemini-2.5-flash'),
+    GEMINI_MODEL: z.string().min(1).default('gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.0-flash'),
     SUPABASE_URL: z.string().url('SUPABASE_URL must be a valid URL'),
     SUPABASE_SERVICE_ROLE_KEY: z
       .string()

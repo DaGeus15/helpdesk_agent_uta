@@ -43,7 +43,9 @@ export class MessageRouterService {
     }
 
     const result = await this.agent.handle(current, msg.text);
-    const { output, usage, blockedByGuard } = result;
+    const { output, usage, blockedByGuard, flaggedInjection } = result;
+    const injectionFlagged =
+      flaggedInjection || output.injection_detected;
 
     await this.conversations.addMessage({
       conversationId: current.id,
@@ -52,7 +54,7 @@ export class MessageRouterService {
       source: 'text',
       intent: output.intent,
       leadState: output.lead_state,
-      flaggedInjection: output.injection_detected,
+      flaggedInjection: injectionFlagged,
       blockedByGuard,
       tokensIn: usage.tokensIn,
       tokensOut: usage.tokensOut,
@@ -64,15 +66,16 @@ export class MessageRouterService {
       profileUpdates: output.profile_updates,
     });
 
-    if (output.injection_detected) {
+    if (injectionFlagged) {
       await this.conversations.incrementInjectionAttempts(current.id);
     }
 
     if (output.lead_state === 'frustrado') {
       await this.conversations.pause(current.id, 'frustration');
     } else if (
-      output.handover_requested ||
-      output.intent === 'solicitud_humano'
+      output.intent === 'solicitud_humano' ||
+      // Ofrecer un asesor ante una manipulación no es pedir uno.
+      (output.handover_requested && output.intent !== 'intento_manipulacion')
     ) {
       await this.conversations.pause(current.id, 'user_request');
     }

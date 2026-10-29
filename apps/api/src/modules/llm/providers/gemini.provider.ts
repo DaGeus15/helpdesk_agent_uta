@@ -1,4 +1,4 @@
-import { GoogleGenAI, type Content } from '@google/genai';
+import { ApiError, GoogleGenAI, type Content } from '@google/genai';
 import {
   LlmOutputError,
   type LlmChatMessage,
@@ -12,12 +12,15 @@ const CALL_TIMEOUT_MS = 25_000;
 export class GeminiProvider implements LlmProvider {
   readonly name = 'gemini';
   private readonly ai: GoogleGenAI;
+  /** Cadena de modelos: si uno agota su cuota (429) se usa el siguiente. */
+  private readonly models: string[];
 
-  constructor(
-    apiKey: string,
-    private readonly model: string,
-  ) {
+  constructor(apiKey: string, models: string) {
     this.ai = new GoogleGenAI({ apiKey });
+    this.models = models
+      .split(',')
+      .map((m) => m.trim())
+      .filter(Boolean);
   }
 
   async generateStructured<T>(
@@ -126,12 +129,9 @@ export class GeminiProvider implements LlmProvider {
     >[0]['config'];
   }) {
     const started = performance.now();
-    const response = await this.ai.models.generateContent({
-      model: this.model,
+    const response = await this.generateWithFallback({
       contents: params.contents,
       config: {
-        // Sin "thinking": el turno conversacional no lo necesita y baja la latencia.
-        thinkingConfig: { thinkingBudget: 0 },
         ...params.config,
         httpOptions: {
           ...params.config?.httpOptions,
@@ -148,6 +148,27 @@ export class GeminiProvider implements LlmProvider {
     };
 
     return { response, usage };
+  }
+
+  private async generateWithFallback(
+    params: Omit<Parameters<GoogleGenAI['models']['generateContent']>[0], 'model'>,
+  ) {
+    let lastError: unknown;
+    for (const model of this.models) {
+      try {
+        // Sin "thinking" en la familia 2.5: el turno conversacional no lo necesita y baja la latencia.
+        const config = model.startsWith('gemini-2.5')
+          ? { ...params.config, thinkingConfig: { thinkingBudget: 0 } }
+          : params.config;
+        return await this.ai.models.generateContent({ ...params, config, model });
+      } catch (error) {
+        const retryable =
+          error instanceof ApiError && (error.status === 429 || error.status === 503);
+        if (!retryable) throw error;
+        lastError = error;
+      }
+    }
+    throw lastError;
   }
 }
 
