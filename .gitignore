@@ -9,3 +9,4 @@ build/
 .vercel/
 coverage/
 .cursor-tasks/
+!apps/dashboard/.env.production

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npx -y pnpm@12.8.1 install --frozen-lockfile",
+  "buildCommand": "npx -y pnpm@12.8.1 --filter dashboard build",
+  "outputDirectory": "apps/dashboard/dist",
+  "framework": null,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
