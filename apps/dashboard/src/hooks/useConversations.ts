@@ -7,11 +7,19 @@ import {
 } from '@/mocks'
 import { USE_MOCKS, hasSupabaseEnv } from '@/lib/env'
 import { supabase } from '@/lib/supabase'
-import type { Conversation, LeadState, Message, PausedReason } from '@/types'
+import type { Conversation, LeadState, Message, MessageRole, PausedReason } from '@/types'
 
 export interface ConversationWithPreview extends Conversation {
   last_message_preview: string
   last_message_role?: Message['role'] | null
+}
+
+interface LastMessageRow {
+  conversation_id: string
+  content: string
+  role: MessageRole
+  source?: string
+  created_at?: string
 }
 
 const ADVISOR_REASONS: PausedReason[] = ['frustration', 'user_request']
@@ -131,26 +139,18 @@ export function useConversations() {
       }
 
       const convs = (convData ?? []) as Conversation[]
-      const ids = convs.map((c) => c.id)
 
       const previewByConv = new Map<string, { content: string; role: Message['role'] }>()
-      if (ids.length > 0) {
-        const { data: msgData } = await client
-          .from('messages')
-          .select('conversation_id, content, created_at, role')
-          .in('conversation_id', ids)
-          .order('created_at', { ascending: false })
-          .limit(Math.max(ids.length * 3, 50))
+      const { data: previewData, error: previewError } = await client
+        .from('conversation_last_message')
+        .select('conversation_id, content, role, source, created_at')
 
-        if (!cancelled && msgData) {
-          for (const row of msgData) {
-            if (!previewByConv.has(row.conversation_id)) {
-              previewByConv.set(row.conversation_id, {
-                content: row.content,
-                role: row.role as Message['role'],
-              })
-            }
-          }
+      if (!cancelled && !previewError && previewData) {
+        for (const row of previewData as LastMessageRow[]) {
+          previewByConv.set(row.conversation_id, {
+            content: row.content,
+            role: row.role,
+          })
         }
       }
 

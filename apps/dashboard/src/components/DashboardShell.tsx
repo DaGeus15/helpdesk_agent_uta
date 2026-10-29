@@ -49,7 +49,14 @@ export function DashboardShell() {
     isLive,
     configured,
   } = useConversations()
-  const { messages, bottomRef } = useMessages(selectedId)
+  const {
+    messages,
+    handoverEvents,
+    bottomRef,
+    addOptimistic,
+    markOptimisticFailed,
+    applyServerMessage,
+  } = useMessages(selectedId)
 
   const needsAdvisorCount = useMemo(
     () => conversations.filter(needsAdvisor).length,
@@ -190,7 +197,11 @@ export function DashboardShell() {
                 <ChatView
                   conversation={selected}
                   messages={messages}
+                  handoverEvents={handoverEvents}
                   bottomRef={bottomRef}
+                  onOptimisticSend={addOptimistic}
+                  onOptimisticFailed={markOptimisticFailed}
+                  onServerMessage={applyServerMessage}
                   onBack={() => setSelectedId(null)}
                   className={showChatOnMobile ? 'flex' : 'hidden md:flex'}
                 />

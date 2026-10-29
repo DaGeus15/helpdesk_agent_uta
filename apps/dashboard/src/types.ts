@@ -4,6 +4,8 @@ export type MessageRole = 'user' | 'assistant' | 'operator'
 
 export type MessageSource = 'text' | 'voice'
 
+export type DeliveryStatus = 'pending' | 'sent' | 'failed'
+
 /** Reasons the AI can be paused — keep the union broad for API/DB values. */
 export type PausedReason =
   | 'frustration'
@@ -68,13 +70,15 @@ export interface Message {
   tokens_out: number | null
   latency_ms: number | null
   created_at: string
+  delivery_status?: DeliveryStatus
+  client_id?: string | null
 }
 
 export interface HandoverEvent {
   id: string
   conversation_id: string
   type: HandoverEventType
-  reason: HandoverReason
+  reason: HandoverReason | string
   created_at: string
 }
 
@@ -86,4 +90,8 @@ export interface Metrics {
   injectionAttempts: number
   avgLatencyMs: number
   tokensTotal: number
+  llm?: {
+    fallbacks: number
+    rateLimited: number
+  }
 }

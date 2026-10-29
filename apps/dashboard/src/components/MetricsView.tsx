@@ -2,6 +2,7 @@ import {
   Activity,
   Flame,
   HandHelping,
+  Cpu,
   ShieldAlert,
   Timer,
   Zap,
@@ -64,7 +65,7 @@ export function MetricsView({
   return (
     <div className="min-h-0 flex-1 overflow-y-auto bg-white">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
           <MetricCard
             label="Personas atendidas"
             value={metrics.active}
@@ -101,6 +102,29 @@ export function MetricsView({
             icon={Zap}
             title="Tokens totales consumidos en inferencias"
           />
+          <div
+            title="Saltos de modelo de respaldo y respuestas 429 por cuota"
+            className="rounded-lg bg-[var(--mist)] px-4 py-4 sm:col-span-2 xl:col-span-1 2xl:col-span-1"
+          >
+            <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--text)]">
+              <Cpu className="size-3.5 opacity-70" />
+              LLM
+            </span>
+            <div className="mt-1.5 space-y-0.5">
+              <p className="text-sm text-[var(--ink)]">
+                <strong className="text-[22px] font-bold tabular-nums">
+                  {metrics.llm?.fallbacks ?? 0}
+                </strong>{' '}
+                <span className="text-[var(--muted)]">saltos de respaldo</span>
+              </p>
+              <p className="text-sm text-[var(--ink)]">
+                <strong className="text-[22px] font-bold tabular-nums">
+                  {metrics.llm?.rateLimited ?? 0}
+                </strong>{' '}
+                <span className="text-[var(--muted)]">429 por modelo</span>
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">

@@ -37,6 +37,8 @@ export interface CourseRow {
   end_date?: string | null
   enrollment_start?: string | null
   enrollment_end?: string | null
+  /** Web site toggle: open enrollments regardless of start date window. */
+  enroll_open_on_site?: boolean | null
   schedules?: string[] | null
   syllabus?: SyllabusModule[] | null
   outcomes?: string | null
@@ -96,7 +98,16 @@ export function computeCourseStatus(
     start_date,
     end_date,
     site_status,
+    enroll_open_on_site,
   } = course
+
+  // Botón de la web: prioridad sobre las ventanas de fechas.
+  if (
+    enroll_open_on_site &&
+    (!enrollment_end || today <= enrollment_end)
+  ) {
+    return 'inscripciones_abiertas'
+  }
 
   if (
     enrollment_start &&

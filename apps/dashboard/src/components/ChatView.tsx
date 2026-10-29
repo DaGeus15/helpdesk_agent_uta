@@ -12,6 +12,7 @@ import {
   ArrowDown,
   ArrowLeft,
   ChevronDown,
+  ClipboardList,
   Mic,
   ShieldAlert,
   Zap,
@@ -24,12 +25,16 @@ import { api, ApiError } from '@/lib/api'
 import { cn, formatClockTime, formatLatencyShort } from '@/lib/utils'
 import { getLeadStateMeta } from '@/lib/lead-state'
 import type { ConversationWithPreview } from '@/hooks/useConversations'
-import type { LeadProfile, Message } from '@/types'
+import type { HandoverEvent, LeadProfile, Message } from '@/types'
 
 interface ChatViewProps {
   conversation: ConversationWithPreview
   messages: Message[]
+  handoverEvents: HandoverEvent[]
   bottomRef: RefObject<HTMLDivElement | null>
+  onOptimisticSend: (text: string, clientId: string) => void
+  onOptimisticFailed: (clientId: string) => void
+  onServerMessage: (message: Message) => void
   onBack?: () => void
   className?: string
 }
@@ -58,6 +63,18 @@ const SUMMARY_LINE_LABELS = [
   'Estado',
   'Siguiente paso',
 ] as const
+
+const HANDOVER_REASON_LABELS: Record<string, string> = {
+  frustration: 'Frustración',
+  user_request: 'Pidió un asesor',
+  operator_takeover: 'Intervención del operador',
+  operator_message: 'Mensaje del operador',
+  operator_release: 'Operador liberó el control',
+}
+
+function handoverReasonLabel(reason: string): string {
+  return HANDOVER_REASON_LABELS[reason] ?? reason.replace(/_/g, ' ')
+}
 
 function isMeaningfulProfileValue(value: string | undefined): value is string {
   if (value == null) return false
@@ -89,11 +106,11 @@ function ProfileChipsRow({
 }) {
   if (chips.length === 0) return null
   return (
-    <div className={cn('flex gap-1.5 overflow-x-auto whitespace-nowrap', className)}>
+    <div className={cn('flex gap-1 overflow-x-auto whitespace-nowrap', className)}>
       {chips.map((chip) => (
         <span
           key={chip.label}
-          className="inline-flex shrink-0 items-center gap-1 rounded bg-white/95 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-[var(--navy)] uppercase"
+          className="inline-flex shrink-0 items-center gap-1 rounded bg-white/95 px-2 py-0.5 text-[10px] font-bold tracking-wide text-[var(--navy)] uppercase"
         >
           <span className="opacity-70">{chip.label}:</span>
           {chip.value}
@@ -114,7 +131,7 @@ function renderSummaryText(text: string): ReactNode {
       const rest = line.slice(match.length + 1)
       return (
         <p key={index} className="leading-relaxed">
-          <strong className="font-semibold text-white">{match}:</strong>
+          <strong className="font-semibold text-[var(--ink)]">{match}:</strong>
           {rest}
         </p>
       )
@@ -181,26 +198,38 @@ function messageMeta(message: Message): string {
 function MessageBubble({
   message,
   animate,
+  sameRoleAsPrev,
+  onRetry,
 }: {
   message: Message
   animate: boolean
+  sameRoleAsPrev: boolean
+  onRetry?: (message: Message) => void
 }) {
   const isUser = message.role === 'user'
   const isOperator = message.role === 'operator'
   const isAssistant = message.role === 'assistant'
+  const discarded = message.intent === 'descartada_por_handover'
+  const failed = message.delivery_status === 'failed'
+  const pending = message.delivery_status === 'pending'
 
   return (
     <div
       className={cn(
-        'mb-2.5 max-w-[72%] rounded-[10px] px-3.5 py-2.5 text-[var(--ink)] whitespace-pre-wrap break-words',
+        'max-w-[85%] rounded-[10px] px-3 py-2.5 text-[14px] leading-snug text-[var(--ink)] whitespace-pre-wrap break-words sm:max-w-[62%]',
+        sameRoleAsPrev ? 'mt-1' : 'mt-2.5',
         isUser && 'rounded-bl-sm bg-[var(--mist)]',
         (isAssistant || isOperator) && 'ml-auto rounded-br-sm border border-[var(--line)]',
         isOperator &&
+          !failed &&
           'border-[color-mix(in_srgb,var(--operator)_45%,var(--line))] bg-[color-mix(in_srgb,var(--operator)_7%,white)]',
+        failed &&
+          'border-[color-mix(in_srgb,var(--critical)_45%,var(--line))] bg-[color-mix(in_srgb,var(--critical)_8%,white)]',
+        discarded && 'opacity-55',
         animate && 'bubble-enter',
       )}
     >
-      {(message.source === 'voice' || message.flagged_injection) && (
+      {(message.source === 'voice' || message.flagged_injection || discarded) && (
         <div className="mb-1 flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-[var(--muted)]">
           {message.source === 'voice' && (
             <span className="inline-flex items-center gap-0.5">
@@ -214,11 +243,30 @@ function MessageBubble({
               Intento de manipulación
             </span>
           )}
+          {discarded && (
+            <span className="rounded bg-[var(--mist)] px-1.5 text-[10px] text-[var(--muted)]">
+              Respuesta de la IA descartada (tomaste el control)
+            </span>
+          )}
         </div>
       )}
-      <p>{linkify(message.content)}</p>
-      <small className="mt-1 flex flex-wrap gap-1.5 text-[11px] text-[var(--muted)]">
-        {messageMeta(message)}
+      <p className={cn(discarded && 'line-through decoration-[var(--muted)]')}>
+        {linkify(message.content)}
+      </p>
+      <small className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-[var(--muted)]">
+        {pending && !failed ? (
+          <span className="text-[var(--muted)]">enviando…</span>
+        ) : failed ? (
+          <button
+            type="button"
+            className="font-medium text-[var(--critical)] underline-offset-2 hover:underline"
+            onClick={() => onRetry?.(message)}
+          >
+            No se pudo enviar · Reintentar
+          </button>
+        ) : (
+          messageMeta(message)
+        )}
       </small>
     </div>
   )
@@ -226,7 +274,7 @@ function MessageBubble({
 
 function SystemSeparator({ label }: { label: string }) {
   return (
-    <p className="my-3.5 text-center text-xs text-[var(--muted)]">{label}</p>
+    <p className="my-2.5 text-center text-[11px] text-[var(--muted)]">{label}</p>
   )
 }
 
@@ -239,12 +287,16 @@ function errorMessage(err: unknown): string {
 type TimelineItem =
   | { type: 'day'; key: string; label: string }
   | { type: 'system'; key: string; label: string }
-  | { type: 'msg'; key: string; message: Message; index: number }
+  | { type: 'msg'; key: string; message: Message; index: number; sameRoleAsPrev: boolean }
 
 export function ChatView({
   conversation,
   messages,
+  handoverEvents,
   bottomRef,
+  onOptimisticSend,
+  onOptimisticFailed,
+  onServerMessage,
   onBack,
   className,
 }: ChatViewProps) {
@@ -252,7 +304,8 @@ export function ChatView({
   const [sending, setSending] = useState(false)
   const [takingOver, setTakingOver] = useState(false)
   const [releasing, setReleasing] = useState(false)
-  const [advisorSummary, setAdvisorSummary] = useState<string | null>(null)
+  const [regeneratingSummary, setRegeneratingSummary] = useState(false)
+  const [advisorSummary, setAdvisorSummary] = useState<string | null | undefined>(undefined)
   const [summaryOpen, setSummaryOpen] = useState(false)
   const [templatesOpen, setTemplatesOpen] = useState(true)
   const [stickToBottom, setStickToBottom] = useState(true)
@@ -261,59 +314,85 @@ export function ChatView({
 
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const summaryPanelRef = useRef<HTMLDivElement | null>(null)
+  const summaryBtnRef = useRef<HTMLButtonElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const prevCountRef = useRef(0)
   const convIdRef = useRef(conversation.id)
+  const pendingClientIdRef = useRef<string | null>(null)
 
   const meta = getLeadStateMeta(conversation.lead_state)
   const name = conversation.display_name ?? conversation.telegram_username ?? 'Sin nombre'
   const chips = profileChips(conversation.profile)
-  const summaryText = advisorSummary ?? conversation.summary
+  const summaryMissing = advisorSummary === null
+  const summaryText =
+    advisorSummary === undefined
+      ? conversation.summary || null
+      : advisorSummary
   const humanMode = conversation.ai_paused
 
   const items = useMemo(() => {
     const out: TimelineItem[] = []
     let lastDay = ''
     let prevRole: Message['role'] | null = null
-    let sawOperator = false
 
-    messages.forEach((m, index) => {
-      const dk = dayKey(m.created_at)
+    type Raw =
+      | { kind: 'msg'; at: number; message: Message; index: number }
+      | { kind: 'event'; at: number; event: HandoverEvent }
+
+    const raw: Raw[] = [
+      ...messages.map((message, index) => ({
+        kind: 'msg' as const,
+        at: new Date(message.created_at).getTime(),
+        message,
+        index,
+      })),
+      ...handoverEvents.map((event) => ({
+        kind: 'event' as const,
+        at: new Date(event.created_at).getTime(),
+        event,
+      })),
+    ].sort((a, b) => a.at - b.at || (a.kind === 'event' ? -1 : 1))
+
+    for (const entry of raw) {
+      const iso =
+        entry.kind === 'msg' ? entry.message.created_at : entry.event.created_at
+      const dk = dayKey(iso)
       if (dk !== lastDay) {
         lastDay = dk
-        out.push({ type: 'day', key: `day-${dk}`, label: dayLabel(m.created_at) })
+        out.push({ type: 'day', key: `day-${dk}`, label: dayLabel(iso) })
         prevRole = null
       }
 
-      if (m.role === 'operator' && prevRole !== 'operator') {
+      if (entry.kind === 'event') {
+        const time = formatClockTime(entry.event.created_at)
+        const label =
+          entry.event.type === 'paused'
+            ? `— IA en pausa · ${handoverReasonLabel(entry.event.reason)} · ${time} —`
+            : `— IA reanudada · ${time} —`
         out.push({
           type: 'system',
-          key: `pause-${m.id}`,
-          label: `— IA en pausa · Intervención del operador · ${formatClockTime(m.created_at)} —`,
+          key: `handover-${entry.event.id}`,
+          label,
         })
-        sawOperator = true
-      } else if (
-        m.role === 'assistant' &&
-        sawOperator &&
-        prevRole === 'operator'
-      ) {
-        out.push({
-          type: 'system',
-          key: `resume-${m.id}`,
-          label: `— IA reanudada · ${formatClockTime(m.created_at)} —`,
-        })
+        continue
       }
 
-      out.push({ type: 'msg', key: m.id, message: m, index })
-      prevRole = m.role
-      if (m.role === 'operator') sawOperator = true
-    })
+      const sameRoleAsPrev = prevRole === entry.message.role
+      out.push({
+        type: 'msg',
+        key: entry.message.id,
+        message: entry.message,
+        index: entry.index,
+        sameRoleAsPrev,
+      })
+      prevRole = entry.message.role
+    }
     return out
-  }, [messages])
+  }, [messages, handoverEvents])
 
   useEffect(() => {
     setDraft('')
-    setAdvisorSummary(null)
+    setAdvisorSummary(undefined)
     setSummaryOpen(false)
     setTemplatesOpen(true)
     setStickToBottom(true)
@@ -321,6 +400,7 @@ export function ChatView({
     setAnimateFrom(null)
     prevCountRef.current = 0
     convIdRef.current = conversation.id
+    pendingClientIdRef.current = null
   }, [conversation.id])
 
   useEffect(() => {
@@ -352,9 +432,11 @@ export function ChatView({
       if (e.key === 'Escape') setSummaryOpen(false)
     }
     function onPointer(e: MouseEvent) {
-      const el = summaryPanelRef.current
-      if (!el) return
-      if (!el.contains(e.target as Node)) setSummaryOpen(false)
+      const panel = summaryPanelRef.current
+      const btn = summaryBtnRef.current
+      const target = e.target as Node
+      if (panel?.contains(target) || btn?.contains(target)) return
+      setSummaryOpen(false)
     }
     window.addEventListener('keydown', onKey)
     const t = window.setTimeout(() => {
@@ -371,7 +453,7 @@ export function ChatView({
     const el = textareaRef.current
     if (!el) return
     el.style.height = 'auto'
-    const next = Math.min(Math.max(el.scrollHeight, 46), 160)
+    const next = Math.min(Math.max(el.scrollHeight, 44), 160)
     el.style.height = `${next}px`
   }, [draft])
 
@@ -396,11 +478,29 @@ export function ChatView({
       const res = await api.takeover(conversation.id)
       setAdvisorSummary(res.summary)
       setSummaryOpen(true)
-      toast.success('Control tomado', { description: 'La IA quedó en pausa' })
+      toast.success('Control tomado', {
+        description: res.summary
+          ? 'La IA quedó en pausa'
+          : 'La IA quedó en pausa; el resumen no se generó',
+      })
     } catch (err) {
       toast.error('No se pudo tomar control', { description: errorMessage(err) })
     } finally {
       setTakingOver(false)
+    }
+  }
+
+  async function handleRegenerateSummary() {
+    setRegeneratingSummary(true)
+    try {
+      const res = await api.getSummary(conversation.id)
+      setAdvisorSummary(res.summary)
+      setSummaryOpen(true)
+      toast.success('Resumen actualizado')
+    } catch (err) {
+      toast.error('No se pudo generar el resumen', { description: errorMessage(err) })
+    } finally {
+      setRegeneratingSummary(false)
     }
   }
 
@@ -416,21 +516,37 @@ export function ChatView({
     }
   }
 
+  async function sendWithClientId(text: string, clientId: string) {
+    pendingClientIdRef.current = clientId
+    onOptimisticSend(text, clientId)
+    setSending(true)
+    try {
+      const res = await api.sendMessage(conversation.id, text, clientId)
+      onServerMessage(res.message)
+      setDraft('')
+      setStickToBottom(true)
+    } catch (err) {
+      onOptimisticFailed(clientId)
+      if (!(err instanceof ApiError && err.isNetwork)) {
+        toast.error('No se pudo enviar el mensaje', { description: errorMessage(err) })
+      }
+    } finally {
+      pendingClientIdRef.current = null
+      setSending(false)
+    }
+  }
+
   async function handleSubmit(e?: FormEvent) {
     e?.preventDefault()
     const text = draft.trim()
     if (!text || sending) return
+    const clientId = crypto.randomUUID()
+    await sendWithClientId(text, clientId)
+  }
 
-    setSending(true)
-    try {
-      await api.sendMessage(conversation.id, text)
-      setDraft('')
-      setStickToBottom(true)
-    } catch (err) {
-      toast.error('No se pudo enviar el mensaje', { description: errorMessage(err) })
-    } finally {
-      setSending(false)
-    }
+  async function handleRetry(message: Message) {
+    if (!message.client_id || sending) return
+    await sendWithClientId(message.content, message.client_id)
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -440,10 +556,6 @@ export function ChatView({
     }
   }
 
-  const oneLineSummary = summaryText
-    ? summaryText.replace(/\s+/g, ' ').trim().slice(0, 140)
-    : 'Aún no hay suficiente conversación para resumir.'
-
   return (
     <div
       className={cn(
@@ -451,14 +563,14 @@ export function ChatView({
         className,
       )}
     >
-      {/* Cabecera póster navy / carmesí */}
+      {/* Cabecera compacta navy / carmesí (~88px máx) */}
       <div
         className={cn(
-          'relative z-20 shrink-0 px-5 py-5 text-white sm:px-6',
+          'relative z-20 max-h-[88px] shrink-0 overflow-hidden px-4 py-2.5 text-white sm:px-5',
           humanMode ? 'bg-[var(--crimson)]' : 'bg-[var(--navy)]',
         )}
       >
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               {onBack && (
@@ -466,72 +578,61 @@ export function ChatView({
                   type="button"
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 shrink-0 text-white hover:bg-white/15 hover:text-white md:hidden"
+                  className="h-7 w-7 shrink-0 text-white hover:bg-white/15 hover:text-white md:hidden"
                   onClick={onBack}
                   aria-label="Volver a conversaciones"
                 >
                   <ArrowLeft className="size-4" />
                 </Button>
               )}
-              <h2 className="truncate text-[clamp(1.25rem,2.4vw,1.875rem)] font-bold tracking-wide text-white uppercase">
+              <h2 className="truncate text-lg font-semibold tracking-tight text-white sm:text-xl">
                 {name}
               </h2>
             </div>
 
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              <span className="rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-[var(--navy)] uppercase">
+            <div className="mt-1 flex flex-wrap items-center gap-1">
+              <span className="rounded bg-white px-2 py-px text-[10px] font-bold tracking-wide text-[var(--navy)] uppercase">
                 {meta.emoji} {meta.label}
               </span>
               <span
                 className={cn(
-                  'rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide uppercase',
+                  'rounded bg-white px-2 py-px text-[10px] font-bold tracking-wide uppercase',
                   humanMode ? 'text-[var(--crimson)]' : 'text-[var(--navy)]',
                 )}
               >
                 {humanMode ? 'Operador' : 'IA'}
               </span>
-              <span
-                className={cn(
-                  'rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide uppercase',
-                  humanMode ? 'text-[var(--crimson)]' : 'text-[var(--navy)]',
-                )}
-              >
-                Telegram
-              </span>
               {conversation.injection_attempts > 0 && (
-                <span className="inline-flex items-center gap-1 rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-[var(--crimson)] uppercase">
-                  <ShieldAlert className="size-3" />
+                <span className="inline-flex items-center gap-0.5 rounded bg-white px-2 py-px text-[10px] font-bold tracking-wide text-[var(--crimson)] uppercase">
+                  <ShieldAlert className="size-2.5" />
                   {conversation.injection_attempts}
                 </span>
               )}
+              {chips.length > 0 && (
+                <ProfileChipsRow chips={chips.slice(0, 3)} className="ml-0.5" />
+              )}
             </div>
-
-            {chips.length > 0 && (
-              <div className="mt-2">
-                <ProfileChipsRow chips={chips} />
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={() => summaryText && setSummaryOpen((o) => !o)}
-              className="mt-3 max-w-[80ch] text-left text-sm text-white/90 focus-visible:outline-none"
-              aria-expanded={summaryOpen}
-            >
-              <strong className="font-semibold text-white">Resumen:</strong>{' '}
-              {oneLineSummary}
-              {summaryText ? (
-                <ChevronDown
-                  className={cn(
-                    'ml-1 inline size-3.5 transition-ui',
-                    summaryOpen && 'rotate-180',
-                  )}
-                />
-              ) : null}
-            </button>
           </div>
 
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+            <button
+              ref={summaryBtnRef}
+              type="button"
+              onClick={() => setSummaryOpen((o) => !o)}
+              aria-expanded={summaryOpen}
+              aria-controls="advisor-summary-panel"
+              className="inline-flex h-8 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-[var(--navy)] transition-ui hover:bg-white/90 focus-visible:outline-none"
+            >
+              <ClipboardList className="size-3.5" />
+              Resumen
+              <ChevronDown
+                className={cn(
+                  'size-3.5 transition-ui',
+                  summaryOpen && 'rotate-180',
+                )}
+              />
+            </button>
+
             {humanMode ? (
               <>
                 <Tooltip>
@@ -540,7 +641,7 @@ export function ChatView({
                       <button
                         type="button"
                         disabled
-                        className="cursor-not-allowed rounded-md bg-white/70 px-4 py-2 text-sm font-semibold text-[var(--red)] opacity-60"
+                        className="h-8 cursor-not-allowed rounded-md bg-white/70 px-3 text-xs font-semibold text-[var(--red)] opacity-60"
                       >
                         Tomar control
                       </button>
@@ -554,7 +655,7 @@ export function ChatView({
                   type="button"
                   onClick={() => void handleRelease()}
                   disabled={releasing}
-                  className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-[var(--crimson)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
+                  className="h-8 rounded-md bg-white px-3 text-xs font-semibold text-[var(--crimson)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
                 >
                   {releasing ? 'Devolviendo…' : 'Devolver a la IA'}
                 </button>
@@ -564,33 +665,52 @@ export function ChatView({
                 type="button"
                 onClick={() => void handleTakeover()}
                 disabled={takingOver}
-                className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-[var(--red)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
+                className="h-8 rounded-md bg-white px-3 text-xs font-semibold text-[var(--red)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
               >
                 {takingOver ? 'Tomando…' : 'Tomar control'}
               </button>
             )}
           </div>
         </div>
-
-        {summaryOpen && summaryText && (
-          <div
-            ref={summaryPanelRef}
-            className="mt-3 max-h-48 overflow-y-auto rounded-md bg-black/20 p-3 banner-enter"
-            role="dialog"
-            aria-label="Resumen para el asesor"
-          >
-            <div className="space-y-0.5 text-sm text-white/90">
-              {renderSummaryText(summaryText)}
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="relative min-h-0 flex-1">
+        {summaryOpen && (
+          <div
+            id="advisor-summary-panel"
+            ref={summaryPanelRef}
+            role="dialog"
+            aria-label="Resumen para el asesor"
+            className="absolute inset-x-0 top-0 z-20 max-h-[45%] overflow-y-auto border-b border-[var(--line)] bg-white px-4 py-3 shadow-[var(--uta-shadow-lift)] banner-enter sm:px-5"
+          >
+            {summaryMissing ? (
+              <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--ink)]">
+                <p>No se pudo generar el resumen; puedes regenerarlo</p>
+                <button
+                  type="button"
+                  onClick={() => void handleRegenerateSummary()}
+                  disabled={regeneratingSummary}
+                  className="rounded-md bg-[var(--navy)] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+                >
+                  {regeneratingSummary ? 'Generando…' : 'Regenerar resumen'}
+                </button>
+              </div>
+            ) : summaryText ? (
+              <div className="space-y-0.5 text-sm text-[var(--text)]">
+                {renderSummaryText(summaryText)}
+              </div>
+            ) : (
+              <p className="text-sm text-[var(--muted)]">
+                Aún no hay suficiente conversación para resumir.
+              </p>
+            )}
+          </div>
+        )}
+
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="h-full min-h-0 overflow-y-auto px-5 py-5 sm:px-6"
+          className="h-full min-h-0 overflow-y-auto px-4 py-3 sm:px-5"
         >
           {messages.length === 0 ? (
             <p className="py-10 text-center text-sm text-[var(--muted)]">
@@ -600,7 +720,7 @@ export function ChatView({
             items.map((item) => {
               if (item.type === 'day') {
                 return (
-                  <div key={item.key} className="my-2 flex items-center justify-center">
+                  <div key={item.key} className="my-1.5 flex items-center justify-center">
                     <span className="text-[11px] font-medium text-[var(--muted)]">
                       — {item.label} —
                     </span>
@@ -615,6 +735,8 @@ export function ChatView({
                   key={item.key}
                   message={item.message}
                   animate={animateFrom !== null && item.index >= animateFrom}
+                  sameRoleAsPrev={item.sameRoleAsPrev}
+                  onRetry={(m) => void handleRetry(m)}
                 />
               )
             })
@@ -644,7 +766,7 @@ export function ChatView({
         onSubmit={(e) => void handleSubmit(e)}
         className="shrink-0 border-t border-[var(--line)] bg-white"
       >
-        <div className="flex items-center gap-2 px-5 pt-3 sm:px-6">
+        <div className="flex items-center gap-2 px-4 pt-2 sm:px-5">
           <Button
             type="button"
             size="sm"
@@ -673,7 +795,7 @@ export function ChatView({
           )}
         </div>
 
-        <div className="flex gap-2.5 px-5 pt-2 sm:px-6">
+        <div className="flex items-end gap-2 px-4 pt-1.5 pb-1 sm:px-5">
           <Textarea
             ref={textareaRef}
             value={draft}
@@ -681,19 +803,19 @@ export function ChatView({
             onKeyDown={handleKeyDown}
             placeholder="Escribe como el bot… (Enter envía, Shift+Enter nueva línea)"
             rows={1}
-            className="min-h-[46px] max-h-[160px] flex-1 resize-y rounded-md border-[var(--line)] py-2.5 text-[15px] shadow-none focus-visible:ring-[var(--red)]"
+            className="min-h-[44px] max-h-[160px] flex-1 resize-none rounded-md border-[var(--line)] py-2.5 text-[14px] shadow-none focus-visible:ring-[var(--red)]"
             disabled={sending}
           />
           <Button
             type="submit"
-            className="mb-0.5 h-11 shrink-0 self-end rounded-md bg-[var(--red)] px-5 font-semibold text-white hover:bg-[var(--crimson)]"
+            className="h-11 shrink-0 self-end rounded-md bg-[var(--red)] px-5 font-semibold text-white hover:bg-[var(--crimson)]"
             disabled={sending || !draft.trim()}
           >
             Enviar
           </Button>
         </div>
 
-        <p className="px-5 pt-1.5 pb-3 text-xs text-[var(--muted)] sm:px-6">
+        <p className="px-4 pb-2.5 text-[11px] text-[var(--muted)] sm:px-5">
           Al enviar, la IA se pausa y tu mensaje llega por el mismo bot.
         </p>
       </form>

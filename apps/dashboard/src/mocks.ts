@@ -254,6 +254,7 @@ export const MOCK_METRICS: Metrics = {
   injectionAttempts: 2,
   avgLatencyMs: 980,
   tokensTotal: 4850,
+  llm: { fallbacks: 0, rateLimited: 0 },
 }
 
 /** Last message preview per conversation (for list cards). */
