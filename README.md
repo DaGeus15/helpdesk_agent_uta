@@ -7,7 +7,7 @@ Proyecto para la **Hackathon UTA 2026 · Ecosistema Multi-Agente para Ventas** (
 
 Producción: bot [@HelpdeskUTA15Bot](https://t.me/HelpdeskUTA15Bot) · panel https://helpdesk-agent-uta.vercel.app (usuario `admin`, contraseña `admin`) · API https://codeandes-api.onrender.com/health
 
-Documentación: [arquitectura](docs/ARCHITECTURE.md) · [plan](docs/PLAN.md) · [catálogo](docs/CATALOGO.md) · [batería de pruebas](docs/PRUEBAS.md) · [guion de demo](docs/DEMO.md) · [reto](docs/RETO.md)
+Documentación: [arquitectura](docs/ARCHITECTURE.md) · [plan](docs/PLAN.md) · [catálogo](docs/CATALOGO.md) · [batería de pruebas](docs/PRUEBAS.md) · [guion de demo](docs/DEMO.md) · [decisiones y seguridad](docs/DECISIONES.md) · [reto](docs/RETO.md)
 
 ## Arquitectura en 30 segundos
 

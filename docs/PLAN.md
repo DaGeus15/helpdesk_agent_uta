@@ -67,3 +67,13 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 - [x] Rediseño del panel con identidad visual UTA (azul institucional) y pantalla de login.
 - [x] Cadena de respaldo de modelos Gemini ante 429 (free tier: 5 RPM por modelo).
 - [x] Prueba de punta a punta en producción: voz, venta, guardrails, handover y devolución a la IA.
+
+## Cierre (13:00 → 13:15)
+
+- [x] Batería de evaluación automática de la rúbrica (`apps/api/scripts/eval-agent.js`).
+- [x] Robustez: aviso de espera con IA pausada, keep-alive de Render, cadena de 5 modelos Gemini (también salta 404).
+- [x] Catálogo real de los Talleres CTT-FISEI (18 cursos, precios por audiencia, estado por fechas) y respuestas en el idioma del usuario.
+- [x] Panel: acabado estilo Apple, vista de Cursos, QR de Telegram y landing pública `/contacto`.
+- [x] Layout a pantalla completa con más espacio para el chat (T14).
+- [x] Descartado: WhatsApp (Cloud API exige trámite en Meta; whatsapp-web.js no es oficial).
+- [x] `docs/DECISIONES.md`: decisiones, ventana de contexto y seguridad.
