@@ -34,7 +34,7 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 
 ## Fase 3 — Guardrails y handover lógico (12:20 → 12:30, en paralelo con la Fase 4)
 
-- [ ] **T3.1 guardrails + handover + operator:** `GuardrailsService.preCheck` (heurísticas de injection) y `postCheck` (importes, porcentajes, "gratis", fuga de prompt → regenerar una vez / respuesta segura); pausa automática por `frustrado` o petición de humano; endpoints `takeover`, `release`, `messages`, `summary` y `metrics` según contrato; con IA pausada no se infiere.
+- [x] **T3.1 guardrails + handover + operator:** `GuardrailsService.preCheck` (heurísticas de injection) y `postCheck` (importes, porcentajes, "gratis", fuga de prompt → regenerar una vez / respuesta segura); pausa automática por `frustrado` o petición de humano; endpoints `takeover`, `release`, `messages`, `summary` y `metrics` según contrato; con IA pausada no se infiere.
 - Criterio: casos 9-18 de `PRUEBAS.md`.
 
 ## Fase 4 — Dashboard en tiempo real (12:20 → 12:40, en paralelo con la Fase 3)
@@ -46,8 +46,8 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 ## Fase 5 — Valor agregado (incluido en tareas anteriores)
 
 - [x] Notas de voz → dentro de T2.2.
-- [ ] Resumen para el operador al tomar control → dentro de T3.1 / T4.2.
-- [ ] Métricas → endpoint en T3.1, tira básica en T4.2. Panel avanzado (gráficas, latencia por mensaje): **recortado**.
+- [x] Resumen para el operador al tomar control → dentro de T3.1 / T4.2.
+- [x] Métricas → endpoint en T3.1, tira básica en T4.2. Panel avanzado (gráficas, latencia por mensaje): **recortado**.
 
 ## Fase 6 — Despliegue y sustentación (12:20 deploy inicial, 12:40 → 13:00 final)
 

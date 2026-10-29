@@ -5,7 +5,7 @@ Decisiones confirmadas en la Fase 0 (29-oct-2026):
 | Tema | Decisión |
 |---|---|
 | Centro ficticio | **CodeAndes Academy** (Ambato, Ecuador). Catálogo en `docs/CATALOGO.md` |
-| LLM | **Google Gemini** (`gemini-2.5-flash`) detrás de la interfaz `LlmProvider`. Cambiable con `LLM_PROVIDER` |
+| LLM | **Google Gemini** detrás de la interfaz `LlmProvider` (cambiable con `LLM_PROVIDER`). Cadena de respaldo `gemini-2.5-flash` → `2.5-flash-lite` → `2.0-flash` ante 429/503 |
 | API | **NestJS** en **Render** (web service, HTTPS → webhook de Telegram) |
 | Dashboard | **React + Vite + Tailwind + shadcn/ui** en **Vercel** |
 | Datos y tiempo real | **Supabase** (Postgres + Realtime por WebSockets) |

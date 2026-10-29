@@ -50,6 +50,6 @@
 **D1 · Valor agregado.** Notas de voz transcritas con Gemini (audio inline, sin otro servicio), resumen automático al tomar control y panel de métricas.
 
 **Preguntas incómodas**
-- *¿Y si Gemini cae?* → Hay timeout de 25 s, un reintento de validación y una respuesta segura que ofrece un asesor. El proveedor se cambia por variable de entorno.
+- *¿Y si Gemini cae o se agota la cuota?* → Hay una cadena de modelos (`gemini-2.5-flash` → `2.5-flash-lite` → `2.0-flash`): ante un 429 o 503 se usa el siguiente, cada uno con su propia cuota. Además hay timeout de 25 s, un reintento de validación y una respuesta segura que ofrece un asesor. El proveedor se cambia por variable de entorno.
 - *¿Por qué el panel no tiene login?* → Por el tiempo de la hackathon. El RLS ya es de solo lectura y toda escritura pasa por la API. El siguiente paso es Supabase Auth con políticas `to authenticated`.
 - *¿Cómo escala?* → La API es stateless salvo la cola por chat en memoria, que se movería a Redis o una cola si se escala horizontalmente. Supabase escala el Realtime.
