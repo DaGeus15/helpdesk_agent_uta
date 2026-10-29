@@ -1,0 +1,14 @@
+{
+  "name": "codeandes-helpdesk",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,magenta \"pnpm --filter api dev\" \"pnpm --filter dashboard dev\"",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
