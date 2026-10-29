@@ -16,6 +16,12 @@ export interface LeadProfile {
   budget?: string;
   goal?: string;
   contact?: string;
+  email?: string;
+  phone?: string;
+  /** Ecuadorian cédula (10 digits). */
+  id_number?: string;
+  /** estudiante UTA | graduado/docente/administrativo | público general */
+  audience?: string;
 }
 
 export interface Conversation {

@@ -38,6 +38,7 @@ export interface Course {
   prerequisites: string | null;
   certificate: string | null;
   source_url: string | null;
+  enrollment_form_url: string | null;
   site_status: string | null;
   active: boolean;
   /** Derived; not stored in DB. */

@@ -6,6 +6,7 @@ import { AgentModule } from './modules/agent/agent.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { ConversationsModule } from './modules/conversations/conversations.module';
+import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 import { LlmModule } from './modules/llm/llm.module';
 import { OperatorModule } from './modules/operator/operator.module';
 import { SupabaseModule } from './modules/supabase/supabase.module';
@@ -16,6 +17,7 @@ import { TelegramModule } from './modules/telegram/telegram.module';
     AppConfigModule,
     SupabaseModule,
     CatalogModule,
+    EnrollmentModule,
     LlmModule,
     ConversationsModule,
     AgentModule,

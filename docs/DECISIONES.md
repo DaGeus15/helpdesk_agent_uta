@@ -17,6 +17,7 @@ Complementa a [ARCHITECTURE.md](ARCHITECTURE.md). Resume qué se decidió, por q
 | Catálogo | **Cursos reales de CTT-FISEI** extraídos con un script reproducible (`apps/api/scripts/scrape-ctt.mjs`) | Datos veraces. Precios y fechas salen de la BD, nunca del LLM | Catálogo inventado |
 | Estado del curso | **Se calcula por fechas** (zona America/Guayaquil): inscripciones abiertas, en curso, próximamente, finalizado | La web marca "ABIERTO" cursos de 2025 ya terminados | Confiar en la etiqueta de la web |
 | Flujo de trabajo | Claude planifica y revisa; Cursor implementa cada tarea; un commit por tarea | Pedido por el equipo; trazabilidad en el historial de git | — |
+| Enlace de inscripción | Lo arma el **servidor** (`EnrollmentFormService`) con el Google Form oficial del curso y el perfil del lead; el LLM no lo genera | Evita URLs inventadas o manipuladas por prompt injection; el formulario sale del scraper (`enrollment_form_url`) | Dejar que el modelo pegue el link |
 
 ## 2. Ventana de contexto: qué pasa con conversaciones largas
 

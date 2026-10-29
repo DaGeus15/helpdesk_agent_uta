@@ -80,6 +80,38 @@ export class CatalogService {
     return this.cache!.courses;
   }
 
+  async getCourseById(id: string): Promise<Course | null> {
+    const courses = await this.getCourses();
+    return courses.find((c) => c.id === id) ?? null;
+  }
+
+  /** Best-effort match by name / interest text (normalized contains). */
+  async findCourseByInterest(interest: string): Promise<Course | null> {
+    const hint = interest
+      .normalize('NFD')
+      .replace(/\p{M}/gu, '')
+      .toLowerCase()
+      .trim();
+    if (!hint) return null;
+    const courses = await this.getCourses();
+    let best: { course: Course; score: number } | null = null;
+    for (const course of courses) {
+      const name = course.name
+        .normalize('NFD')
+        .replace(/\p{M}/gu, '')
+        .toLowerCase();
+      let score = 0;
+      if (name === hint) score = 100;
+      else if (name.includes(hint) || hint.includes(name)) score = 50;
+      else {
+        const tokens = hint.split(/\s+/).filter((t) => t.length > 3);
+        score = tokens.filter((t) => name.includes(t)).length;
+      }
+      if (!best || score > best.score) best = { course, score };
+    }
+    return best && best.score > 0 ? best.course : null;
+  }
+
   async getPromotions(): Promise<Promotion[]> {
     await this.ensureCache();
     return this.cache!.promotions;
@@ -303,6 +335,10 @@ function mapCourse(row: Record<string, unknown>, today: string): Course {
       row.prerequisites == null ? null : String(row.prerequisites),
     certificate: row.certificate == null ? null : String(row.certificate),
     source_url: row.source_url == null ? null : String(row.source_url),
+    enrollment_form_url:
+      row.enrollment_form_url == null
+        ? null
+        : String(row.enrollment_form_url),
     site_status: row.site_status == null ? null : String(row.site_status),
     active: Boolean(row.active),
   };
