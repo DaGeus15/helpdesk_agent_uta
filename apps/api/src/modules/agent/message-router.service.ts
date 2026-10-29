@@ -65,6 +65,34 @@ export class MessageRouterService {
       profileAfter,
     );
 
+    // Carrera de handover: si el operador pausó durante la inferencia,
+    // NO enviamos la respuesta. Sí la guardamos con intent
+    // 'descartada_por_handover' para que el panel la muestre tachada.
+    const afterInference =
+      (await this.conversations.findById(current.id)) ?? current;
+    if (afterInference.ai_paused) {
+      this.logger.log(
+        `Discarding AI reply for ${current.id}: ai_paused during inference (handover race)`,
+      );
+      await this.conversations.addMessage({
+        conversationId: current.id,
+        role: 'assistant',
+        content: reply,
+        source: 'text',
+        intent: 'descartada_por_handover',
+        leadState: output.lead_state,
+        flaggedInjection: injectionFlagged,
+        blockedByGuard,
+        tokensIn: usage.tokensIn,
+        tokensOut: usage.tokensOut,
+        latencyMs: usage.latencyMs,
+      });
+      if (injectionFlagged) {
+        await this.conversations.incrementInjectionAttempts(current.id);
+      }
+      return null;
+    }
+
     await this.conversations.addMessage({
       conversationId: current.id,
       role: 'assistant',

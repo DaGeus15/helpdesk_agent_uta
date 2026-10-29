@@ -8,12 +8,17 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Bot, type Context } from 'grammy';
 import type { Update } from 'grammy/types';
+import { InMemoryRateLimiter } from '../../common/in-memory-rate-limiter';
 import type { Env } from '../../config/env.schema';
 import { MessageRouterService } from '../agent/message-router.service';
+import { ConversationsService } from '../conversations/conversations.service';
 import {
   LLM_PROVIDER,
   type LlmProvider,
 } from '../llm/llm-provider.interface';
+
+const RATE_LIMIT_REPLY =
+  'Voy leyendo tus mensajes, dame un momento 🙏';
 
 @Injectable()
 export class TelegramService implements OnModuleInit, OnModuleDestroy {
@@ -22,10 +27,15 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
   private readonly chatQueues = new Map<number, Promise<void>>();
   private mode!: Env['TELEGRAM_MODE'];
   private token!: string;
+  /** Máx. 10 mensajes de usuario por chat por minuto. */
+  private readonly chatRateLimit = new InMemoryRateLimiter(10, 60_000);
+  /** Una sola respuesta amable por ventana cuando se excede el límite. */
+  private readonly rateLimitNotified = new InMemoryRateLimiter(1, 60_000);
 
   constructor(
     private readonly config: ConfigService<Env, true>,
     private readonly router: MessageRouterService,
+    private readonly conversations: ConversationsService,
     @Inject(LLM_PROVIDER) private readonly llm: LlmProvider,
   ) {}
 
@@ -176,6 +186,21 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       .join(' ')
       .trim();
 
+    const chatKey = String(chat.id);
+    if (!this.chatRateLimit.tryConsume(chatKey)) {
+      await this.handleRateLimited(
+        chat.id,
+        chatKey,
+        {
+          username: from?.username ?? null,
+          displayName: displayName || null,
+        },
+        text,
+        source,
+      );
+      return;
+    }
+
     try {
       const reply = await this.router.handleIncoming({
         chatId: chat.id,
@@ -184,6 +209,8 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
         text,
         source,
       });
+      // Si el router devolvió null (p. ej. descartada_por_handover), no enviamos.
+      // El holding reply con IA ya pausada sí se envía.
       if (reply) {
         await this.sendText(chat.id, reply);
       }
@@ -196,6 +223,45 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
         'Disculpa, tuve un problema técnico 🙏 ¿Me lo repites en un momento?',
       );
     }
+  }
+
+  /**
+   * Mensajes por encima del rate limit: se guardan, no se infiere,
+   * y como máximo una respuesta amable por minuto.
+   */
+  private async handleRateLimited(
+    chatId: number,
+    chatKey: string,
+    meta: { username: string | null; displayName: string | null },
+    text: string,
+    source: 'text' | 'voice',
+  ): Promise<void> {
+    const conversation = await this.conversations.upsertByTelegramChat({
+      chatId,
+      username: meta.username,
+      displayName: meta.displayName,
+    });
+
+    await this.conversations.addMessage({
+      conversationId: conversation.id,
+      role: 'user',
+      content: text,
+      source,
+    });
+
+    if (!this.rateLimitNotified.tryConsume(chatKey)) {
+      this.logger.debug(`Rate limit silent drop for chat ${chatId}`);
+      return;
+    }
+
+    await this.conversations.addMessage({
+      conversationId: conversation.id,
+      role: 'assistant',
+      content: RATE_LIMIT_REPLY,
+      source: 'text',
+      intent: 'rate_limited',
+    });
+    await this.sendText(chatId, RATE_LIMIT_REPLY);
   }
 
   private async processVoice(ctx: Context): Promise<void> {

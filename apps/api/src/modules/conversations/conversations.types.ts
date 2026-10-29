@@ -40,6 +40,8 @@ export interface Conversation {
   created_at: string;
 }
 
+export type DeliveryStatus = 'pending' | 'sent' | 'failed';
+
 export interface Message {
   id: string;
   conversation_id: string;
@@ -53,5 +55,7 @@ export interface Message {
   tokens_in: number | null;
   tokens_out: number | null;
   latency_ms: number | null;
+  delivery_status: DeliveryStatus;
+  client_id: string | null;
   created_at: string;
 }

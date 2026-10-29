@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ApiError, GoogleGenAI, type Content } from '@google/genai';
 import {
   LlmOutputError,
@@ -17,9 +18,12 @@ const DEFAULT_FALLBACK_MODELS = [
 
 export class GeminiProvider implements LlmProvider {
   readonly name = 'gemini';
+  private readonly logger = new Logger(GeminiProvider.name);
   private readonly ai: GoogleGenAI;
   /** Cadena de modelos: si uno agota su cuota (429) se usa el siguiente. */
   private readonly models: string[];
+  private fallbackHopsTotal = 0;
+  private rateLimitedTotal = 0;
 
   constructor(apiKey: string, models: string) {
     this.ai = new GoogleGenAI({ apiKey });
@@ -29,6 +33,13 @@ export class GeminiProvider implements LlmProvider {
       .filter(Boolean);
     // Siempre hay respaldo, aunque GEMINI_MODEL nombre un único modelo.
     this.models = [...new Set([...configured, ...DEFAULT_FALLBACK_MODELS])];
+  }
+
+  getObservability(): { fallbacks: number; rateLimited: number } {
+    return {
+      fallbacks: this.fallbackHopsTotal,
+      rateLimited: this.rateLimitedTotal,
+    };
   }
 
   async generateStructured<T>(
@@ -137,7 +148,7 @@ export class GeminiProvider implements LlmProvider {
     >[0]['config'];
   }) {
     const started = performance.now();
-    const response = await this.generateWithFallback({
+    const { response, model, fallbackHops } = await this.generateWithFallback({
       contents: params.contents,
       config: {
         ...params.config,
@@ -155,25 +166,54 @@ export class GeminiProvider implements LlmProvider {
       latencyMs,
     };
 
+    this.logger.log(
+      JSON.stringify({
+        event: 'gemini_call',
+        model,
+        fallbackHops,
+        latencyMs,
+        tokensIn: usage.tokensIn,
+        tokensOut: usage.tokensOut,
+      }),
+    );
+
     return { response, usage };
   }
 
   private async generateWithFallback(
     params: Omit<Parameters<GoogleGenAI['models']['generateContent']>[0], 'model'>,
-  ) {
+  ): Promise<{
+    response: Awaited<ReturnType<GoogleGenAI['models']['generateContent']>>;
+    model: string;
+    fallbackHops: number;
+  }> {
     let lastError: unknown;
+    let hops = 0;
     for (const model of this.models) {
       try {
         // Sin "thinking" en la familia 2.5: el turno conversacional no lo necesita y baja la latencia.
         const config = model.startsWith('gemini-2.5')
           ? { ...params.config, thinkingConfig: { thinkingBudget: 0 } }
           : params.config;
-        return await this.ai.models.generateContent({ ...params, config, model });
+        const response = await this.ai.models.generateContent({
+          ...params,
+          config,
+          model,
+        });
+        if (hops > 0) {
+          this.fallbackHopsTotal += hops;
+        }
+        return { response, model, fallbackHops: hops };
       } catch (error) {
+        const status = error instanceof ApiError ? error.status : undefined;
+        if (status === 429) {
+          this.rateLimitedTotal += 1;
+        }
         const retryable =
           // 429 cuota, 5xx caída y 404 modelo retirado: se prueba el siguiente.
           error instanceof ApiError && [404, 429, 500, 503].includes(error.status);
         if (!retryable) throw error;
+        hops += 1;
         lastError = error;
       }
     }

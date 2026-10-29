@@ -14,6 +14,7 @@ import { OperatorService } from './operator.service';
 
 const sendMessageBodySchema = z.object({
   text: z.string().min(1).max(2000),
+  clientId: z.string().min(1).max(128).optional(),
 });
 
 @Controller('operator')
@@ -42,10 +43,14 @@ export class OperatorController {
     const parsed = sendMessageBodySchema.safeParse(body);
     if (!parsed.success) {
       throw new BadRequestException(
-        'Body inválido: se requiere { text } con 1-2000 caracteres',
+        'Body inválido: se requiere { text } (1-2000) y opcionalmente clientId',
       );
     }
-    return this.operator.sendOperatorMessage(id, parsed.data.text);
+    return this.operator.sendOperatorMessage(
+      id,
+      parsed.data.text,
+      parsed.data.clientId,
+    );
   }
 
   @Get('conversations/:id/summary')

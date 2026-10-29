@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { SUPABASE_CLIENT } from '../supabase/supabase.constants';
 import type {
   Conversation,
+  DeliveryStatus,
   LeadProfile,
   LeadState,
   Message,
@@ -28,6 +29,8 @@ export interface AddMessageInput {
   tokensIn?: number | null;
   tokensOut?: number | null;
   latencyMs?: number | null;
+  deliveryStatus?: DeliveryStatus;
+  clientId?: string | null;
 }
 
 export interface ApplyAgentResultInput {
@@ -114,7 +117,14 @@ export class ConversationsService {
   }
 
   async addMessage(input: AddMessageInput): Promise<Message> {
-    const conversation = await this.requireById(input.conversationId);
+    await this.requireById(input.conversationId);
+
+    if (input.clientId) {
+      const existing = await this.findByClientId(input.clientId);
+      if (existing) {
+        return existing;
+      }
+    }
 
     const { data, error } = await this.supabase
       .from('messages')
@@ -130,29 +140,63 @@ export class ConversationsService {
         tokens_in: input.tokensIn ?? null,
         tokens_out: input.tokensOut ?? null,
         latency_ms: input.latencyMs ?? null,
+        delivery_status: input.deliveryStatus ?? 'sent',
+        client_id: input.clientId ?? null,
       })
       .select('*')
       .single();
 
     if (error) {
+      // Carrera de idempotencia: otro request insertó el mismo client_id
+      if (input.clientId && /messages_client_id_unique|duplicate key/i.test(error.message)) {
+        const existing = await this.findByClientId(input.clientId);
+        if (existing) return existing;
+      }
       throw new Error(`Failed to insert message: ${error.message}`);
     }
 
-    const { error: updateError } = await this.supabase
-      .from('conversations')
-      .update({
-        last_message_at: new Date().toISOString(),
-        message_count: conversation.message_count + 1,
-      })
-      .eq('id', input.conversationId);
+    const { error: counterError } = await this.supabase.rpc(
+      'increment_conversation_counter',
+      { conv_id: input.conversationId, field: 'message_count' },
+    );
 
-    if (updateError) {
+    if (counterError) {
       this.logger.error(
-        `Message saved but failed to bump conversation counters: ${updateError.message}`,
+        `Message saved but failed to bump message_count: ${counterError.message}`,
       );
     }
 
     return mapMessage(data);
+  }
+
+  async updateDeliveryStatus(
+    messageId: string,
+    status: DeliveryStatus,
+  ): Promise<Message> {
+    const { data, error } = await this.supabase
+      .from('messages')
+      .update({ delivery_status: status })
+      .eq('id', messageId)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to update delivery_status: ${error.message}`);
+    }
+    return mapMessage(data);
+  }
+
+  async findByClientId(clientId: string): Promise<Message | null> {
+    const { data, error } = await this.supabase
+      .from('messages')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Failed to find message by client_id: ${error.message}`);
+    }
+    return data ? mapMessage(data) : null;
   }
 
   async getRecentMessages(
@@ -197,11 +241,11 @@ export class ConversationsService {
   }
 
   async incrementInjectionAttempts(id: string): Promise<void> {
-    const conversation = await this.requireById(id);
-    const { error } = await this.supabase
-      .from('conversations')
-      .update({ injection_attempts: conversation.injection_attempts + 1 })
-      .eq('id', id);
+    await this.requireById(id);
+    const { error } = await this.supabase.rpc(
+      'increment_conversation_counter',
+      { conv_id: id, field: 'injection_attempts' },
+    );
 
     if (error) {
       throw new Error(
@@ -340,6 +384,8 @@ function mapConversation(row: Record<string, unknown>): Conversation {
 }
 
 function mapMessage(row: Record<string, unknown>): Message {
+  const delivery =
+    row.delivery_status == null ? 'sent' : String(row.delivery_status);
   return {
     id: String(row.id),
     conversation_id: String(row.conversation_id),
@@ -353,6 +399,8 @@ function mapMessage(row: Record<string, unknown>): Message {
     tokens_in: row.tokens_in == null ? null : Number(row.tokens_in),
     tokens_out: row.tokens_out == null ? null : Number(row.tokens_out),
     latency_ms: row.latency_ms == null ? null : Number(row.latency_ms),
+    delivery_status: (delivery as DeliveryStatus) || 'sent',
+    client_id: row.client_id == null ? null : String(row.client_id),
     created_at: String(row.created_at),
   };
 }

@@ -1,12 +1,24 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Env } from '../../config/env.schema';
 import type { AuthTokenPayload } from './auth.types';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(private readonly config: ConfigService<Env, true>) {}
+
+  onModuleInit(): void {
+    const nodeEnv = this.config.get('NODE_ENV', { infer: true });
+    const secret = this.config.get('AUTH_TOKEN_SECRET', { infer: true });
+    if (nodeEnv === 'production' && !secret) {
+      this.logger.warn(
+        'AUTH_TOKEN_SECRET is missing in production. Tokens fall back to TELEGRAM_WEBHOOK_SECRET or SUPABASE_SERVICE_ROLE_KEY — set AUTH_TOKEN_SECRET to a dedicated value.',
+      );
+    }
+  }
 
   login(
     username: string,

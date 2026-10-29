@@ -20,10 +20,10 @@ export class TelegramController {
 
   @Post('webhook')
   @HttpCode(200)
-  async webhook(
+  webhook(
     @Headers('x-telegram-bot-api-secret-token') secret: string | undefined,
     @Body() update: Update,
-  ): Promise<{ ok: true }> {
+  ): { ok: true } {
     const expected = this.config.get('TELEGRAM_WEBHOOK_SECRET', {
       infer: true,
     });
@@ -31,9 +31,8 @@ export class TelegramController {
       throw new UnauthorizedException('Invalid Telegram webhook secret');
     }
 
-    // Process update; Nest returns 200 as soon as this resolves.
-    // Handlers enqueue heavy work per-chat so this stays fast.
-    await this.telegram.handleUpdate(update);
+    // 200 inmediato; el update se procesa en segundo plano (cola por chat).
+    void this.telegram.handleUpdate(update);
     return { ok: true };
   }
 }
