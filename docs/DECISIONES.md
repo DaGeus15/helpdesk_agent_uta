@@ -65,3 +65,6 @@ Cada llamada al modelo lleva siempre lo mismo, sin importar cuánto dure la conv
 - Sin rate limiting por usuario de Telegram. Lo amortiguan la cadena de modelos y la cola por chat.
 - Las heurísticas no detectan todos los ataques. Por eso la defensa principal es la validación de salida contra la BD, no el detector.
 - Las credenciales usadas durante la hackathon deben rotarse después del evento.
+
+### Formulario de inscripción: estado del prellenado
+El Google Form oficial del CTT exige iniciar sesión con una cuenta institucional: responde 401 sin sesión. Por eso el servidor no puede leer los `entry.<id>` de sus campos y hoy el bot envía el **enlace directo** al formulario de la edición vigente. El prellenado ya está implementado (`src/modules/enrollment/`) y se activa solo si el formulario pasa a ser público. La otra vía es configurar a mano los IDs de los campos, obtenidos con "Obtener enlace prellenado" por quien administra el form.
