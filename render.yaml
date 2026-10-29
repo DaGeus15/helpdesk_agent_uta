@@ -33,3 +33,7 @@ services:
         sync: false
       - key: DASHBOARD_ORIGIN
         sync: false
+      - key: CATALOG_SYNC_ENABLED
+        value: "true"
+      - key: CATALOG_SYNC_HOURS
+        value: "6"

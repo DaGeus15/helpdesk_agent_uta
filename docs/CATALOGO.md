@@ -1,6 +1,6 @@
 # Catálogo oficial — Talleres Tecnológicos CTT-FISEI (UTA)
 
-Fuente de verdad comercial del agente. Datos extraídos de [ctt-talleresfisei.uta.edu.ec/course.php](https://ctt-talleresfisei.uta.edu.ec/course.php) con `apps/api/scripts/scrape-ctt.mjs` → `supabase/data/ctt-cursos.json` y `supabase/seed_ctt.sql`.
+**Este documento es una referencia humana.** El catálogo vivo del agente se mantiene **solo** desde [ctt-talleresfisei.uta.edu.ec/course.php](https://ctt-talleresfisei.uta.edu.ec/course.php) vía el módulo `catalog-sync` de la API (upsert automático; sin edición manual de filas). El seed (`supabase/seed_ctt.sql`) y el script `apps/api/scripts/scrape-ctt.mjs` sirven para el bootstrap inicial o para regenerar dumps, no para operación diaria.
 
 **Hoy (referencia America/Guayaquil): 2026-10-29**
 
@@ -410,6 +410,10 @@ Conocimientos básicos de redes
 
 ## Fuente y regeneración
 
-1. `node apps/api/scripts/scrape-ctt.mjs`
-2. Aplicar en Supabase: `supabase/migrations/003_real_catalog.sql` y luego `supabase/seed_ctt.sql`
-3. Los cursos ficticios CodeAndes (`python-fundamentos`, …) y promos `PRONTO15`/`COMBO20` quedan con `active = false` (sin DELETE).
+En producción / local con la API levantada, el catálogo se actualiza solo (`CATALOG_SYNC_ENABLED`, intervalo `CATALOG_SYNC_HOURS`) o con **Actualizar ahora** en el panel / `POST /operator/catalog/sync`.
+
+Bootstrap o dump offline:
+
+1. `pnpm --filter api build && node apps/api/scripts/scrape-ctt.mjs`
+2. Aplicar en Supabase: migraciones `003`–`005` y luego `supabase/seed_ctt.sql` (solo primera vez o recuperación)
+3. Los cursos ficticios CodeAndes (`python-fundamentos`, …) y promos `PRONTO15`/`COMBO20` quedan con `active = false` (sin DELETE). Los `ctt-*` ausentes de la web también se desactivan, nunca se borran.

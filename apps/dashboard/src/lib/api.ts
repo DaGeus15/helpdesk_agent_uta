@@ -83,6 +83,34 @@ export interface SummaryResponse {
   lead_state: LeadState
 }
 
+export interface CatalogSyncResult {
+  ok: boolean
+  total: number
+  upserted: number
+  deactivated: number
+  durationMs: number
+  error?: string
+}
+
+export interface CatalogSyncRun {
+  id: string
+  started_at: string
+  finished_at: string | null
+  ok: boolean
+  total: number
+  upserted: number
+  deactivated: number
+  error: string | null
+}
+
+export interface CatalogSyncStatus {
+  enabled: boolean
+  intervalHours: number
+  running: boolean
+  nextScheduledAt: string | null
+  lastRun: CatalogSyncRun | null
+}
+
 export const api = {
   login(username: string, password: string) {
     return request<LoginResponse>(
@@ -120,5 +148,15 @@ export const api = {
 
   getMetrics() {
     return request<Metrics>('/operator/metrics')
+  },
+
+  syncCatalog() {
+    return request<CatalogSyncResult>('/operator/catalog/sync', {
+      method: 'POST',
+    })
+  },
+
+  getCatalogStatus() {
+    return request<CatalogSyncStatus>('/operator/catalog/status')
   },
 }

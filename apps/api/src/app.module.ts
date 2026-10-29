@@ -5,6 +5,7 @@ import { KeepAliveService } from './health/keep-alive.service';
 import { AgentModule } from './modules/agent/agent.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
+import { CatalogSyncModule } from './modules/catalog-sync/catalog-sync.module';
 import { ConversationsModule } from './modules/conversations/conversations.module';
 import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 import { LlmModule } from './modules/llm/llm.module';
@@ -17,6 +18,7 @@ import { TelegramModule } from './modules/telegram/telegram.module';
     AppConfigModule,
     SupabaseModule,
     CatalogModule,
+    CatalogSyncModule,
     EnrollmentModule,
     LlmModule,
     ConversationsModule,

@@ -36,6 +36,17 @@ export const envSchema = z
       z.string().min(1).optional(),
     ),
     AUTH_TOKEN_TTL_HOURS: z.coerce.number().int().positive().default(12),
+    CATALOG_SYNC_ENABLED: z.preprocess((value) => {
+      if (value === undefined || value === null || value === '') return true;
+      if (typeof value === 'boolean') return value;
+      if (typeof value === 'string') {
+        const v = value.trim().toLowerCase();
+        if (['false', '0', 'no', 'off'].includes(v)) return false;
+        if (['true', '1', 'yes', 'on'].includes(v)) return true;
+      }
+      return Boolean(value);
+    }, z.boolean().default(true)),
+    CATALOG_SYNC_HOURS: z.coerce.number().positive().default(6),
   })
   .superRefine((data, ctx) => {
     if (data.TELEGRAM_MODE !== 'webhook') {

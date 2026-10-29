@@ -14,10 +14,16 @@ Complementa a [ARCHITECTURE.md](ARCHITECTURE.md). Resume qué se decidió, por q
 | Datos y tiempo real | **Supabase** (Postgres + Realtime por WebSockets) | Postgres gestionado y `postgres_changes` sin montar servidor de sockets | SSE propio |
 | Panel | React + Vite + Tailwind + shadcn/ui en Vercel. Lee de Supabase y **escribe solo vía API** | Tiempo real directo desde la BD y escritura controlada | Escribir desde el navegador con la service key |
 | Despliegue | API en **Render** (webhook HTTPS + keep-alive) y panel en **Vercel** | Gratis y con deploy automático en cada push a `main` | Servidor propio |
-| Catálogo | **Cursos reales de CTT-FISEI** extraídos con un script reproducible (`apps/api/scripts/scrape-ctt.mjs`) | Datos veraces. Precios y fechas salen de la BD, nunca del LLM | Catálogo inventado |
+| Catálogo | **Cursos reales de CTT-FISEI** sincronizados automáticamente desde la web (`catalog-sync`; seed/script solo para bootstrap) | Datos veraces y al día. Precios y fechas salen de la BD, nunca del LLM | Catálogo inventado o actualización manual |
 | Estado del curso | **Se calcula por fechas** (zona America/Guayaquil): inscripciones abiertas, en curso, próximamente, finalizado | La web marca "ABIERTO" cursos de 2025 ya terminados | Confiar en la etiqueta de la web |
 | Flujo de trabajo | Claude planifica y revisa; Cursor implementa cada tarea; un commit por tarea | Pedido por el equipo; trazabilidad en el historial de git | — |
 | Enlace de inscripción | Lo arma el **servidor** (`EnrollmentFormService`) con el Google Form oficial del curso y el perfil del lead; el LLM no lo genera | Evita URLs inventadas o manipuladas por prompt injection; el formulario sale del scraper (`enrollment_form_url`) | Dejar que el modelo pegue el link |
+| Sync del catálogo | Automática al boot (+10 s) y cada `CATALOG_SYNC_HOURS` (6); upsert + soft-deactivate; nunca DELETE | El panel y el bot siempre reflejan la web oficial sin intervención manual | Seed SQL a mano en cada cambio de la web |
+
+### Salvaguardas del `catalog-sync`
+- Si el scrape devuelve **0 cursos**, o **menos del 50 %** de los `ctt-*` activos actuales, **no se escribe** en `courses` (probable caída de la web o cambio de HTML). Se registra el error en `catalog_sync_runs` y se conserva el catálogo anterior.
+- Timeout de **15 s** por página y como máximo **3 descargas en paralelo**. Un curso que falle al parsear se omite sin abortar el resto.
+- Lock en memoria: no hay ejecuciones solapadas. Desactivable con `CATALOG_SYNC_ENABLED=false`.
 
 ## 2. Ventana de contexto: qué pasa con conversaciones largas
 

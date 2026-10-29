@@ -38,12 +38,13 @@ flowchart LR
 
 ```
 apps/
-  api/          NestJS: telegram, agent, guardrails, llm, conversations, operator, catalog, supabase
+  api/          NestJS: telegram, agent, guardrails, llm, conversations, operator, catalog, catalog-sync, supabase
   dashboard/    React + Vite + Tailwind + shadcn/ui (Supabase Realtime)
 supabase/
   migrations/001_init.sql              esquema base, RLS y Realtime
   migrations/003_real_catalog.sql      campos del catálogo CTT-FISEI
   migrations/004_enrollment_form.sql   URL del Google Form por curso
+  migrations/005_catalog_sync.sql      historial de sincronizaciones del catálogo
   seed.sql                             seed ficticio legacy (desactivado por seed_ctt)
   seed_ctt.sql                         catálogo real (18 cursos CTT-FISEI)
   data/ctt-cursos.json             dump del scraper
@@ -55,7 +56,7 @@ render.yaml     blueprint del despliegue de la API
 
 Requisitos: Node ≥ 20 y pnpm (`corepack enable`).
 
-1. **Supabase:** crea un proyecto y, en el *SQL Editor*, ejecuta en orden `supabase/migrations/001_init.sql`, `supabase/migrations/003_real_catalog.sql`, `supabase/migrations/004_enrollment_form.sql` y `supabase/seed_ctt.sql`. (Opcional: regenerar el seed con `node apps/api/scripts/scrape-ctt.mjs`.)
+1. **Supabase:** crea un proyecto y, en el *SQL Editor*, ejecuta en orden `supabase/migrations/001_init.sql`, `supabase/migrations/003_real_catalog.sql`, `supabase/migrations/004_enrollment_form.sql`, `supabase/migrations/005_catalog_sync.sql` y `supabase/seed_ctt.sql`. (Opcional: regenerar el seed con `pnpm --filter api build && node apps/api/scripts/scrape-ctt.mjs`.)
 2. **Bot:** crea uno con @BotFather (`/newbot`) y guarda el token.
 3. **Gemini:** crea una API key en https://aistudio.google.com/apikey.
 4. **Variables:** copia `apps/api/.env.example` → `apps/api/.env` y `apps/dashboard/.env.example` → `apps/dashboard/.env` y complétalas (tablas abajo).
@@ -65,6 +66,10 @@ Requisitos: Node ≥ 20 y pnpm (`corepack enable`).
    pnpm dev
    ```
    La API queda en `http://localhost:3000` con long polling de Telegram y el panel en `http://localhost:5173`.
+
+### Sincronización del catálogo
+
+El módulo `catalog-sync` descarga https://ctt-talleresfisei.uta.edu.ec/course.php, hace upsert de los cursos `ctt-*` en Supabase y desactiva (`active = false`) los que ya no aparecen en la web (nunca DELETE). Arranca 10 s después del boot y se repite cada `CATALOG_SYNC_HOURS` (por defecto 6). Se puede forzar desde el panel (**Cursos → Actualizar ahora**) o con `POST /operator/catalog/sync`. Salvaguardas: si el scrape devuelve 0 cursos o menos del 50 % de los activos actuales, no toca la base. Desactivar con `CATALOG_SYNC_ENABLED=false`.
 
 ### Variables de la API (`apps/api/.env`)
 
@@ -80,6 +85,7 @@ Requisitos: Node ≥ 20 y pnpm (`corepack enable`).
 | `CONTEXT_WINDOW_MESSAGES` / `SUMMARY_EVERY_N_MESSAGES` | Ventana de contexto (12) y frecuencia del resumen (8) |
 | `OPERATOR_USERNAME` / `OPERATOR_PASSWORD` | Credenciales del panel (por defecto `admin` / `admin`) |
 | `AUTH_TOKEN_SECRET` / `AUTH_TOKEN_TTL_HOURS` | Firma y duración del token del operador (opcional; 12 h) |
+| `CATALOG_SYNC_ENABLED` / `CATALOG_SYNC_HOURS` | Sync automática del catálogo CTT-FISEI (`true` / `6`) |
 
 ### Variables del dashboard (`apps/dashboard/.env`)
 

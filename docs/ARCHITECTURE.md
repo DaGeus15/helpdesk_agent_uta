@@ -17,6 +17,7 @@ Decisiones confirmadas en la Fase 0 (29-oct-2026) y actualizadas con el catálog
 ```mermaid
 flowchart LR
     U[Prospecto<br/>Telegram] <-->|Bot API| TG[telegram<br/>conector]
+    WEB[ctt-talleresfisei.uta.edu.ec] -->|scrape| SYNC[catalog-sync]
     subgraph API[apps/api · NestJS · Render]
         TG --> CONV[conversations<br/>persistencia + handover]
         TG --> AG[agent<br/>pipeline de inferencia]
@@ -24,12 +25,15 @@ flowchart LR
         AG --> LLM[llm<br/>LlmProvider → Gemini]
         AG --> CAT[catalog<br/>cursos, precios, promos]
         AG --> CONV
+        SYNC --> CAT
         OP[operator<br/>REST para el panel] --> CONV
         OP --> TG
         OP --> AG
+        OP --> SYNC
     end
     CONV <--> DB[(Supabase Postgres)]
     CAT --> DB
+    SYNC --> DB
     DB -- Realtime WS --> D[apps/dashboard<br/>React · Vercel]
     D -- REST + CORS --> OP
     LLM <--> G[Gemini API]
@@ -43,7 +47,8 @@ Separación de capas (rúbrica C1):
 | Pipeline de inferencia | `agent` (+ `guardrails`) | Construir contexto, llamar al LLM, validar salida, decidir handover | Telegram, HTTP |
 | Proveedor LLM | `llm` | `generateStructured()`, `transcribeAudio()`, `summarize()`; conteo de tokens | Dominio de ventas |
 | Persistencia y handover | `conversations` | CRUD de conversaciones/mensajes, `ai_paused`, eventos de handover | LLM, Telegram |
-| Datos oficiales | `catalog` | Cursos, horarios, precios y promociones (fuente única de verdad) | — |
+| Datos oficiales | `catalog` | Cursos, horarios, precios y promociones (caché en memoria) | Scraping |
+| Sync del catálogo | `catalog-sync` | Scrapea la web CTT-FISEI, upsert/desactiva `ctt-*`, programa sync periódica | LLM, Telegram |
 | API del operador | `operator` | Endpoints REST del dashboard | Detalles del LLM |
 
 El agente recibe un `IncomingMessage` y devuelve un `AgentResult`; el conector de Telegram es el único que conoce grammY. Añadir WhatsApp = otro conector que produzca `IncomingMessage`.
@@ -85,7 +90,7 @@ sequenceDiagram
 
 ## 3. Modelo de datos (Supabase)
 
-Archivos: `supabase/migrations/001_init.sql`, `003_real_catalog.sql` y `supabase/seed_ctt.sql` (catálogo real CTT-FISEI).
+Archivos: `supabase/migrations/001_init.sql`, `003_real_catalog.sql`, `004_enrollment_form.sql`, `005_catalog_sync.sql` y `supabase/seed_ctt.sql` (catálogo real CTT-FISEI; en producción se mantiene vía `catalog-sync`).
 
 ```sql
 create extension if not exists pgcrypto;
@@ -169,6 +174,17 @@ create table handover_events (
   created_at       timestamptz not null default now()
 );
 
+create table catalog_sync_runs (
+  id            uuid primary key default gen_random_uuid(),
+  started_at    timestamptz not null default now(),
+  finished_at   timestamptz,
+  ok            boolean not null default false,
+  total         int not null default 0,
+  upserted      int not null default 0,
+  deactivated   int not null default 0,
+  error         text
+);
+
 -- Realtime para el dashboard
 alter publication supabase_realtime add table conversations, messages, handover_events;
 
@@ -178,11 +194,13 @@ alter table promotions enable row level security;
 alter table conversations enable row level security;
 alter table messages enable row level security;
 alter table handover_events enable row level security;
-create policy read_all on courses        for select to anon using (true);
-create policy read_all on promotions     for select to anon using (true);
-create policy read_all on conversations  for select to anon using (true);
-create policy read_all on messages       for select to anon using (true);
-create policy read_all on handover_events for select to anon using (true);
+alter table catalog_sync_runs enable row level security;
+create policy read_all on courses            for select to anon using (true);
+create policy read_all on promotions         for select to anon using (true);
+create policy read_all on conversations      for select to anon using (true);
+create policy read_all on messages           for select to anon using (true);
+create policy read_all on handover_events    for select to anon using (true);
+create policy read_all on catalog_sync_runs  for select to anon using (true);
 ```
 
 > Limitación conocida (demo): la lectura anónima expone las conversaciones a quien tenga la URL del dashboard. Endurecimiento posterior: Supabase Auth para operadores y política `to authenticated`.
@@ -200,12 +218,36 @@ Base: `https://<render-app>.onrender.com`. CORS: `DASHBOARD_ORIGIN` (Vercel + `h
 | `POST` | `/operator/conversations/:id/messages` | `{ text }` | `{ message }` | Envía por el bot, guarda `role=operator`, pausa la IA si no lo estaba |
 | `GET` | `/operator/conversations/:id/summary` | — | `{ summary, profile, lead_state }` | Resumen para el operador |
 | `GET` | `/operator/metrics` | — | `{ active, byState, hotLeads, handovers, injectionAttempts, avgLatencyMs, tokensTotal }` | Panel de métricas |
+| `POST` | `/operator/catalog/sync` | — | `{ ok, total, upserted, deactivated, durationMs, error? }` | Fuerza sync desde la web CTT-FISEI |
+| `GET` | `/operator/catalog/status` | — | `{ enabled, intervalHours, running, nextScheduledAt, lastRun }` | Estado de la sync automática |
 
 El dashboard lee listas e historial directamente de Supabase (Realtime) y solo escribe por estos endpoints.
 
+### Flujo de sincronización del catálogo (`catalog-sync`)
+
+```mermaid
+sequenceDiagram
+    participant S as catalog-sync
+    participant W as ctt-talleresfisei
+    participant DB as Supabase
+    participant C as CatalogService
+
+    Note over S: boot +10s / cada N horas / POST sync
+    S->>W: GET course.php + páginas curso
+    alt 0 cursos o &lt;50% de activos
+        S-->>DB: no escribe (conserva catálogo)
+        S->>DB: INSERT catalog_sync_runs (ok=false)
+    else scrape OK
+        S->>DB: upsert courses (ctt-*)
+        S->>DB: active=false ausentes (nunca DELETE)
+        S->>C: refresh()
+        S->>DB: INSERT catalog_sync_runs (ok=true)
+    end
+```
+
 ### Variables de entorno
 
-`apps/api/.env`: `PORT`, `NODE_ENV`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_MODE` (`polling` | `webhook`), `TELEGRAM_WEBHOOK_SECRET`, `PUBLIC_API_URL`, `LLM_PROVIDER` (`gemini`), `GEMINI_API_KEY`, `GEMINI_MODEL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DASHBOARD_ORIGIN`, `CONTEXT_WINDOW_MESSAGES` (12), `SUMMARY_EVERY_N_MESSAGES` (8).
+`apps/api/.env`: `PORT`, `NODE_ENV`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_MODE` (`polling` | `webhook`), `TELEGRAM_WEBHOOK_SECRET`, `PUBLIC_API_URL`, `LLM_PROVIDER` (`gemini`), `GEMINI_API_KEY`, `GEMINI_MODEL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DASHBOARD_ORIGIN`, `CONTEXT_WINDOW_MESSAGES` (12), `SUMMARY_EVERY_N_MESSAGES` (8), `CATALOG_SYNC_ENABLED` (true), `CATALOG_SYNC_HOURS` (6).
 
 `apps/dashboard/.env`: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_API_URL`.
 
