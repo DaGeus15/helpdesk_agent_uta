@@ -14,10 +14,10 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 
 ## Lo que Dayle debe preparar YA (en paralelo, ~10 min)
 
-- [ ] Bot de Telegram: @BotFather → `/newbot` → token.
-- [ ] Gemini API key: https://aistudio.google.com/apikey
-- [ ] Proyecto Supabase: URL, `anon` key y `service_role` key (Settings → API).
-- [ ] Repo vacío en GitHub (para Render y Vercel) y cuentas de Render y Vercel enlazadas a GitHub.
+- [x] Bot de Telegram: @BotFather → `/newbot` → token.
+- [x] Gemini API key: https://aistudio.google.com/apikey
+- [x] Proyecto Supabase: URL, `anon` key y `service_role` key (Settings → API).
+- [x] Repo vacío en GitHub (para Render y Vercel) y cuentas de Render y Vercel enlazadas a GitHub.
 
 ## Fase 1 — Esqueleto (11:45 → 12:00)
 
@@ -28,8 +28,8 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 
 ## Fase 2 — Bot conversacional (12:00 → 12:20)
 
-- [ ] **T2.1 llm + catalog:** interfaz `LlmProvider` (`generateStructured`, `transcribeAudio`, `summarize`, devuelven tokens y latencia), `GeminiProvider` con `@google/genai`, fábrica por `LLM_PROVIDER`; `CatalogService` que carga cursos y promociones de Supabase, los cachea, genera el catálogo compacto para el prompt y calcula el conjunto de importes/porcentajes permitidos.
-- [ ] **T2.2 telegram + conversations + agent:** grammY (polling en local, webhook con secret en prod), normalización a `IncomingMessage` (texto y voz → transcripción), `ConversationsService` (upsert, guardar mensajes, ventana de N, perfil, contadores), `AgentService` con prompt en capas, salida zod `AgentOutput`, actualización de estado/perfil/tokens y resumen cada N mensajes.
+- [x] **T2.1 llm + catalog:** interfaz `LlmProvider` (`generateStructured`, `transcribeAudio`, `summarize`, devuelven tokens y latencia), `GeminiProvider` con `@google/genai`, fábrica por `LLM_PROVIDER`; `CatalogService` que carga cursos y promociones de Supabase, los cachea, genera el catálogo compacto para el prompt y calcula el conjunto de importes/porcentajes permitidos.
+- [x] **T2.2 telegram + conversations + agent:** grammY (polling en local, webhook con secret en prod), normalización a `IncomingMessage` (texto y voz → transcripción), `ConversationsService` (upsert, guardar mensajes, ventana de N, perfil, contadores), `AgentService` con prompt en capas, salida zod `AgentOutput`, actualización de estado/perfil/tokens y resumen cada N mensajes.
 - Criterio: conversación natural en Telegram usando el catálogo real (casos 1-8 de `PRUEBAS.md`); los mensajes aparecen en Supabase.
 
 ## Fase 3 — Guardrails y handover lógico (12:20 → 12:30, en paralelo con la Fase 4)
@@ -39,18 +39,24 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 
 ## Fase 4 — Dashboard en tiempo real (12:20 → 12:40, en paralelo con la Fase 3)
 
-- [ ] **T4.1 lista + chat en vivo:** suscripción Realtime a `conversations` y `messages`; tarjetas ordenadas por actividad con termómetro (color + icono por `lead_state`), badge de IA pausada y de intentos de injection; vista de chat con burbujas por rol (usuario / IA / operador, voz marcada).
-- [ ] **T4.2 controles del operador:** "Tomar control" (muestra el resumen), caja de texto "enviar como bot", "Devolver a la IA", tira de métricas arriba (activas, por estado, leads calientes, handovers).
+- [x] **T4.1 lista + chat en vivo:** suscripción Realtime a `conversations` y `messages`; tarjetas ordenadas por actividad con termómetro (color + icono por `lead_state`), badge de IA pausada y de intentos de injection; vista de chat con burbujas por rol (usuario / IA / operador, voz marcada).
+- [x] **T4.2 controles del operador:** "Tomar control" (muestra el resumen), caja de texto "enviar como bot", "Devolver a la IA", tira de métricas arriba (activas, por estado, leads calientes, handovers).
 - Criterio: dos chats de Telegram a la vez reflejados al instante; handover sin que el usuario note el cambio (casos 17-19).
 
 ## Fase 5 — Valor agregado (incluido en tareas anteriores)
 
-- [ ] Notas de voz → dentro de T2.2.
+- [x] Notas de voz → dentro de T2.2.
 - [ ] Resumen para el operador al tomar control → dentro de T3.1 / T4.2.
 - [ ] Métricas → endpoint en T3.1, tira básica en T4.2. Panel avanzado (gráficas, latencia por mensaje): **recortado**.
 
 ## Fase 6 — Despliegue y sustentación (12:20 deploy inicial, 12:40 → 13:00 final)
 
-- [ ] **T6.1 deploy esqueleto (12:20):** Render (API, webhook) + Vercel (dashboard) con variables; CORS verificado contra la URL de Vercel.
-- [ ] **T6.2 README + DEMO (Claude, 12:45):** README con arquitectura, variables y guía de despliegue; `docs/DEMO.md` con el guion de 5 min y respuestas al jurado por criterio de la rúbrica.
+- [x] **T6.1 deploy esqueleto (12:20):** Render (API, webhook) + Vercel (dashboard) con variables; CORS verificado contra la URL de Vercel.
+- [x] **T6.2 README + DEMO (Claude, 12:45):** README con arquitectura, variables y guía de despliegue; `docs/DEMO.md` con el guion de 5 min y respuestas al jurado por criterio de la rúbrica.
 - [ ] **T6.3 prueba final en producción:** batería rápida de `PRUEBAS.md` contra el bot desplegado.
+
+## URLs de producción
+
+- Bot: https://t.me/HelpdeskUTA15Bot
+- Dashboard: https://helpdesk-agent-uta.vercel.app
+- API: https://codeandes-api.onrender.com (`/health`)
