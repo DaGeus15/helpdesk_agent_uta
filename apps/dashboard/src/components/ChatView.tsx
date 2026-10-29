@@ -6,6 +6,7 @@ import {
   type RefObject,
 } from 'react'
 import {
+  ArrowLeft,
   ChevronDown,
   ChevronUp,
   Mic,
@@ -29,10 +30,12 @@ interface ChatViewProps {
   conversation: ConversationWithPreview
   messages: Message[]
   bottomRef: RefObject<HTMLDivElement | null>
+  onBack?: () => void
+  className?: string
 }
 
 function roleLabel(role: Message['role']): string | null {
-  if (role === 'assistant') return 'IA'
+  if (role === 'assistant') return 'IA · Andrea'
   if (role === 'operator') return 'Asesor'
   return null
 }
@@ -54,37 +57,43 @@ function profileChips(profile: LeadProfile): Array<{ label: string; value: strin
 function MessageBubble({ message }: { message: Message }) {
   const isUser = message.role === 'user'
   const isOperator = message.role === 'operator'
+  const isAssistant = message.role === 'assistant'
   const label = roleLabel(message.role)
 
   return (
     <div className={cn('flex w-full', isUser ? 'justify-start' : 'justify-end')}>
       <div
         className={cn(
-          'max-w-[80%] rounded-2xl px-3.5 py-2 text-sm shadow-sm',
-          isUser && 'rounded-bl-md bg-white border text-foreground',
-          message.role === 'assistant' && 'rounded-br-md bg-indigo-600 text-white',
-          isOperator && 'rounded-br-md bg-teal-700 text-white',
-          message.flagged_injection && 'ring-2 ring-red-400',
+          'max-w-[85%] rounded-2xl px-3.5 py-2 text-sm shadow-sm sm:max-w-[75%]',
+          isUser && 'rounded-bl-md border border-[var(--uta-border)] bg-white text-[var(--uta-text)]',
+          isAssistant &&
+            'rounded-br-md bg-[var(--uta-primary-soft)] text-[var(--uta-text)]',
+          isOperator && 'rounded-br-md bg-[var(--uta-primary)] text-white',
         )}
       >
         {(label || message.source === 'voice' || message.flagged_injection) && (
           <div
             className={cn(
-              'mb-1 flex flex-wrap items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide',
-              isUser ? 'text-muted-foreground' : 'text-white/80',
+              'mb-1 flex flex-wrap items-center gap-1.5 text-[10px] font-medium tracking-wide',
+              isOperator ? 'text-white/80' : 'text-[var(--uta-text-muted)]',
             )}
           >
             {label && <span>{label}</span>}
             {message.source === 'voice' && (
               <span className="inline-flex items-center gap-0.5">
                 <Mic className="size-3" />
-                voz
+                Nota de voz transcrita
               </span>
             )}
             {message.flagged_injection && (
-              <span className="inline-flex items-center gap-0.5 text-red-200">
+              <span
+                className={cn(
+                  'inline-flex items-center gap-0.5',
+                  isOperator ? 'text-red-200' : 'text-red-600',
+                )}
+              >
                 <ShieldAlert className="size-3" />
-                injection
+                Intento de manipulación
               </span>
             )}
           </div>
@@ -93,7 +102,7 @@ function MessageBubble({ message }: { message: Message }) {
         <p
           className={cn(
             'mt-1 text-[10px]',
-            isUser ? 'text-muted-foreground' : 'text-white/70',
+            isOperator ? 'text-white/70' : 'text-[var(--uta-text-muted)]',
           )}
         >
           {formatRelativeTime(message.created_at)}
@@ -109,7 +118,13 @@ function errorMessage(err: unknown): string {
   return 'Error desconocido'
 }
 
-export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
+export function ChatView({
+  conversation,
+  messages,
+  bottomRef,
+  onBack,
+  className,
+}: ChatViewProps) {
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
   const [takingOver, setTakingOver] = useState(false)
@@ -118,7 +133,6 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
   const [summaryOpen, setSummaryOpen] = useState(true)
 
   const meta = getLeadStateMeta(conversation.lead_state)
-  const Icon = meta.Icon
   const name = conversation.display_name ?? conversation.telegram_username ?? 'Sin nombre'
   const chips = profileChips(conversation.profile)
   const summaryText = advisorSummary ?? conversation.summary
@@ -164,7 +178,6 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
     try {
       await api.sendMessage(conversation.id, text)
       setDraft('')
-      // El mensaje llega por Realtime; no lo duplicamos en estado local.
     } catch (err) {
       toast.error('No se pudo enviar el mensaje', { description: errorMessage(err) })
     } finally {
@@ -180,45 +193,55 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
   }
 
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col bg-background">
-      <div className="flex flex-col gap-3 border-b bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className={cn('flex h-full min-w-0 flex-1 flex-col bg-[var(--uta-bg)]', className)}>
+      <div className="flex flex-col gap-3 border-b border-[var(--uta-border)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="truncate text-base font-semibold">{name}</h2>
+            {onBack && (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="mr-0.5 h-8 px-2 md:hidden"
+                onClick={onBack}
+                aria-label="Volver a conversaciones"
+              >
+                <ArrowLeft className="size-4" />
+              </Button>
+            )}
+            <h2 className="truncate text-base font-semibold text-[var(--uta-text)]">{name}</h2>
             <span
               className={cn(
-                'inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium transition-colors duration-300',
+                'inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium transition-ui',
                 meta.bg,
               )}
             >
-              <span className={cn('size-1.5 rounded-full transition-colors duration-300', meta.dot)} />
-              <Icon className={cn('size-3 transition-colors duration-300', meta.color)} />
+              <span className={cn('size-1.5 rounded-full', meta.dot)} />
               {meta.label}
             </span>
             {conversation.ai_paused ? (
-              <Badge variant="warning" className="gap-1">
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800">
                 <PauseCircle className="size-3" />
-                IA en pausa — atendiendo un asesor
-              </Badge>
+                Atendiendo un asesor
+              </span>
             ) : (
-              <Badge
-                variant="secondary"
-                className="gap-1 border-emerald-200 bg-emerald-50 text-emerald-700"
-              >
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
                 <PlayCircle className="size-3" />
                 IA activa
-              </Badge>
+              </span>
             )}
             {conversation.injection_attempts > 0 && (
               <Badge variant="destructive" className="gap-1">
                 <ShieldAlert className="size-3" />
-                {conversation.injection_attempts} injection
+                {conversation.injection_attempts} intento
                 {conversation.injection_attempts > 1 ? 's' : ''}
               </Badge>
             )}
           </div>
           {conversation.telegram_username && (
-            <p className="text-xs text-muted-foreground">@{conversation.telegram_username}</p>
+            <p className="text-xs text-[var(--uta-text-muted)]">
+              @{conversation.telegram_username}
+            </p>
           )}
         </div>
 
@@ -226,6 +249,7 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
           <Button
             type="button"
             size="sm"
+            className="bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
             onClick={() => void handleTakeover()}
             disabled={takingOver || conversation.ai_paused}
           >
@@ -244,10 +268,10 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
       </div>
 
       {summaryText && (
-        <div className="border-b bg-amber-50/60">
+        <div className="border-b border-amber-200/80 bg-amber-50/70">
           <button
             type="button"
-            className="flex w-full items-center justify-between gap-2 px-4 py-2 text-left text-sm font-medium text-amber-900"
+            className="flex w-full items-center justify-between gap-2 px-4 py-2 text-left text-sm font-medium text-amber-900 transition-ui"
             onClick={() => setSummaryOpen((o) => !o)}
           >
             <span>Resumen para el asesor</span>
@@ -268,7 +292,7 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
                   ))}
                 </div>
               )}
-              <p className="text-xs leading-relaxed text-amber-950/90 whitespace-pre-wrap">
+              <p className="whitespace-pre-wrap text-xs leading-relaxed text-amber-950/90">
                 {summaryText}
               </p>
             </div>
@@ -277,7 +301,7 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
       )}
 
       <ScrollArea className="flex-1">
-        <div className="flex flex-col gap-3 bg-[radial-gradient(circle_at_top,_#eef2ff_0%,_transparent_55%)] px-4 py-4">
+        <div className="chat-pattern flex flex-col gap-3 px-4 py-4">
           {messages.map((m) => (
             <MessageBubble key={m.id} message={m} />
           ))}
@@ -285,7 +309,7 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
         </div>
       </ScrollArea>
 
-      <form onSubmit={(e) => void handleSubmit(e)} className="border-t bg-card p-3">
+      <form onSubmit={(e) => void handleSubmit(e)} className="border-t border-[var(--uta-border)] bg-white p-3">
         <div className="flex items-end gap-2">
           <Textarea
             value={draft}
@@ -299,13 +323,14 @@ export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
           <Button
             type="submit"
             size="icon"
+            className="bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
             disabled={sending || !draft.trim()}
             aria-label="Enviar"
           >
             <Send />
           </Button>
         </div>
-        <p className="mt-1.5 text-[11px] text-muted-foreground">
+        <p className="mt-1.5 text-[11px] text-[var(--uta-text-muted)]">
           Enter envía · Shift+Enter salto de línea. El mensaje aparece por Realtime.
         </p>
       </form>

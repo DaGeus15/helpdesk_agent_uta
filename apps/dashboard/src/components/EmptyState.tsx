@@ -1,15 +1,27 @@
 import { MessagesSquare } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-export function EmptyState() {
+interface EmptyStateProps {
+  className?: string
+}
+
+export function EmptyState({ className }: EmptyStateProps) {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-      <div className="rounded-full bg-indigo-50 p-4 text-indigo-600">
-        <MessagesSquare className="size-8" />
+    <div
+      className={cn(
+        'flex h-full flex-col items-center justify-center gap-4 px-6 text-center',
+        className,
+      )}
+    >
+      <div className="rounded-full bg-[var(--uta-primary-soft)] p-5 text-[var(--uta-primary)]">
+        <MessagesSquare className="size-10" strokeWidth={1.5} />
       </div>
-      <div className="max-w-sm space-y-1">
-        <h2 className="text-base font-semibold text-foreground">Selecciona una conversación</h2>
-        <p className="text-sm text-muted-foreground">
-          Elige un chat de la izquierda para ver el historial, el termómetro del lead y tomar el
+      <div className="max-w-sm space-y-1.5">
+        <h2 className="text-base font-semibold text-[var(--uta-text)]">
+          Selecciona una conversación
+        </h2>
+        <p className="text-sm text-[var(--uta-text-muted)]">
+          Elige un chat de la lista para ver el historial, el termómetro del lead y tomar el
           control cuando haga falta.
         </p>
       </div>

@@ -13,6 +13,7 @@ interface ConversationListProps {
   selectedId: string | null
   unread: Record<string, number>
   onSelect: (id: string) => void
+  className?: string
 }
 
 const FILTERS: Array<{ id: 'all' | LeadState; label: string }> = [
@@ -28,6 +29,7 @@ export function ConversationList({
   selectedId,
   unread,
   onSelect,
+  className,
 }: ConversationListProps) {
   const [query, setQuery] = useState('')
   const [stateFilter, setStateFilter] = useState<'all' | LeadState>('all')
@@ -44,17 +46,22 @@ export function ConversationList({
   }, [conversations, query, stateFilter])
 
   return (
-    <aside className="flex h-full w-full flex-col border-r bg-card md:w-[360px] md:shrink-0">
-      <div className="space-y-2 border-b px-4 py-3">
+    <aside
+      className={cn(
+        'flex h-full w-full flex-col border-r border-[var(--uta-border)] bg-white md:w-[360px] md:shrink-0',
+        className,
+      )}
+    >
+      <div className="space-y-2 border-b border-[var(--uta-border)] px-4 py-3">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Conversaciones</h2>
-          <p className="text-xs text-muted-foreground">
+          <h2 className="text-sm font-semibold text-[var(--uta-text)]">Conversaciones</h2>
+          <p className="text-xs text-[var(--uta-text-muted)]">
             {filtered.length} de {conversations.length}
           </p>
         </div>
 
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-[var(--uta-text-muted)]" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -70,10 +77,10 @@ export function ConversationList({
               type="button"
               onClick={() => setStateFilter(f.id)}
               className={cn(
-                'rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors',
+                'rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-ui',
                 stateFilter === f.id
-                  ? 'border-indigo-200 bg-indigo-50 text-indigo-700'
-                  : 'border-transparent bg-muted/60 text-muted-foreground hover:bg-muted',
+                  ? 'border-[var(--uta-primary)] bg-[var(--uta-primary-soft)] text-[var(--uta-primary)]'
+                  : 'border-[var(--uta-border)] bg-white text-[var(--uta-text-muted)] hover:bg-[var(--uta-bg)]',
               )}
             >
               {f.label}
@@ -85,7 +92,7 @@ export function ConversationList({
       <ScrollArea className="flex-1">
         <div className="flex flex-col gap-1.5 p-2">
           {filtered.length === 0 ? (
-            <p className="px-2 py-6 text-center text-xs text-muted-foreground">
+            <p className="px-2 py-6 text-center text-xs text-[var(--uta-text-muted)]">
               No hay conversaciones con ese filtro.
             </p>
           ) : (
