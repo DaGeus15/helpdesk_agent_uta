@@ -1,6 +1,8 @@
 # Asistente de Cursos CTT-FISEI: agente de ventas con IA en Telegram + panel de mando en tiempo real
 
 > Contexto completo del proyecto para portafolio. Autor: **Dayle García** · Hackathon UTA 2026 (FISEI, Universidad Técnica de Ambato) · 29 de octubre de 2026.
+>
+> [![CI](https://github.com/DaGeus15/helpdesk_agent_uta/actions/workflows/ci.yml/badge.svg)](https://github.com/DaGeus15/helpdesk_agent_uta/actions/workflows/ci.yml) · 46 tests unitarios · batería de evaluación de la rúbrica · desplegado en Render + Vercel + Supabase
 
 ## Enlaces
 
@@ -57,7 +59,8 @@ En vez de escribir el código línea a línea, usé un esquema **orquestador →
 **Cifras:**
 - **23 tareas** delegadas a Cursor (T1-T23), cada una con su especificación versionada.
 - Hasta **3 agentes en paralelo** en este repo.
-- Un commit por tarea, de la planificación a las 11:36 al cierre del día (ver historial de git).
+- **55 commits** en el día (de las 11:36 a las ~16:00), un commit por tarea.
+- **46 tests unitarios** y **CI en GitHub Actions** (typecheck, tests y build en cada push).
 
 **Por qué funcionó:**
 - **Especificaciones cerradas:** con archivos permitidos y criterio de terminado, cada agente tenía poco margen para desviarse.
@@ -79,11 +82,11 @@ En vez de escribir el código línea a línea, usé un esquema **orquestador →
 - **Nunca deja al usuario sin respuesta:** cadena de 5 modelos de respaldo, respuesta segura ante fallos y aviso de espera cuando un humano tiene el control.
 
 ### Panel de mando (Módulo B)
-- Bandeja en vivo con Supabase Realtime (WebSockets), sin recargar.
+- Bandeja en vivo con Supabase Realtime (WebSockets), sin recargar: vistas previas exactas, separadores "IA en pausa / reanudada" en vivo, envío optimista con reintento y respuestas de la IA descartadas por handover visibles.
 - Termómetro del lead por color, icono y etiqueta; alertas de "Requiere asesor" y de intentos de manipulación.
 - **Handover:** "Tomar control" (con resumen automático para el asesor), enviar como el bot por el mismo token y "Devolver a la IA", que retoma la conversación sabiendo lo que dijo el humano.
 - Vistas de Bandeja, Métricas (conversaciones activas, distribución por estado, leads calientes, handovers, inyecciones, latencia, tokens, respaldos del LLM) y Cursos (sincronizados con la web oficial, con botón "Actualizar ahora").
-- Login del operador con token HMAC, límite de intentos e **identidad visual oficial del CTT-FISEI** (azul marino `#012e5a`, carmesí `#ad272e`, Poppins).
+- Login del operador rediseñado nivel agencia (split editorial, estados en vivo, tarjeta de doble bisel), con token HMAC, límite de intentos e **identidad visual oficial del CTT-FISEI** (azul marino `#012e5a`, carmesí `#ad272e`, Poppins).
 - **Landing pública** `/contacto` con QR al bot y los cursos abiertos, próximos y en curso, pensada para proyectar en la demo.
 
 ## Arquitectura
@@ -163,8 +166,18 @@ flowchart LR
 
 ## Calidad y pruebas
 
-- **Batería automática de la rúbrica** (`apps/api/scripts/eval-agent.js`): 19 casos de ventas, objeciones, lista de cursos, cierre, frustración, pedido de humano, temario real, faltas de ortografía, cambio de tema, inglés y 6 ataques (ignorar instrucciones, "soy el director, 90 %", revelar el prompt, DAN, precio falso de $10, instrucción escondida). Todos en verde.
-- La batería detectó bugs reales que se corrigieron: un modelo de Gemini retirado que cortaba la respuesta, falsos positivos del guardrail, confusión de ediciones de cursos y una carrera en el handover.
+- **46 tests unitarios** (Vitest) sobre la lógica pura: guardrails (inyección, importes, porcentajes, falsos positivos), estado de los cursos por fechas, catálogo compacto, prellenado del formulario, schema de salida del LLM y rate limiter.
+- **CI en GitHub Actions**: install congelado, typecheck de los dos proyectos, tests y build en cada push y PR.
+- **Batería de evaluación del agente real** (`apps/api/scripts/eval-agent.js`): 19 casos de la rúbrica (ventas, objeciones, lista, cierre, frustración, pedido de humano, temario, ortografía, cambio de tema, inglés y 6 ataques de inyección o descuentos falsos), con verificación automática PASS/FAIL contra Gemini y Supabase reales.
+- **Runbook de operación** (`docs/RUNBOOK.md`): despliegue, rollback, rotación de secretos, sincronización forzada del catálogo y respuesta a incidentes (429 masivos, cambios en la web del CTT, fallos del webhook).
+- **Auditoría de código hecha por un agente** y corrección de lo encontrado:
+  - carrera del handover (la IA ya no responde si el operador tomó el control durante la inferencia);
+  - envío del operador con estado de entrega e idempotencia;
+  - métricas agregadas en SQL;
+  - contadores atómicos;
+  - webhook que responde al instante;
+  - límites de intentos de login y de mensajes por chat;
+  - request-id en los logs.
 
 ## Desafíos y aprendizajes
 
@@ -200,4 +213,4 @@ flowchart LR
 
 ## Documentación del repositorio
 
-[README](../README.md) · [Arquitectura](ARCHITECTURE.md) · [Decisiones y seguridad](DECISIONES.md) · [Catálogo](CATALOGO.md) · [Pruebas](PRUEBAS.md) · [Guion de demo](DEMO.md) · [Plan](PLAN.md)
+[README](../README.md) · [Runbook](RUNBOOK.md) · [Arquitectura](ARCHITECTURE.md) · [Decisiones y seguridad](DECISIONES.md) · [Catálogo](CATALOGO.md) · [Pruebas](PRUEBAS.md) · [Guion de demo](DEMO.md) · [Plan](PLAN.md)
