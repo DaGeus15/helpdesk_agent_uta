@@ -17,6 +17,8 @@ async function bootstrap() {
   app.enableCors({
     origin: origins,
     credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   const port = config.get('PORT', { infer: true });

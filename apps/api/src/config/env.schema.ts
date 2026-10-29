@@ -29,6 +29,13 @@ export const envSchema = z
     DASHBOARD_ORIGIN: z.string().min(1).default('http://localhost:5173'),
     CONTEXT_WINDOW_MESSAGES: z.coerce.number().int().positive().default(12),
     SUMMARY_EVERY_N_MESSAGES: z.coerce.number().int().positive().default(8),
+    OPERATOR_USERNAME: z.string().min(1).default('admin'),
+    OPERATOR_PASSWORD: z.string().min(1).default('admin'),
+    AUTH_TOKEN_SECRET: z.preprocess(
+      emptyToUndefined,
+      z.string().min(1).optional(),
+    ),
+    AUTH_TOKEN_TTL_HOURS: z.coerce.number().int().positive().default(12),
   })
   .superRefine((data, ctx) => {
     if (data.TELEGRAM_MODE !== 'webhook') {

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppConfigModule } from './config/config.module';
 import { HealthController } from './health/health.controller';
 import { AgentModule } from './modules/agent/agent.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { ConversationsModule } from './modules/conversations/conversations.module';
 import { LlmModule } from './modules/llm/llm.module';
@@ -18,6 +19,7 @@ import { TelegramModule } from './modules/telegram/telegram.module';
     ConversationsModule,
     AgentModule,
     TelegramModule,
+    AuthModule,
     OperatorModule,
   ],
   controllers: [HealthController],

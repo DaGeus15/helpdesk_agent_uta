@@ -5,8 +5,10 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { z } from 'zod';
+import { OperatorAuthGuard } from '../auth/operator-auth.guard';
 import { OperatorService } from './operator.service';
 
 const sendMessageBodySchema = z.object({
@@ -14,6 +16,7 @@ const sendMessageBodySchema = z.object({
 });
 
 @Controller('operator')
+@UseGuards(OperatorAuthGuard)
 export class OperatorController {
   constructor(private readonly operator: OperatorService) {}
 
