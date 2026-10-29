@@ -97,6 +97,17 @@ export class CatalogService {
       const group = courses.filter((c) => c.status === status);
       if (group.length === 0) continue;
       lines.push(`\n## ${STATUS_LABEL[status]} (${group.length})`);
+      if (status === 'finalizado') {
+        // Ediciones pasadas en una línea: así el modelo no las confunde con la edición vigente
+        // de un curso con el mismo nombre (p. ej. Python 2 de 2025 frente al de noviembre de 2026).
+        lines.push(
+          'Ediciones ANTERIORES ya terminadas. Si un curso aparece también arriba, vale SIEMPRE la edición de arriba.',
+        );
+        for (const course of group) {
+          lines.push(`- ${course.name} (edición finalizada${course.end_date ? ` el ${course.end_date}` : ''})`);
+        }
+        continue;
+      }
       for (const course of group) {
         lines.push(formatCourseCompact(course));
       }

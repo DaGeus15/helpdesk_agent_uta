@@ -71,6 +71,7 @@ export class AgentService {
         : null,
       flaggedInjection ? SECURITY_NOTE : null,
       `<mensaje_usuario>${sanitized}</mensaje_usuario>`,
+      'Responde (campo reply) en el MISMO idioma en que está escrito <mensaje_usuario>.',
     ].filter(Boolean);
 
     const messages: LlmChatMessage[] = [
