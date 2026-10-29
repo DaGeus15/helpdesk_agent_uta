@@ -176,9 +176,16 @@ export class MessageRouterService {
     if (recentAssistant.some((m) => m.content.includes(url))) return output.reply;
 
     const prefilled = url !== course.enrollment_form_url;
+    // Si la respuesta habla de otro curso, no se rotula el formulario con un nombre que confunda.
+    const named = output.reply
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .includes(normalizeCourseName(course.name));
+    const label = named ? ` de ${course.name}` : ' del CTT-FISEI';
     const block = prefilled
-      ? `📝 Te dejé el formulario de inscripción de ${course.name} prellenado con tus datos; solo revisa y envía: ${url}`
-      : `Formulario de inscripción de ${course.name}: ${url}`;
+      ? `📝 Te dejé el formulario de inscripción${label} prellenado con tus datos; solo revisa y envía: ${url}`
+      : `📝 Formulario de inscripción${label}: ${url}`;
 
     const base = output.reply.trimEnd();
     const combined = `${base}\n\n${block}`;
@@ -201,7 +208,10 @@ export class MessageRouterService {
     if (!course && profile.interest) {
       course = await this.catalog.findCourseByInterest(profile.interest);
     }
-    if (!course || course.status !== 'finalizado') return course;
+    if (!course) return null;
+    // Solo se adjunta el formulario de cursos que admiten inscripción.
+    if (course.status === 'inscripciones_abiertas' || course.status === 'proximamente') return course;
+    if (course.status !== 'finalizado') return null;
 
     // Una edición finalizada no admite inscripción: se busca la vigente del mismo curso
     // (p. ej. "FUNDAMENTOS DE PYTHON 2" de 2025 → "Fundamentos de Python 2 – Certified…").
