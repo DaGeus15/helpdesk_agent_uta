@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
-import { Search } from 'lucide-react'
+import { PanelLeftClose, Search } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { ConversationCard, needsAdvisor } from '@/components/ConversationCard'
 import { LEAD_STATE_META } from '@/lib/lead-state'
 import { cn } from '@/lib/utils'
@@ -14,6 +15,8 @@ interface ConversationListProps {
   unread: Record<string, number>
   loading?: boolean
   onSelect: (id: string) => void
+  collapsed?: boolean
+  onToggleCollapse?: () => void
   className?: string
 }
 
@@ -37,7 +40,6 @@ function SkeletonCard() {
           </div>
           <div className="h-3 w-full rounded bg-slate-100" />
           <div className="h-3 w-2/3 rounded bg-slate-100" />
-          <div className="h-5 w-20 rounded bg-slate-100" />
         </div>
       </div>
     </div>
@@ -50,6 +52,7 @@ export function ConversationList({
   unread,
   loading = false,
   onSelect,
+  onToggleCollapse,
   className,
 }: ConversationListProps) {
   const [query, setQuery] = useState('')
@@ -184,45 +187,56 @@ export function ConversationList({
   return (
     <aside
       className={cn(
-        'flex h-full w-full flex-col border-r border-[var(--uta-hairline)] bg-[#fbfcfe] md:w-[360px] md:shrink-0',
+        // 300px < 1440, 320px ≥ 1440; full width en móvil
+        'flex h-full min-h-0 w-full shrink-0 flex-col border-r border-[var(--uta-hairline)] bg-[#fbfcfe] md:w-[300px] min-[1440px]:w-[320px]',
         className,
       )}
     >
-      <div className="panel-header space-y-3 border-b border-[var(--uta-hairline)] bg-white/80 px-4 py-3 backdrop-blur-md">
-        <div>
-          <h2 className="text-[15px] font-semibold tracking-tight text-[var(--uta-text)]">
+      <div className="shrink-0 space-y-2 border-b border-[var(--uta-hairline)] bg-white/80 px-3 py-2 backdrop-blur-md">
+        <div className="flex h-7 items-center justify-between gap-2">
+          <h2 className="truncate text-[13px] font-semibold tracking-tight text-[var(--uta-text)]">
             Conversaciones
+            <span className="ml-1.5 font-normal tabular-nums text-[var(--uta-text-muted)]">
+              {filtered.length}/{conversations.length}
+            </span>
           </h2>
-          <p className="text-xs text-[var(--uta-text-muted)]">
-            {filtered.length} visibles · {conversations.length} total
-            {stateFilter !== 'all' ? ` · filtro: ${filterCounts[stateFilter]}` : ''}
-          </p>
+          {onToggleCollapse && (
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="hidden h-7 w-7 rounded-lg lg:inline-flex"
+              onClick={onToggleCollapse}
+              aria-label="Colapsar lista de conversaciones"
+            >
+              <PanelLeftClose className="size-4" />
+            </Button>
+          )}
         </div>
 
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-[var(--uta-text-muted)]" />
+          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-[var(--uta-text-muted)]" />
           <Input
             ref={searchRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por nombre o usuario…"
+            placeholder="Buscar…"
             aria-label="Buscar conversaciones"
-            className="h-10 rounded-xl border-transparent bg-[#eef1f6] pl-9 pr-10 text-[13px] shadow-none focus-visible:border-[rgba(30,79,163,0.25)] focus-visible:bg-white focus-visible:ring-[rgba(30,79,163,0.25)]"
+            className="h-9 rounded-xl border-transparent bg-[#eef1f6] pl-8 pr-9 text-[13px] shadow-none focus-visible:border-[rgba(30,79,163,0.25)] focus-visible:bg-white focus-visible:ring-[rgba(30,79,163,0.25)]"
           />
-          <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded-md border border-[var(--uta-hairline)] bg-white/80 px-1.5 py-0.5 text-[10px] font-medium text-[var(--uta-text-muted)]">
+          <kbd className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 rounded-md border border-[var(--uta-hairline)] bg-white/80 px-1.5 py-0.5 text-[10px] font-medium text-[var(--uta-text-muted)]">
             /
           </kbd>
         </div>
 
-        {/* Segmented control estilo iOS */}
         <div
           role="tablist"
           aria-label="Filtrar por estado"
-          className="relative grid grid-cols-5 gap-0.5 rounded-xl bg-[#e8ecf3] p-1"
+          className="relative grid h-8 grid-cols-5 gap-0.5 rounded-xl bg-[#e8ecf3] p-0.5"
         >
           <span
             aria-hidden
-            className="absolute top-1 bottom-1 rounded-lg bg-white shadow-[0_1px_3px_rgba(15,23,42,0.12)] transition-ui"
+            className="absolute top-0.5 bottom-0.5 rounded-lg bg-white shadow-[0_1px_3px_rgba(15,23,42,0.12)] transition-ui"
             style={{
               width: `calc((100% - 0.25rem) / 5)`,
               left: `calc(0.125rem + ${Math.max(selectedFilterIndex, 0)} * ((100% - 0.25rem) / 5))`,
@@ -236,21 +250,30 @@ export function ConversationList({
               aria-selected={stateFilter === f.id}
               onClick={() => setStateFilter(f.id)}
               className={cn(
-                'relative z-10 truncate rounded-lg px-1 py-1.5 text-[10px] font-semibold transition-ui focus-visible:ring-2 focus-visible:ring-[rgba(30,79,163,0.35)] focus-visible:outline-none active:scale-[0.97]',
+                'relative z-10 flex items-center justify-center gap-0.5 truncate rounded-lg px-0.5 text-[10px] font-semibold transition-ui focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(30,79,163,0.35)] active:scale-[0.97]',
                 stateFilter === f.id
                   ? 'text-[var(--uta-primary)]'
                   : 'text-[var(--uta-text-muted)] hover:text-[var(--uta-text)]',
               )}
               title={`${f.label} (${filterCounts[f.id]})`}
             >
-              <span className="block truncate">{f.label.split(' ')[0]}</span>
-              <span className="block tabular-nums opacity-70">{filterCounts[f.id]}</span>
+              <span className="truncate">{f.label.split(' ')[0]}</span>
+              <span
+                className={cn(
+                  'inline-flex min-w-[1.1rem] items-center justify-center rounded-full px-1 text-[9px] tabular-nums',
+                  stateFilter === f.id
+                    ? 'bg-[var(--uta-primary-soft)] text-[var(--uta-primary)]'
+                    : 'bg-black/5 text-[var(--uta-text-muted)]',
+                )}
+              >
+                {filterCounts[f.id]}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="min-h-0 flex-1">
         <div
           ref={listRef}
           tabIndex={0}

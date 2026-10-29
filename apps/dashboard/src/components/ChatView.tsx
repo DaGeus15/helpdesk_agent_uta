@@ -12,12 +12,12 @@ import {
   ArrowDown,
   ArrowLeft,
   ChevronDown,
-  ChevronUp,
   Mic,
   PauseCircle,
   PlayCircle,
   Send,
   ShieldAlert,
+  Zap,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -26,7 +26,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api, ApiError } from '@/lib/api'
 import { cn, formatRelativeTime } from '@/lib/utils'
-import { getLeadStateMeta } from '@/lib/lead-state'
+import { avatarColorFromName, getInitials, getLeadStateMeta } from '@/lib/lead-state'
 import type { ConversationWithPreview } from '@/hooks/useConversations'
 import type { LeadProfile, LeadState, Message } from '@/types'
 
@@ -97,19 +97,13 @@ function ProfileChipsRow({
   chips: Array<{ label: string; value: string }>
   className?: string
 }) {
-  if (chips.length === 0) {
-    return (
-      <p className={cn('text-[11px] text-[var(--uta-text-muted)]', className)}>
-        Aún sin datos del perfil
-      </p>
-    )
-  }
+  if (chips.length === 0) return null
   return (
-    <div className={cn('flex flex-wrap gap-1.5', className)}>
+    <div className={cn('flex gap-1.5 overflow-x-auto whitespace-nowrap', className)}>
       {chips.map((chip) => (
         <span
           key={chip.label}
-          className="inline-flex items-center gap-1 rounded-md border border-[var(--uta-border)] bg-[var(--uta-bg)] px-2 py-0.5 text-[11px] text-[var(--uta-text)]"
+          className="inline-flex shrink-0 items-center gap-1 rounded-md border border-[var(--uta-border)] bg-[var(--uta-bg)] px-2 py-0.5 text-[11px] text-[var(--uta-text)]"
         >
           <span className="font-medium text-[var(--uta-text-muted)]">{chip.label}:</span>
           {chip.value}
@@ -173,7 +167,7 @@ function linkify(text: string): ReactNode[] {
         href={href}
         target={href.startsWith('mailto:') ? undefined : '_blank'}
         rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-        className="underline underline-offset-2 break-all"
+        className="break-all underline underline-offset-2"
       >
         {token}
       </a>,
@@ -208,7 +202,7 @@ function MessageBubble({
     >
       <div
         className={cn(
-          'max-w-[85%] rounded-[20px] px-3.5 py-2 text-[15px] shadow-[var(--uta-shadow-soft)] sm:max-w-[75%]',
+          'max-w-[85%] rounded-[20px] px-3.5 py-2 text-[15px] leading-[1.5] shadow-[var(--uta-shadow-soft)] sm:max-w-[68%]',
           isUser &&
             'rounded-bl-md border border-[var(--uta-hairline)] bg-white text-[var(--uta-text)]',
           isAssistant && 'rounded-br-md bg-[var(--uta-primary-soft)] text-[var(--uta-text)]',
@@ -242,7 +236,7 @@ function MessageBubble({
             )}
           </div>
         )}
-        <p className="whitespace-pre-wrap leading-relaxed">{linkify(message.content)}</p>
+        <p className="whitespace-pre-wrap leading-[1.5]">{linkify(message.content)}</p>
         <p
           className={cn(
             'mt-1 text-[11px]',
@@ -292,13 +286,16 @@ export function ChatView({
   const [takingOver, setTakingOver] = useState(false)
   const [releasing, setReleasing] = useState(false)
   const [advisorSummary, setAdvisorSummary] = useState<string | null>(null)
-  const [summaryOpen, setSummaryOpen] = useState(true)
+  const [summaryOpen, setSummaryOpen] = useState(false)
+  const [templatesOpen, setTemplatesOpen] = useState(true)
   const [stickToBottom, setStickToBottom] = useState(true)
   const [newBelow, setNewBelow] = useState(0)
   const [animateFrom, setAnimateFrom] = useState<number | null>(null)
   const [thermoPulse, setThermoPulse] = useState(false)
 
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const summaryPanelRef = useRef<HTMLDivElement | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const prevCountRef = useRef(0)
   const convIdRef = useRef(conversation.id)
   const prevLeadRef = useRef(conversation.lead_state)
@@ -308,6 +305,7 @@ export function ChatView({
   const name = conversation.display_name ?? conversation.telegram_username ?? 'Sin nombre'
   const chips = profileChips(conversation.profile)
   const summaryText = advisorSummary ?? conversation.summary
+  const avatarBg = avatarColorFromName(name)
 
   const timelineStates = useMemo(() => {
     const states: LeadState[] = []
@@ -341,7 +339,8 @@ export function ChatView({
   useEffect(() => {
     setDraft('')
     setAdvisorSummary(null)
-    setSummaryOpen(true)
+    setSummaryOpen(false)
+    setTemplatesOpen(true)
     setStickToBottom(true)
     setNewBelow(0)
     setAnimateFrom(null)
@@ -381,6 +380,36 @@ export function ChatView({
     }
     prevCountRef.current = next
   }, [messages, stickToBottom, bottomRef, conversation.id])
+
+  useEffect(() => {
+    if (!summaryOpen) return
+    function onKey(e: globalThis.KeyboardEvent) {
+      if (e.key === 'Escape') setSummaryOpen(false)
+    }
+    function onPointer(e: MouseEvent) {
+      const el = summaryPanelRef.current
+      if (!el) return
+      if (!el.contains(e.target as Node)) setSummaryOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    // delay so the opening click doesn't immediately close
+    const t = window.setTimeout(() => {
+      window.addEventListener('mousedown', onPointer)
+    }, 0)
+    return () => {
+      window.clearTimeout(t)
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('mousedown', onPointer)
+    }
+  }, [summaryOpen])
+
+  useEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    const next = Math.min(Math.max(el.scrollHeight, 44), 44 + 4 * 22)
+    el.style.height = `${next}px`
+  }, [draft])
 
   function handleScroll() {
     const el = scrollRef.current
@@ -448,71 +477,87 @@ export function ChatView({
   }
 
   return (
-    <div className={cn('flex h-full min-w-0 flex-1 flex-col bg-[var(--uta-bg)]', className)}>
-      <div className="panel-header flex flex-col gap-2 border-b border-[var(--uta-hairline)] bg-white/90 px-4 py-3 backdrop-blur-md">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              {onBack && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  className="mr-0.5 h-8 px-2 md:hidden"
-                  onClick={onBack}
-                  aria-label="Volver a conversaciones"
-                >
-                  <ArrowLeft className="size-4" />
-                </Button>
-              )}
-              <h2 className="truncate text-[17px] font-semibold tracking-tight text-[var(--uta-text)]">
-                {name}
-              </h2>
-              <span
-                className={cn(
-                  'inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-[13px] font-semibold transition-ui',
-                  meta.bg,
-                )}
-              >
-                <StateIcon className={cn('size-4', meta.color)} />
-                <span
-                  className={cn(
-                    'size-2 rounded-full transition-[background-color] duration-200',
-                    meta.dot,
-                    thermoPulse && 'thermo-pulse',
-                  )}
-                />
-                {meta.label}
-              </span>
-              <LeadTimeline states={timelineStates} />
-              {conversation.ai_paused ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-                  <PauseCircle className="size-3" />
-                  Atendiendo un asesor
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
-                  <PlayCircle className="size-3" />
-                  IA activa
-                </span>
-              )}
-              {conversation.injection_attempts > 0 && (
-                <Badge variant="destructive" className="gap-1">
-                  <ShieldAlert className="size-3" />
-                  {conversation.injection_attempts} intento
-                  {conversation.injection_attempts > 1 ? 's' : ''}
-                </Badge>
-              )}
-            </div>
-            {conversation.telegram_username && (
-              <p className="mt-0.5 text-xs text-[var(--uta-text-muted)]">
-                @{conversation.telegram_username}
-              </p>
-            )}
-            <ProfileChipsRow chips={chips} className="mt-2" />
+    <div className={cn('flex h-full min-h-0 min-w-0 flex-1 flex-col bg-[var(--uta-bg)]', className)}>
+      <div className="relative z-20 shrink-0 border-b border-[var(--uta-hairline)] bg-white/95 backdrop-blur-md">
+        <div className="flex h-14 items-center gap-2 px-3 sm:px-4">
+          {onBack && (
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 shrink-0 md:hidden"
+              onClick={onBack}
+              aria-label="Volver a conversaciones"
+            >
+              <ArrowLeft className="size-4" />
+            </Button>
+          )}
+
+          <div
+            className="flex size-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white shadow-sm"
+            style={{ backgroundColor: avatarBg }}
+            aria-hidden
+          >
+            {getInitials(name)}
           </div>
 
-          <div className="flex shrink-0 gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
+            <h2 className="truncate text-[15px] font-semibold tracking-tight text-[var(--uta-text)]">
+              {name}
+            </h2>
+            <span
+              className={cn(
+                'hidden shrink-0 items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[11px] font-semibold transition-ui sm:inline-flex',
+                meta.bg,
+              )}
+            >
+              <StateIcon className={cn('size-3', meta.color)} />
+              <span
+                className={cn(
+                  'size-1.5 rounded-full transition-[background-color] duration-200',
+                  meta.dot,
+                  thermoPulse && 'thermo-pulse',
+                )}
+              />
+              {meta.label}
+            </span>
+            <LeadTimeline states={timelineStates} />
+            {conversation.ai_paused ? (
+              <span className="hidden shrink-0 items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 sm:inline-flex">
+                <PauseCircle className="size-3" />
+                Asesor
+              </span>
+            ) : (
+              <span className="hidden shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 sm:inline-flex">
+                <PlayCircle className="size-3" />
+                IA
+              </span>
+            )}
+            {conversation.injection_attempts > 0 && (
+              <Badge variant="destructive" className="hidden h-5 shrink-0 gap-0.5 px-1.5 text-[10px] sm:inline-flex">
+                <ShieldAlert className="size-3" />
+                {conversation.injection_attempts}
+              </Badge>
+            )}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1.5">
+            {summaryText ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-8 gap-1 px-2 text-xs"
+                onClick={() => setSummaryOpen((o) => !o)}
+                aria-expanded={summaryOpen}
+                aria-label={summaryOpen ? 'Cerrar resumen' : 'Abrir resumen'}
+              >
+                Resumen
+                <ChevronDown
+                  className={cn('size-3.5 transition-ui', summaryOpen && 'rotate-180')}
+                />
+              </Button>
+            ) : null}
             {conversation.ai_paused ? (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -520,7 +565,7 @@ export function ChatView({
                     <Button
                       type="button"
                       size="sm"
-                      className="bg-[var(--uta-primary)] opacity-40 grayscale hover:bg-[var(--uta-primary)]"
+                      className="h-8 bg-[var(--uta-primary)] px-2.5 text-xs opacity-40 grayscale hover:bg-[var(--uta-primary)]"
                       disabled
                       aria-disabled
                     >
@@ -536,7 +581,7 @@ export function ChatView({
               <Button
                 type="button"
                 size="sm"
-                className="bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
+                className="h-8 bg-[var(--uta-primary)] px-2.5 text-xs hover:bg-[var(--uta-primary-mid)]"
                 onClick={() => void handleTakeover()}
                 disabled={takingOver}
               >
@@ -548,6 +593,7 @@ export function ChatView({
               size="sm"
               variant="outline"
               className={cn(
+                'h-8 px-2.5 text-xs',
                 !conversation.ai_paused &&
                   'cursor-not-allowed opacity-40 grayscale hover:bg-background hover:text-foreground',
               )}
@@ -558,43 +604,40 @@ export function ChatView({
             </Button>
           </div>
         </div>
-      </div>
 
-      {summaryText && (
-        <div className="border-b border-amber-200/80 bg-amber-50/70">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-2 px-4 py-2 text-left text-sm font-medium text-amber-900 transition-ui"
-            onClick={() => setSummaryOpen((o) => !o)}
-            aria-expanded={summaryOpen}
-            aria-label={summaryOpen ? 'Colapsar resumen' : 'Expandir resumen'}
+        {chips.length > 0 && (
+          <div className="flex h-7 items-center border-t border-[var(--uta-hairline)]/60 px-3 sm:px-4">
+            <ProfileChipsRow chips={chips} className="w-full" />
+          </div>
+        )}
+
+        {summaryOpen && summaryText && (
+          <div
+            ref={summaryPanelRef}
+            className="absolute inset-x-0 top-full z-30 max-h-[40%] overflow-y-auto border-b border-amber-200/80 bg-amber-50 shadow-[var(--uta-shadow-lift)] banner-enter"
+            role="dialog"
+            aria-label="Resumen para el asesor"
           >
-            <span>Resumen para el asesor</span>
-            {summaryOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-          </button>
-          <div className="summary-collapse" data-open={summaryOpen ? 'true' : 'false'}>
-            <div>
-              <div className="space-y-2 px-4 pb-3">
-                <ProfileChipsRow
-                  chips={chips}
-                  className="[&_span]:border-amber-200/80 [&_span]:bg-white/70"
-                />
-                <div className="space-y-0.5 text-[13px] text-amber-950/90">
-                  {renderSummaryText(summaryText)}
-                </div>
+            <div className="space-y-2 px-4 py-3">
+              <ProfileChipsRow
+                chips={chips}
+                className="[&_span]:border-amber-200/80 [&_span]:bg-white/70"
+              />
+              <div className="space-y-0.5 text-[13px] text-amber-950/90">
+                {renderSummaryText(summaryText)}
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="relative min-h-0 flex-1">
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="chat-pattern h-full overflow-y-auto"
+          className="chat-pattern h-full min-h-0 overflow-y-auto"
         >
-          <div className="flex flex-col gap-2 px-4 py-4">
+          <div className="flex flex-col gap-2 px-4 py-4 sm:px-6">
             {messages.length === 0 ? (
               <p className="py-10 text-center text-sm text-[var(--uta-text-muted)]">
                 Aún no hay mensajes en esta conversación.
@@ -644,56 +687,73 @@ export function ChatView({
 
       <form
         onSubmit={(e) => void handleSubmit(e)}
-        className="border-t border-[var(--uta-hairline)] bg-white/95 p-3 backdrop-blur-md"
+        className="shrink-0 border-t border-[var(--uta-hairline)] bg-white/95 px-3 py-2 backdrop-blur-md"
       >
-        <div className="mb-2 flex flex-wrap gap-1.5">
-          {QUICK_TEMPLATES.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setDraft(t)}
-              className="rounded-full border border-[var(--uta-hairline)] bg-[var(--uta-bg)] px-2.5 py-1 text-[11px] text-[var(--uta-text)] transition-ui hover:border-[var(--uta-primary)] hover:bg-[var(--uta-primary-soft)] active:scale-[0.97]"
-            >
-              {t.length > 36 ? `${t.slice(0, 35)}…` : t}
-            </button>
-          ))}
+        <div className="mb-1.5 flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="h-7 shrink-0 gap-1 px-2 text-[11px]"
+            onClick={() => setTemplatesOpen((o) => !o)}
+            aria-expanded={templatesOpen}
+            aria-label={templatesOpen ? 'Ocultar plantillas' : 'Mostrar plantillas'}
+          >
+            <Zap className="size-3" />
+            Plantillas
+          </Button>
+          {templatesOpen && (
+            <div className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto">
+              {QUICK_TEMPLATES.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setDraft(t)}
+                  className="h-7 shrink-0 rounded-full border border-[var(--uta-hairline)] bg-[var(--uta-bg)] px-2.5 text-[11px] text-[var(--uta-text)] transition-ui hover:border-[var(--uta-primary)] hover:bg-[var(--uta-primary-soft)] active:scale-[0.97]"
+                >
+                  {t.length > 36 ? `${t.slice(0, 35)}…` : t}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
         <div className="flex items-end gap-2">
           <Textarea
+            ref={textareaRef}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Escribe como el bot…"
-            rows={2}
-            className="min-h-[48px] resize-none rounded-2xl text-[15px] shadow-[var(--uta-shadow-soft)]"
+            rows={1}
+            className="min-h-[44px] max-h-[132px] resize-none overflow-y-auto rounded-2xl py-2.5 text-[15px] leading-[1.5] shadow-[var(--uta-shadow-soft)]"
             disabled={sending}
           />
           <Button
             type="submit"
             size="icon"
-            className="rounded-xl bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
+            className="mb-0.5 h-11 w-11 shrink-0 rounded-xl bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
             disabled={sending || !draft.trim()}
             aria-label="Enviar mensaje"
           >
             <Send />
           </Button>
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[var(--uta-text-muted)]">
-          <p>
-            <kbd className="rounded border border-[var(--uta-border)] bg-[var(--uta-bg)] px-1">Enter</kbd>{' '}
-            envía ·{' '}
+
+        <div className="mt-1 flex items-center justify-between gap-2 text-[11px] leading-none text-[var(--uta-text-muted)]">
+          <p className="min-w-0 truncate">
+            <kbd className="rounded border border-[var(--uta-border)] bg-[var(--uta-bg)] px-1">Enter</kbd>
+            {' '}envía ·{' '}
             <kbd className="rounded border border-[var(--uta-border)] bg-[var(--uta-bg)] px-1">
               Shift+Enter
-            </kbd>{' '}
-            salto de línea
+            </kbd>
+            {' '}salto
+            {!conversation.ai_paused && (
+              <span className="ml-2 text-amber-700">· Al enviar, tomarás el control</span>
+            )}
           </p>
-          <span className="tabular-nums">{draft.length} caracteres</span>
+          <span className="shrink-0 tabular-nums">{draft.length}</span>
         </div>
-        {!conversation.ai_paused && (
-          <p className="mt-1 text-[11px] text-amber-700">
-            Al enviar, tomarás el control de la conversación
-          </p>
-        )}
       </form>
     </div>
   )

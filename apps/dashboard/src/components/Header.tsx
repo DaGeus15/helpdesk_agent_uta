@@ -1,18 +1,20 @@
 import { useState, type ReactNode } from 'react'
-import { BookOpen, LogOut, Menu, MessageSquare, X } from 'lucide-react'
+import { BarChart3, BookOpen, LogOut, Menu, MessageSquare, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
-export type DashboardView = 'conversations' | 'courses'
+export type DashboardView = 'conversations' | 'metrics' | 'courses'
 
 interface HeaderProps {
   isLive: boolean
   view: DashboardView
   onViewChange: (view: DashboardView) => void
+  /** Tira compacta de KPIs (solo vista Conversaciones). */
+  kpiStrip?: ReactNode
 }
 
-export function Header({ isLive, view, onViewChange }: HeaderProps) {
+export function Header({ isLive, view, onViewChange, kpiStrip }: HeaderProps) {
   const { username, logout } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -22,21 +24,20 @@ export function Header({ isLive, view, onViewChange }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-white/10 bg-[rgba(10,42,94,0.88)] text-white shadow-[0_8px_24px_rgba(10,42,94,0.18)] backdrop-blur-xl">
-      <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-xs font-bold tracking-wide shadow-inner">
+    <header className="relative z-30 w-full shrink-0 border-b border-white/10 bg-[rgba(10,42,94,0.88)] text-white shadow-[0_8px_24px_rgba(10,42,94,0.18)] backdrop-blur-xl">
+      <div className="relative flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-[10px] font-bold tracking-wide shadow-inner">
             CA
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold tracking-tight sm:text-base">
+            <p className="truncate text-sm font-semibold tracking-tight">
               CTT-FISEI · Talleres Tecnológicos UTA
             </p>
-            <p className="text-[11px] text-white/70">Panel de mando</p>
           </div>
           <span
             className={cn(
-              'ml-1 hidden items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium sm:inline-flex',
+              'ml-1 hidden items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium sm:inline-flex',
               isLive
                 ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-100'
                 : 'border-white/20 bg-white/10 text-white/70',
@@ -53,12 +54,21 @@ export function Header({ isLive, view, onViewChange }: HeaderProps) {
           </span>
         </div>
 
-        <nav className="hidden items-center gap-1 rounded-xl bg-white/10 p-1 md:flex">
+        <nav
+          className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-0.5 rounded-xl bg-white/10 p-1 md:flex"
+          aria-label="Vistas del panel"
+        >
           <ViewTab
             active={view === 'conversations'}
             onClick={() => selectView('conversations')}
             icon={<MessageSquare className="size-3.5" />}
             label="Conversaciones"
+          />
+          <ViewTab
+            active={view === 'metrics'}
+            onClick={() => selectView('metrics')}
+            icon={<BarChart3 className="size-3.5" />}
+            label="Métricas"
           />
           <ViewTab
             active={view === 'courses'}
@@ -71,7 +81,7 @@ export function Header({ isLive, view, onViewChange }: HeaderProps) {
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <span
             className={cn(
-              'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium sm:hidden',
+              'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium sm:hidden',
               isLive
                 ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-100'
                 : 'border-white/20 bg-white/10 text-white/70',
@@ -86,7 +96,7 @@ export function Header({ isLive, view, onViewChange }: HeaderProps) {
             En vivo
           </span>
           {username && (
-            <span className="hidden max-w-[100px] truncate text-xs text-white/90 sm:inline sm:max-w-[160px] sm:text-sm">
+            <span className="hidden max-w-[100px] truncate text-xs text-white/90 sm:inline sm:max-w-[160px]">
               {username}
             </span>
           )}
@@ -125,6 +135,12 @@ export function Header({ isLive, view, onViewChange }: HeaderProps) {
               label="Conversaciones"
             />
             <MobileNavItem
+              active={view === 'metrics'}
+              onClick={() => selectView('metrics')}
+              icon={<BarChart3 className="size-4" />}
+              label="Métricas"
+            />
+            <MobileNavItem
               active={view === 'courses'}
               onClick={() => selectView('courses')}
               icon={<BookOpen className="size-4" />}
@@ -144,6 +160,8 @@ export function Header({ isLive, view, onViewChange }: HeaderProps) {
           </div>
         </div>
       )}
+
+      {kpiStrip}
     </header>
   )
 }
@@ -164,7 +182,7 @@ function ViewTab({
       type="button"
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-ui',
+        'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-ui focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
         active
           ? 'bg-white text-[var(--uta-primary)] shadow-sm'
           : 'text-white/80 hover:bg-white/10 hover:text-white',
