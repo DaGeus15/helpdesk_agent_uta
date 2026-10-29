@@ -53,10 +53,17 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 
 - [x] **T6.1 deploy esqueleto (12:20):** Render (API, webhook) + Vercel (dashboard) con variables; CORS verificado contra la URL de Vercel.
 - [x] **T6.2 README + DEMO (Claude, 12:45):** README con arquitectura, variables y guía de despliegue; `docs/DEMO.md` con el guion de 5 min y respuestas al jurado por criterio de la rúbrica.
-- [ ] **T6.3 prueba final en producción:** batería rápida de `PRUEBAS.md` contra el bot desplegado.
+- [x] **T6.3 prueba final en producción:** batería rápida de `PRUEBAS.md` contra el bot desplegado.
 
 ## URLs de producción
 
 - Bot: https://t.me/HelpdeskUTA15Bot
 - Dashboard: https://helpdesk-agent-uta.vercel.app
 - API: https://codeandes-api.onrender.com (`/health`)
+
+## Extras añadidos al final (12:25 → 12:35)
+
+- [x] Login del operador (`admin`/`admin` configurable) con token HMAC y guard en `/operator/*`.
+- [x] Rediseño del panel con identidad visual UTA (azul institucional) y pantalla de login.
+- [x] Cadena de respaldo de modelos Gemini ante 429 (free tier: 5 RPM por modelo).
+- [x] Prueba de punta a punta en producción: voz, venta, guardrails, handover y devolución a la IA.
