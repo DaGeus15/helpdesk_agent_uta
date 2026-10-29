@@ -55,6 +55,8 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       );
     }
     const webhookUrl = `${publicUrl.replace(/\/$/, '')}/telegram/webhook`;
+    // En modo webhook grammY exige init() (en polling lo hace bot.start()).
+    await this.bot.init();
     await this.bot.api.setWebhook(webhookUrl, { secret_token: secret });
     this.logger.log(`Telegram webhook set to ${webhookUrl}`);
   }
@@ -70,7 +72,12 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
   }
 
   async handleUpdate(update: Update): Promise<void> {
-    await this.bot.handleUpdate(update);
+    try {
+      await this.bot.handleUpdate(update);
+    } catch (error) {
+      // Nunca devolver 500 a Telegram: reintentaría el mismo update en bucle.
+      this.logger.error(`Failed to handle update ${update.update_id}: ${String(error)}`);
+    }
   }
 
   async sendText(chatId: number, text: string): Promise<void> {
