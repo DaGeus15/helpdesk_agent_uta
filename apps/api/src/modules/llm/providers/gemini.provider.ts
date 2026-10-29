@@ -10,8 +10,9 @@ import {
 const CALL_TIMEOUT_MS = 25_000;
 const DEFAULT_FALLBACK_MODELS = [
   'gemini-2.5-flash-lite',
-  'gemini-2.0-flash',
-  'gemini-2.0-flash-lite',
+  'gemini-3.1-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-flash-latest',
 ];
 
 export class GeminiProvider implements LlmProvider {
@@ -170,7 +171,8 @@ export class GeminiProvider implements LlmProvider {
         return await this.ai.models.generateContent({ ...params, config, model });
       } catch (error) {
         const retryable =
-          error instanceof ApiError && (error.status === 429 || error.status === 503);
+          // 429 cuota, 5xx caída y 404 modelo retirado: se prueba el siguiente.
+          error instanceof ApiError && [404, 429, 500, 503].includes(error.status);
         if (!retryable) throw error;
         lastError = error;
       }
