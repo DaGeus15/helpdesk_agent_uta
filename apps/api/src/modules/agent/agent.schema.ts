@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const AgentOutput = z.object({
-  reply: z.string().min(1).max(900),
+  reply: z.string().min(1).max(1800),
   lead_state: z.enum([
     'interesado',
     'dudoso',
@@ -44,7 +44,7 @@ export type AgentOutput = z.infer<typeof AgentOutput>;
 export const agentOutputJsonSchema: Record<string, unknown> = {
   type: 'object',
   properties: {
-    reply: { type: 'string', minLength: 1, maxLength: 900 },
+    reply: { type: 'string', minLength: 1, maxLength: 1800 },
     lead_state: {
       type: 'string',
       enum: ['interesado', 'dudoso', 'frustrado', 'lead_caliente'],
