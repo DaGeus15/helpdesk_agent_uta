@@ -1,7 +1,10 @@
 export function Footer() {
   return (
-    <footer className="border-t border-[var(--uta-hairline)] bg-white/90 px-4 py-2 text-center text-[11px] text-[var(--uta-text-muted)] backdrop-blur-sm">
-      CTT-FISEI · Talleres Tecnológicos UTA · Hackathon UTA 2026 — FISEI
+    <footer className="bg-[var(--ink)] px-4 py-4 text-center text-[13px] text-[#dddce6]">
+      <p className="m-0">
+        Centro de Transferencia y Desarrollo de Tecnologías · FISEI · Universidad
+        Técnica de Ambato
+      </p>
     </footer>
   )
 }

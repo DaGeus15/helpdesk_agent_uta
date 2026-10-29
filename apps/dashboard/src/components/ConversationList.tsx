@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
-import { PanelLeftClose, Search } from 'lucide-react'
+import { PanelLeftClose } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ConversationCard, needsAdvisor } from '@/components/ConversationCard'
-import { LEAD_STATE_META } from '@/lib/lead-state'
 import { cn } from '@/lib/utils'
 import type { ConversationWithPreview } from '@/hooks/useConversations'
-import type { LeadState } from '@/types'
 
 interface ConversationListProps {
   conversations: ConversationWithPreview[]
@@ -20,27 +18,45 @@ interface ConversationListProps {
   className?: string
 }
 
-const FILTERS: Array<{ id: 'all' | LeadState; label: string }> = [
+type FilterId = 'all' | 'attention' | 'leads' | 'frustrado' | 'dudoso' | 'operator'
+
+const FILTERS: Array<{ id: FilterId; label: string }> = [
   { id: 'all', label: 'Todas' },
-  { id: 'interesado', label: LEAD_STATE_META.interesado.label },
-  { id: 'dudoso', label: LEAD_STATE_META.dudoso.label },
-  { id: 'frustrado', label: LEAD_STATE_META.frustrado.label },
-  { id: 'lead_caliente', label: LEAD_STATE_META.lead_caliente.label },
+  { id: 'attention', label: 'Requieren atención' },
+  { id: 'leads', label: 'Leads' },
+  { id: 'frustrado', label: 'Frustrados' },
+  { id: 'dudoso', label: 'Dudosos' },
+  { id: 'operator', label: 'Con operador' },
 ]
+
+function matchesFilter(c: ConversationWithPreview, filter: FilterId): boolean {
+  switch (filter) {
+    case 'all':
+      return true
+    case 'attention':
+      return needsAdvisor(c)
+    case 'leads':
+      return c.lead_state === 'lead_caliente'
+    case 'frustrado':
+      return c.lead_state === 'frustrado'
+    case 'dudoso':
+      return c.lead_state === 'dudoso'
+    case 'operator':
+      return c.ai_paused
+  }
+}
 
 function SkeletonCard() {
   return (
-    <div className="animate-pulse rounded-2xl border border-[var(--uta-hairline)] bg-white px-3 py-2.5 shadow-[var(--uta-shadow-soft)]">
-      <div className="flex items-start gap-2.5">
-        <div className="size-9 shrink-0 rounded-full bg-slate-200" />
-        <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex justify-between gap-2">
-            <div className="h-3.5 w-28 rounded bg-slate-200" />
-            <div className="h-3 w-10 rounded bg-slate-100" />
-          </div>
-          <div className="h-3 w-full rounded bg-slate-100" />
-          <div className="h-3 w-2/3 rounded bg-slate-100" />
-        </div>
+    <div className="animate-pulse rounded-md border-l-4 border-[var(--line)] bg-white px-3.5 py-3">
+      <div className="mb-2 flex justify-between gap-2">
+        <div className="h-3.5 w-28 rounded bg-[var(--line)]" />
+        <div className="h-3 w-12 rounded bg-[var(--mist)]" />
+      </div>
+      <div className="mb-2 h-3 w-full rounded bg-[var(--mist)]" />
+      <div className="flex gap-1">
+        <div className="h-4 w-16 rounded bg-[var(--mist)]" />
+        <div className="h-4 w-10 rounded bg-[var(--mist)]" />
       </div>
     </div>
   )
@@ -56,7 +72,7 @@ export function ConversationList({
   className,
 }: ConversationListProps) {
   const [query, setQuery] = useState('')
-  const [stateFilter, setStateFilter] = useState<'all' | LeadState>('all')
+  const [stateFilter, setStateFilter] = useState<FilterId>('all')
   const [now, setNow] = useState(() => Date.now())
   const [flashIds, setFlashIds] = useState<Set<string>>(() => new Set())
   const [focusIndex, setFocusIndex] = useState(0)
@@ -122,11 +138,12 @@ export function ConversationList({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = conversations.filter((c) => {
-      if (stateFilter !== 'all' && c.lead_state !== stateFilter) return false
+      if (!matchesFilter(c, stateFilter)) return false
       if (!q) return true
       const name = (c.display_name ?? '').toLowerCase()
       const user = (c.telegram_username ?? '').toLowerCase()
-      return name.includes(q) || user.includes(q)
+      const preview = (c.last_message_preview ?? '').toLowerCase()
+      return name.includes(q) || user.includes(q) || preview.includes(q)
     })
 
     return [...list].sort((a, b) => {
@@ -138,20 +155,14 @@ export function ConversationList({
   }, [conversations, query, stateFilter])
 
   const filterCounts = useMemo(() => {
-    const counts: Record<'all' | LeadState, number> = {
-      all: conversations.length,
-      interesado: 0,
-      dudoso: 0,
-      frustrado: 0,
-      lead_caliente: 0,
-    }
+    const counts = Object.fromEntries(FILTERS.map((f) => [f.id, 0])) as Record<FilterId, number>
     for (const c of conversations) {
-      counts[c.lead_state] += 1
+      for (const f of FILTERS) {
+        if (matchesFilter(c, f.id)) counts[f.id] += 1
+      }
     }
     return counts
   }, [conversations])
-
-  const selectedFilterIndex = FILTERS.findIndex((f) => f.id === stateFilter)
 
   useEffect(() => {
     if (filtered.length === 0) {
@@ -187,25 +198,26 @@ export function ConversationList({
   return (
     <aside
       className={cn(
-        // 300px < 1440, 320px ≥ 1440; full width en móvil
-        'flex h-full min-h-0 w-full shrink-0 flex-col border-r border-[var(--uta-hairline)] bg-[#fbfcfe] md:w-[300px] min-[1440px]:w-[320px]',
+        'flex h-full min-h-0 w-full shrink-0 flex-col bg-[var(--mist)] md:w-[360px]',
         className,
       )}
     >
-      <div className="shrink-0 space-y-2 border-b border-[var(--uta-hairline)] bg-white/80 px-3 py-2 backdrop-blur-md">
-        <div className="flex h-7 items-center justify-between gap-2">
-          <h2 className="truncate text-[13px] font-semibold tracking-tight text-[var(--uta-text)]">
-            Conversaciones
-            <span className="ml-1.5 font-normal tabular-nums text-[var(--uta-text-muted)]">
-              {filtered.length}/{conversations.length}
-            </span>
-          </h2>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
+        <div className="flex items-center justify-between gap-2">
+          <Input
+            ref={searchRef}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por nombre o mensaje"
+            aria-label="Buscar conversación"
+            className="h-10 min-h-10 rounded-md border-[var(--line)] bg-white text-[var(--ink)] shadow-none focus-visible:ring-[var(--red)]"
+          />
           {onToggleCollapse && (
             <Button
               type="button"
               size="icon"
               variant="ghost"
-              className="hidden h-7 w-7 rounded-lg lg:inline-flex"
+              className="hidden h-9 w-9 shrink-0 rounded-md lg:inline-flex"
               onClick={onToggleCollapse}
               aria-label="Colapsar lista de conversaciones"
             >
@@ -214,115 +226,78 @@ export function ConversationList({
           )}
         </div>
 
-        <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-[var(--uta-text-muted)]" />
-          <Input
-            ref={searchRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar…"
-            aria-label="Buscar conversaciones"
-            className="h-9 rounded-xl border-transparent bg-[#eef1f6] pl-8 pr-9 text-[13px] shadow-none focus-visible:border-[rgba(30,79,163,0.25)] focus-visible:bg-white focus-visible:ring-[rgba(30,79,163,0.25)]"
-          />
-          <kbd className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 rounded-md border border-[var(--uta-hairline)] bg-white/80 px-1.5 py-0.5 text-[10px] font-medium text-[var(--uta-text-muted)]">
-            /
-          </kbd>
-        </div>
-
-        <div
-          role="tablist"
-          aria-label="Filtrar por estado"
-          className="relative grid h-8 grid-cols-5 gap-0.5 rounded-xl bg-[#e8ecf3] p-0.5"
-        >
-          <span
-            aria-hidden
-            className="absolute top-0.5 bottom-0.5 rounded-lg bg-white shadow-[0_1px_3px_rgba(15,23,42,0.12)] transition-ui"
-            style={{
-              width: `calc((100% - 0.25rem) / 5)`,
-              left: `calc(0.125rem + ${Math.max(selectedFilterIndex, 0)} * ((100% - 0.25rem) / 5))`,
-            }}
-          />
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por estado">
           {FILTERS.map((f) => (
             <button
               key={f.id}
               type="button"
-              role="tab"
-              aria-selected={stateFilter === f.id}
+              aria-pressed={stateFilter === f.id}
               onClick={() => setStateFilter(f.id)}
               className={cn(
-                'relative z-10 flex items-center justify-center gap-0.5 truncate rounded-lg px-0.5 text-[10px] font-semibold transition-ui focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(30,79,163,0.35)] active:scale-[0.97]',
+                'rounded-full border px-3 py-1 text-[13px] transition-ui focus-visible:outline-none',
                 stateFilter === f.id
-                  ? 'text-[var(--uta-primary)]'
-                  : 'text-[var(--uta-text-muted)] hover:text-[var(--uta-text)]',
+                  ? 'border-[var(--red)] bg-[var(--red)] font-medium text-white'
+                  : 'border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--red)]',
               )}
               title={`${f.label} (${filterCounts[f.id]})`}
             >
-              <span className="truncate">{f.label.split(' ')[0]}</span>
-              <span
-                className={cn(
-                  'inline-flex min-w-[1.1rem] items-center justify-center rounded-full px-1 text-[9px] tabular-nums',
-                  stateFilter === f.id
-                    ? 'bg-[var(--uta-primary-soft)] text-[var(--uta-primary)]'
-                    : 'bg-black/5 text-[var(--uta-text-muted)]',
-                )}
-              >
-                {filterCounts[f.id]}
-              </span>
+              {f.label}
             </button>
           ))}
         </div>
-      </div>
 
-      <ScrollArea className="min-h-0 flex-1">
-        <div
-          ref={listRef}
-          tabIndex={0}
-          role="listbox"
-          aria-label="Lista de conversaciones"
-          onKeyDown={handleListKeyDown}
-          className="flex flex-col gap-2 p-2 focus-visible:outline-none"
-        >
-          {loading && conversations.length === 0 ? (
-            <>
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
-            </>
-          ) : filtered.length === 0 ? (
-            <p className="px-2 py-8 text-center text-[13px] text-[var(--uta-text-muted)]">
-              {conversations.length === 0
-                ? 'Aún no hay conversaciones — escribe al bot @HelpdeskUTA15Bot'
-                : 'No hay conversaciones con ese filtro.'}
-            </p>
-          ) : (
-            filtered.map((c, i) => (
-              <div
-                key={c.id}
-                role="option"
-                aria-selected={c.id === selectedId}
-                data-focused={i === focusIndex || undefined}
-                className={cn(
-                  'rounded-2xl',
-                  i === focusIndex && c.id !== selectedId && 'ring-2 ring-[rgba(30,79,163,0.2)]',
-                )}
-              >
-                <ConversationCard
-                  conversation={c}
-                  selected={c.id === selectedId}
-                  unread={unread[c.id] ?? 0}
-                  flash={flashIds.has(c.id)}
-                  now={now}
-                  onSelect={() => {
-                    setFocusIndex(i)
-                    onSelect(c.id)
-                  }}
-                />
-              </div>
-            ))
-          )}
-        </div>
-      </ScrollArea>
+        <ScrollArea className="min-h-0 flex-1">
+          <div
+            ref={listRef}
+            tabIndex={0}
+            role="listbox"
+            aria-label="Lista de conversaciones"
+            onKeyDown={handleListKeyDown}
+            className="flex flex-col gap-2 pr-1 focus-visible:outline-none"
+          >
+            {loading && conversations.length === 0 ? (
+              <>
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </>
+            ) : filtered.length === 0 ? (
+              <p className="px-1 py-8 text-center text-[13px] text-[var(--muted)]">
+                {conversations.length === 0
+                  ? 'Aún no hay conversaciones — escribe al bot @HelpdeskUTA15Bot'
+                  : 'No hay conversaciones con ese filtro.'}
+              </p>
+            ) : (
+              filtered.map((c, i) => (
+                <div
+                  key={c.id}
+                  role="option"
+                  aria-selected={c.id === selectedId}
+                  data-focused={i === focusIndex || undefined}
+                  className={cn(
+                    i === focusIndex &&
+                      c.id !== selectedId &&
+                      'rounded-md ring-2 ring-[color-mix(in_srgb,var(--red)_35%,transparent)]',
+                  )}
+                >
+                  <ConversationCard
+                    conversation={c}
+                    selected={c.id === selectedId}
+                    unread={unread[c.id] ?? 0}
+                    flash={flashIds.has(c.id)}
+                    now={now}
+                    onSelect={() => {
+                      setFocusIndex(i)
+                      onSelect(c.id)
+                    }}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        </ScrollArea>
+      </div>
     </aside>
   )
 }

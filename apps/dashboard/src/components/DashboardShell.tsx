@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { PanelLeft } from 'lucide-react'
 import { Toaster } from 'sonner'
 import { Header, type DashboardView } from '@/components/Header'
-import { MiniKpiStrip } from '@/components/MiniKpiStrip'
 import { MetricsView } from '@/components/MetricsView'
 import { ConversationList } from '@/components/ConversationList'
 import { needsAdvisor } from '@/components/ConversationCard'
@@ -14,7 +13,6 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { useConversations } from '@/hooks/useConversations'
 import { useMessages } from '@/hooks/useMessages'
-import { useMetrics } from '@/hooks/useMetrics'
 import { getMissingEnvVars } from '@/lib/env'
 import { readStorage, writeStorage } from '@/lib/storage'
 import { cn } from '@/lib/utils'
@@ -52,7 +50,6 @@ export function DashboardShell() {
     configured,
   } = useConversations()
   const { messages, bottomRef } = useMessages(selectedId)
-  const metrics = useMetrics(conversations)
 
   const needsAdvisorCount = useMemo(
     () => conversations.filter(needsAdvisor).length,
@@ -94,36 +91,27 @@ export function DashboardShell() {
         closeButton
         toastOptions={{
           className:
-            'banner-enter !rounded-2xl !border-[var(--uta-hairline)] !shadow-[var(--uta-shadow-lift)]',
+            'banner-enter !rounded-lg !border-[var(--line)] !shadow-[var(--uta-shadow-lift)]',
         }}
       />
-      <div className="flex h-dvh flex-col overflow-hidden bg-[var(--uta-bg)]">
+      <div className="flex h-dvh flex-col overflow-hidden bg-white">
         <ConfigBanner missing={missing} />
         <Header
           isLive={isLive && configured}
           view={view}
           onViewChange={handleViewChange}
-          kpiStrip={
-            view === 'conversations' ? (
-              <MiniKpiStrip
-                metrics={metrics}
-                needsAdvisor={needsAdvisorCount}
-                onOpenMetrics={() => handleViewChange('metrics')}
-              />
-            ) : null
-          }
+          attentionCount={needsAdvisorCount}
         />
 
         {view === 'courses' ? (
           <CoursesView />
         ) : view === 'metrics' ? (
           <MetricsView
-            metrics={metrics}
             conversations={conversations}
             onSelectConversation={selectConversation}
           />
         ) : !configured ? (
-          <div className="flex min-h-0 flex-1 items-center justify-center p-8 text-center text-sm text-[var(--uta-text-muted)]">
+          <div className="flex min-h-0 flex-1 items-center justify-center p-8 text-center text-sm text-[var(--text)]">
             Configura las variables VITE_* para cargar conversaciones en vivo.
           </div>
         ) : (
@@ -164,14 +152,14 @@ export function DashboardShell() {
               )}
             />
 
-            <main className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+            <main className="relative flex min-h-0 min-w-0 flex-1 flex-col border-l border-[var(--line)]">
               <div className="pointer-events-none absolute top-2 left-2 z-10 hidden gap-1 md:flex">
                 {listCollapsed && (
                   <Button
                     type="button"
                     size="icon"
                     variant="outline"
-                    className="pointer-events-auto hidden h-8 w-8 rounded-lg border-[var(--uta-hairline)] bg-white/95 shadow-sm lg:inline-flex"
+                    className="pointer-events-auto hidden h-8 w-8 rounded-md border-[var(--line)] bg-white/95 shadow-sm lg:inline-flex"
                     onClick={toggleListCollapsed}
                     aria-label="Mostrar lista de conversaciones"
                   >
@@ -182,7 +170,7 @@ export function DashboardShell() {
                   type="button"
                   size="icon"
                   variant="outline"
-                  className="pointer-events-auto h-8 w-8 rounded-lg border-[var(--uta-hairline)] bg-white/95 shadow-sm lg:hidden"
+                  className="pointer-events-auto h-8 w-8 rounded-md border-[var(--line)] bg-white/95 shadow-sm lg:hidden"
                   onClick={() => setDrawerOpen((o) => !o)}
                   aria-label={
                     drawerOpen

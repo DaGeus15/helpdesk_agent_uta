@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { ShieldAlert } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { avatarColorFromName, getInitials, getLeadStateMeta } from '@/lib/lead-state'
-import { cn, formatRelativeTime, truncate } from '@/lib/utils'
+import { getLeadStateMeta } from '@/lib/lead-state'
+import { cn, formatClockTime, truncate } from '@/lib/utils'
 import type { ConversationWithPreview } from '@/hooks/useConversations'
 
 interface ConversationCardProps {
@@ -22,18 +20,22 @@ export function needsAdvisor(conversation: ConversationWithPreview): boolean {
   )
 }
 
+function previewPrefix(role: ConversationWithPreview['last_message_role']): string {
+  if (role === 'assistant') return 'IA: '
+  if (role === 'operator') return 'Operador: '
+  return ''
+}
+
 export function ConversationCard({
   conversation,
   selected,
   unread = 0,
   flash = false,
-  now = Date.now(),
   onSelect,
 }: ConversationCardProps) {
   const meta = getLeadStateMeta(conversation.lead_state)
   const name = conversation.display_name ?? conversation.telegram_username ?? 'Sin nombre'
   const alert = needsAdvisor(conversation)
-  const avatarBg = avatarColorFromName(name)
   const [thermoPulse, setThermoPulse] = useState(false)
   const prevStateRef = useRef(conversation.lead_state)
 
@@ -46,6 +48,11 @@ export function ConversationCard({
     }
   }, [conversation.lead_state])
 
+  const preview = `${previewPrefix(conversation.last_message_role)}${truncate(
+    conversation.last_message_preview,
+    80,
+  )}`
+
   return (
     <button
       type="button"
@@ -53,82 +60,61 @@ export function ConversationCard({
       aria-label={`Conversación con ${name}`}
       aria-current={selected ? 'true' : undefined}
       className={cn(
-        'w-full rounded-2xl border px-3 py-2.5 text-left transition-ui focus-visible:ring-2 focus-visible:ring-[rgba(30,79,163,0.35)] focus-visible:outline-none active:scale-[0.99]',
-        selected
-          ? 'border-[rgba(30,79,163,0.2)] border-l-[3px] border-l-[var(--uta-primary)] bg-[var(--uta-primary-soft)] shadow-[var(--uta-shadow-soft)]'
-          : 'border-[var(--uta-hairline)] bg-white shadow-[var(--uta-shadow-soft)] hover:-translate-y-px hover:shadow-[var(--uta-shadow-lift)]',
-        alert && !selected && 'border-red-200/80 bg-red-50/70 hover:bg-red-50',
-        alert && selected && 'border-red-300 border-l-red-600 bg-red-50/90',
+        'grid w-full gap-1.5 rounded-md border-0 border-l-4 bg-white px-3.5 py-3 text-left text-[var(--text)] transition-ui focus-visible:outline-none',
+        selected && 'shadow-[inset_0_0_0_2px_var(--red)]',
+        !selected && 'hover:bg-[color-mix(in_srgb,white_94%,var(--ink))]',
         flash && 'card-flash',
       )}
+      style={{ borderLeftColor: meta.colorHex }}
     >
-      <div className="flex items-start gap-2.5">
-        <div
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold text-white shadow-sm"
-          style={{ backgroundColor: avatarBg }}
-          aria-hidden
-        >
-          {getInitials(name)}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <p className="truncate text-[15px] font-semibold tracking-tight text-[var(--uta-text)]">
-              {name}
-            </p>
-            <div className="flex shrink-0 flex-col items-end gap-1">
-              <span className="text-[11px] tabular-nums text-[var(--uta-text-muted)]">
-                {formatRelativeTime(conversation.last_message_at, now)}
-              </span>
-              {unread > 0 && (
-                <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--uta-primary)] px-1.5 text-[10px] font-semibold text-white tabular-nums">
-                  {unread > 99 ? '99+' : unread}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <p className="mt-0.5 line-clamp-2 text-[13px] text-[var(--uta-text-muted)]">
-            {truncate(conversation.last_message_preview, 90)}
-          </p>
-
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <span
-              className={cn(
-                'inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[11px] font-medium transition-ui',
-                meta.bg,
-              )}
-            >
-              <span
-                className={cn(
-                  'size-1.5 rounded-full transition-[background-color] duration-200',
-                  meta.dot,
-                  thermoPulse && 'thermo-pulse',
-                )}
-              />
-              {meta.label}
+      <div className="flex items-center justify-between gap-3">
+        <p className="min-w-0 truncate font-semibold text-[var(--ink)]">{name}</p>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {unread > 0 && (
+            <span className="inline-flex min-w-[22px] items-center justify-center rounded-full bg-[var(--red)] px-1.5 text-xs font-semibold text-white tabular-nums">
+              {unread > 99 ? '99+' : unread}
             </span>
-
-            {alert && (
-              <Badge variant="destructive" className="text-[10px]">
-                Requiere asesor
-              </Badge>
-            )}
-
-            {conversation.ai_paused && !alert && (
-              <Badge variant="warning" className="text-[10px]">
-                IA pausada
-              </Badge>
-            )}
-
-            {conversation.injection_attempts > 0 && (
-              <Badge variant="destructive" className="gap-1 text-[10px]">
-                <ShieldAlert className="size-3" />
-                {conversation.injection_attempts}
-              </Badge>
-            )}
-          </div>
+          )}
+          <time className="text-xs whitespace-nowrap text-[var(--muted)]">
+            {formatClockTime(conversation.last_message_at)}
+          </time>
         </div>
+      </div>
+
+      <p className="truncate text-[13px]">{preview}</p>
+
+      <div className="flex flex-wrap gap-1">
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 rounded px-2 py-px text-xs font-medium shadow-[inset_3px_0_0_var(--state-color)]',
+            meta.bg,
+            thermoPulse && 'thermo-pulse',
+          )}
+          style={{ ['--state-color' as string]: meta.colorHex }}
+        >
+          <span aria-hidden>{meta.emoji}</span>
+          {meta.label}
+        </span>
+
+        {conversation.ai_paused ? (
+          <span className="inline-flex items-center rounded bg-[var(--operator)] px-2 py-px text-xs font-medium text-white">
+            Operador
+          </span>
+        ) : (
+          <span className="inline-flex items-center rounded bg-[color-mix(in_srgb,var(--ink)_8%,white)] px-2 py-px text-xs font-medium text-[var(--ink)]">
+            IA
+          </span>
+        )}
+
+        <span className="inline-flex items-center rounded bg-[var(--navy)] px-2 py-px text-xs font-medium text-white">
+          Telegram
+        </span>
+
+        {alert && (
+          <span className="inline-flex items-center rounded bg-[var(--critical)] px-2 py-px text-xs font-medium text-white">
+            Atención
+          </span>
+        )}
       </div>
     </button>
   )

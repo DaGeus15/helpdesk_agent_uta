@@ -264,6 +264,15 @@ export function getLastMessagePreview(conversationId: string): string {
   return msgs[0]?.content ?? 'Sin mensajes'
 }
 
+export function getLastMessageRole(
+  conversationId: string,
+): Message['role'] | null {
+  const msgs = MOCK_MESSAGES.filter((m) => m.conversation_id === conversationId).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  )
+  return msgs[0]?.role ?? null
+}
+
 export function getMessagesForConversation(conversationId: string): Message[] {
   return MOCK_MESSAGES.filter((m) => m.conversation_id === conversationId).sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),

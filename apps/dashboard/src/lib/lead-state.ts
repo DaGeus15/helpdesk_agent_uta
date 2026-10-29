@@ -3,6 +3,9 @@ import type { LeadState } from '@/types'
 
 export interface LeadStateMeta {
   label: string
+  emoji: string
+  /** CSS color for state accent */
+  colorHex: string
   /** Tailwind text color for icon */
   color: string
   /** Tailwind bg for thermometer dot */
@@ -17,34 +20,42 @@ export interface LeadStateMeta {
 export const LEAD_STATE_META: Record<LeadState, LeadStateMeta> = {
   interesado: {
     label: 'Interesado',
-    color: 'text-[#1E4FA3]',
-    dot: 'bg-[#1E4FA3]',
-    bg: 'bg-[#E8EFFA] text-[#0A2A5E] border-[#c5d5ef]',
-    bar: 'bg-[#1E4FA3]',
+    emoji: '🙂',
+    colorHex: '#1f5fa8',
+    color: 'text-[var(--state-interesado)]',
+    dot: 'bg-[var(--state-interesado)]',
+    bg: 'bg-[color-mix(in_srgb,var(--state-interesado)_13%,white)] text-[var(--ink)]',
+    bar: 'bg-[var(--state-interesado)]',
     Icon: Sparkles,
   },
   dudoso: {
     label: 'Dudoso',
-    color: 'text-amber-700',
-    dot: 'bg-amber-500',
-    bg: 'bg-amber-50 text-amber-800 border-amber-200',
-    bar: 'bg-amber-500',
+    emoji: '🤔',
+    colorHex: '#c08a00',
+    color: 'text-[var(--state-dudoso)]',
+    dot: 'bg-[var(--state-dudoso)]',
+    bg: 'bg-[color-mix(in_srgb,var(--state-dudoso)_13%,white)] text-[var(--ink)]',
+    bar: 'bg-[var(--state-dudoso)]',
     Icon: HelpCircle,
   },
   frustrado: {
     label: 'Frustrado',
-    color: 'text-red-700',
-    dot: 'bg-red-600',
-    bg: 'bg-red-50 text-red-700 border-red-200',
-    bar: 'bg-red-600',
+    emoji: '😤',
+    colorHex: '#b70717',
+    color: 'text-[var(--state-frustrado)]',
+    dot: 'bg-[var(--state-frustrado)]',
+    bg: 'bg-[color-mix(in_srgb,var(--state-frustrado)_13%,white)] text-[var(--ink)]',
+    bar: 'bg-[var(--state-frustrado)]',
     Icon: Flame,
   },
   lead_caliente: {
     label: 'Lead caliente',
-    color: 'text-emerald-700',
-    dot: 'bg-emerald-600',
-    bg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    bar: 'bg-emerald-600',
+    emoji: '🔥',
+    colorHex: '#1f8a3b',
+    color: 'text-[var(--state-lead)]',
+    dot: 'bg-[var(--state-lead)]',
+    bg: 'bg-[color-mix(in_srgb,var(--state-lead)_13%,white)] text-[var(--ink)]',
+    bar: 'bg-[var(--state-lead)]',
     Icon: Rocket,
   },
 }
@@ -56,7 +67,7 @@ export function getLeadStateMeta(state: LeadState): LeadStateMeta {
   return LEAD_STATE_META[state]
 }
 
-const AVATAR_COLORS = ['#0A2A5E', '#1E4FA3', '#0F766E', '#B45309', '#9F1239', '#4338CA', '#0369A1']
+const AVATAR_COLORS = ['#012e5a', '#1f5fa8', '#ad272e', '#c08a00', '#1f8a3b', '#44425a']
 
 export function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)

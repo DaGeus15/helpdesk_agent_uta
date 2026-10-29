@@ -20,7 +20,7 @@ export function ContactCard({
   return (
     <section
       className={cn(
-        'rounded-2xl border border-[var(--uta-hairline)] bg-white shadow-[var(--uta-shadow-soft)]',
+        'rounded-lg border border-[var(--line)] bg-white',
         compact ? 'p-4' : 'p-5 sm:p-6',
         className,
       )}
@@ -31,31 +31,31 @@ export function ContactCard({
           compact ? 'sm:flex-row sm:items-center' : 'sm:flex-row sm:items-start',
         )}
       >
-        <div className="mx-auto shrink-0 rounded-2xl border border-[var(--uta-hairline)] bg-white p-3 shadow-sm">
+        <div className="mx-auto shrink-0 rounded-lg border border-[var(--line)] bg-white p-3">
           <QRCodeSVG
             value={TELEGRAM_BOT_URL}
             size={qrSize}
             level="M"
             marginSize={1}
             bgColor="#ffffff"
-            fgColor="#0a2a5e"
+            fgColor="#012e5a"
             title="Código QR del bot de Telegram CTT-FISEI"
           />
         </div>
 
         <div className="min-w-0 flex-1 space-y-3 text-center sm:text-left">
           <div>
-            <h3 className="text-base font-semibold tracking-tight text-[var(--uta-primary)] sm:text-lg">
+            <h3 className="text-base font-semibold text-[var(--navy)] sm:text-lg">
               {title}
             </h3>
-            <p className="mt-1 text-sm text-[var(--uta-text-muted)]">
+            <p className="mt-1 text-sm text-[var(--text)]">
               Escríbenos por Telegram
             </p>
           </div>
 
           <Button
             asChild
-            className="h-10 rounded-xl bg-[var(--uta-primary)] shadow-[0_8px_20px_rgba(10,42,94,0.2)] hover:bg-[var(--uta-primary-mid)]"
+            className="h-10 rounded-md bg-[var(--red)] font-semibold text-white hover:bg-[var(--crimson)]"
           >
             <a href={TELEGRAM_BOT_URL} target="_blank" rel="noreferrer">
               <Send className="size-4" />
@@ -69,7 +69,7 @@ export function ContactCard({
               <li key={email}>
                 <a
                   href={`mailto:${email}`}
-                  className="inline-flex items-center gap-2 text-sm text-[var(--uta-text-muted)] transition-ui hover:text-[var(--uta-primary)]"
+                  className="inline-flex items-center gap-2 text-sm text-[var(--text)] transition-ui hover:text-[var(--navy)]"
                 >
                   <Mail className="size-3.5 shrink-0" />
                   <span className="break-all">{email}</span>

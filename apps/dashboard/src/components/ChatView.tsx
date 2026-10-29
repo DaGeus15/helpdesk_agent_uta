@@ -13,22 +13,18 @@ import {
   ArrowLeft,
   ChevronDown,
   Mic,
-  PauseCircle,
-  PlayCircle,
-  Send,
   ShieldAlert,
   Zap,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api, ApiError } from '@/lib/api'
-import { cn, formatRelativeTime } from '@/lib/utils'
-import { avatarColorFromName, getInitials, getLeadStateMeta } from '@/lib/lead-state'
+import { cn, formatClockTime, formatLatencyShort } from '@/lib/utils'
+import { getLeadStateMeta } from '@/lib/lead-state'
 import type { ConversationWithPreview } from '@/hooks/useConversations'
-import type { LeadProfile, LeadState, Message } from '@/types'
+import type { LeadProfile, Message } from '@/types'
 
 interface ChatViewProps {
   conversation: ConversationWithPreview
@@ -47,12 +43,6 @@ const QUICK_TEMPLATES = [
 
 const LINK_RE =
   /(https?:\/\/[^\s<]+[^<.,:;"')\]\s]|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g
-
-function roleLabel(role: Message['role']): string | null {
-  if (role === 'assistant') return 'IA · Andrea'
-  if (role === 'operator') return 'Asesor'
-  return null
-}
 
 const EMPTY_PROFILE_VALUES = new Set([
   'unknown',
@@ -103,9 +93,9 @@ function ProfileChipsRow({
       {chips.map((chip) => (
         <span
           key={chip.label}
-          className="inline-flex shrink-0 items-center gap-1 rounded-md border border-[var(--uta-border)] bg-[var(--uta-bg)] px-2 py-0.5 text-[11px] text-[var(--uta-text)]"
+          className="inline-flex shrink-0 items-center gap-1 rounded bg-white/95 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-[var(--navy)] uppercase"
         >
-          <span className="font-medium text-[var(--uta-text-muted)]">{chip.label}:</span>
+          <span className="opacity-70">{chip.label}:</span>
           {chip.value}
         </span>
       ))}
@@ -124,7 +114,7 @@ function renderSummaryText(text: string): ReactNode {
       const rest = line.slice(match.length + 1)
       return (
         <p key={index} className="leading-relaxed">
-          <strong className="font-semibold">{match}:</strong>
+          <strong className="font-semibold text-white">{match}:</strong>
           {rest}
         </p>
       )
@@ -178,93 +168,65 @@ function linkify(text: string): ReactNode[] {
   return parts.length > 0 ? parts : [text]
 }
 
+function messageMeta(message: Message): string {
+  const time = formatClockTime(message.created_at)
+  if (message.role === 'assistant') {
+    const latency = formatLatencyShort(message.latency_ms)
+    return latency ? `IA · ${time} · ${latency}` : `IA · ${time}`
+  }
+  if (message.role === 'operator') return `Operador · ${time}`
+  return time
+}
+
 function MessageBubble({
   message,
-  showLabel,
   animate,
 }: {
   message: Message
-  showLabel: boolean
   animate: boolean
 }) {
   const isUser = message.role === 'user'
   const isOperator = message.role === 'operator'
   const isAssistant = message.role === 'assistant'
-  const label = roleLabel(message.role)
 
   return (
     <div
       className={cn(
-        'flex w-full',
-        isUser ? 'justify-start' : 'justify-end',
+        'mb-2.5 max-w-[72%] rounded-[10px] px-3.5 py-2.5 text-[var(--ink)] whitespace-pre-wrap break-words',
+        isUser && 'rounded-bl-sm bg-[var(--mist)]',
+        (isAssistant || isOperator) && 'ml-auto rounded-br-sm border border-[var(--line)]',
+        isOperator &&
+          'border-[color-mix(in_srgb,var(--operator)_45%,var(--line))] bg-[color-mix(in_srgb,var(--operator)_7%,white)]',
         animate && 'bubble-enter',
       )}
     >
-      <div
-        className={cn(
-          'max-w-[85%] rounded-[20px] px-3.5 py-2 text-[15px] leading-[1.5] shadow-[var(--uta-shadow-soft)] sm:max-w-[68%]',
-          isUser &&
-            'rounded-bl-md border border-[var(--uta-hairline)] bg-white text-[var(--uta-text)]',
-          isAssistant && 'rounded-br-md bg-[var(--uta-primary-soft)] text-[var(--uta-text)]',
-          isOperator && 'rounded-br-md bg-[var(--uta-primary)] text-white',
-        )}
-      >
-        {(showLabel || message.source === 'voice' || message.flagged_injection) && (
-          <div
-            className={cn(
-              'mb-1 flex flex-wrap items-center gap-1.5 text-[11px] font-medium tracking-wide',
-              isOperator ? 'text-white/80' : 'text-[var(--uta-text-muted)]',
-            )}
-          >
-            {showLabel && label && <span>{label}</span>}
-            {message.source === 'voice' && (
-              <span className="inline-flex items-center gap-0.5">
-                <Mic className="size-3" />
-                Nota de voz transcrita
-              </span>
-            )}
-            {message.flagged_injection && (
-              <span
-                className={cn(
-                  'inline-flex items-center gap-0.5',
-                  isOperator ? 'text-red-200' : 'text-red-600',
-                )}
-              >
-                <ShieldAlert className="size-3" />
-                Intento de manipulación
-              </span>
-            )}
-          </div>
-        )}
-        <p className="whitespace-pre-wrap leading-[1.5]">{linkify(message.content)}</p>
-        <p
-          className={cn(
-            'mt-1 text-[11px]',
-            isOperator ? 'text-white/70' : 'text-[var(--uta-text-muted)]',
+      {(message.source === 'voice' || message.flagged_injection) && (
+        <div className="mb-1 flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-[var(--muted)]">
+          {message.source === 'voice' && (
+            <span className="inline-flex items-center gap-0.5">
+              <Mic className="size-3" />
+              Nota de voz transcrita
+            </span>
           )}
-        >
-          {formatRelativeTime(message.created_at)}
-        </p>
-      </div>
+          {message.flagged_injection && (
+            <span className="inline-flex items-center gap-0.5 rounded bg-[color-mix(in_srgb,var(--critical)_14%,white)] px-1.5 text-[var(--ink)]">
+              <ShieldAlert className="size-3" />
+              Intento de manipulación
+            </span>
+          )}
+        </div>
+      )}
+      <p>{linkify(message.content)}</p>
+      <small className="mt-1 flex flex-wrap gap-1.5 text-[11px] text-[var(--muted)]">
+        {messageMeta(message)}
+      </small>
     </div>
   )
 }
 
-function LeadTimeline({ states }: { states: LeadState[] }) {
-  if (states.length === 0) return null
+function SystemSeparator({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-1" title="Evolución del termómetro">
-      {states.map((state, i) => {
-        const meta = getLeadStateMeta(state)
-        return (
-          <span
-            key={`${state}-${i}`}
-            className={cn('size-2 rounded-full', meta.dot)}
-            title={meta.label}
-          />
-        )
-      })}
-    </div>
+    <p className="my-3.5 text-center text-xs text-[var(--muted)]">{label}</p>
   )
 }
 
@@ -273,6 +235,11 @@ function errorMessage(err: unknown): string {
   if (err instanceof Error) return err.message
   return 'Error desconocido'
 }
+
+type TimelineItem =
+  | { type: 'day'; key: string; label: string }
+  | { type: 'system'; key: string; label: string }
+  | { type: 'msg'; key: string; message: Message; index: number }
 
 export function ChatView({
   conversation,
@@ -291,37 +258,25 @@ export function ChatView({
   const [stickToBottom, setStickToBottom] = useState(true)
   const [newBelow, setNewBelow] = useState(0)
   const [animateFrom, setAnimateFrom] = useState<number | null>(null)
-  const [thermoPulse, setThermoPulse] = useState(false)
 
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const summaryPanelRef = useRef<HTMLDivElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const prevCountRef = useRef(0)
   const convIdRef = useRef(conversation.id)
-  const prevLeadRef = useRef(conversation.lead_state)
 
   const meta = getLeadStateMeta(conversation.lead_state)
-  const StateIcon = meta.Icon
   const name = conversation.display_name ?? conversation.telegram_username ?? 'Sin nombre'
   const chips = profileChips(conversation.profile)
   const summaryText = advisorSummary ?? conversation.summary
-  const avatarBg = avatarColorFromName(name)
-
-  const timelineStates = useMemo(() => {
-    const states: LeadState[] = []
-    for (const m of messages) {
-      if (m.role === 'assistant' && m.lead_state) states.push(m.lead_state)
-    }
-    return states.slice(-8)
-  }, [messages])
+  const humanMode = conversation.ai_paused
 
   const items = useMemo(() => {
-    const out: Array<
-      | { type: 'day'; key: string; label: string }
-      | { type: 'msg'; key: string; message: Message; showLabel: boolean; index: number }
-    > = []
+    const out: TimelineItem[] = []
     let lastDay = ''
     let prevRole: Message['role'] | null = null
+    let sawOperator = false
+
     messages.forEach((m, index) => {
       const dk = dayKey(m.created_at)
       if (dk !== lastDay) {
@@ -329,9 +284,29 @@ export function ChatView({
         out.push({ type: 'day', key: `day-${dk}`, label: dayLabel(m.created_at) })
         prevRole = null
       }
-      const showLabel = m.role !== 'user' && m.role !== prevRole
-      out.push({ type: 'msg', key: m.id, message: m, showLabel, index })
+
+      if (m.role === 'operator' && prevRole !== 'operator') {
+        out.push({
+          type: 'system',
+          key: `pause-${m.id}`,
+          label: `— IA en pausa · Intervención del operador · ${formatClockTime(m.created_at)} —`,
+        })
+        sawOperator = true
+      } else if (
+        m.role === 'assistant' &&
+        sawOperator &&
+        prevRole === 'operator'
+      ) {
+        out.push({
+          type: 'system',
+          key: `resume-${m.id}`,
+          label: `— IA reanudada · ${formatClockTime(m.created_at)} —`,
+        })
+      }
+
+      out.push({ type: 'msg', key: m.id, message: m, index })
       prevRole = m.role
+      if (m.role === 'operator') sawOperator = true
     })
     return out
   }, [messages])
@@ -344,19 +319,9 @@ export function ChatView({
     setStickToBottom(true)
     setNewBelow(0)
     setAnimateFrom(null)
-    setThermoPulse(false)
     prevCountRef.current = 0
     convIdRef.current = conversation.id
-    prevLeadRef.current = conversation.lead_state
   }, [conversation.id])
-
-  useEffect(() => {
-    if (prevLeadRef.current === conversation.lead_state) return
-    prevLeadRef.current = conversation.lead_state
-    setThermoPulse(true)
-    const t = window.setTimeout(() => setThermoPulse(false), 450)
-    return () => window.clearTimeout(t)
-  }, [conversation.lead_state])
 
   useEffect(() => {
     const prev = prevCountRef.current
@@ -392,7 +357,6 @@ export function ChatView({
       if (!el.contains(e.target as Node)) setSummaryOpen(false)
     }
     window.addEventListener('keydown', onKey)
-    // delay so the opening click doesn't immediately close
     const t = window.setTimeout(() => {
       window.addEventListener('mousedown', onPointer)
     }, 0)
@@ -407,7 +371,7 @@ export function ChatView({
     const el = textareaRef.current
     if (!el) return
     el.style.height = 'auto'
-    const next = Math.min(Math.max(el.scrollHeight, 44), 44 + 4 * 22)
+    const next = Math.min(Math.max(el.scrollHeight, 46), 160)
     el.style.height = `${next}px`
   }, [draft])
 
@@ -476,156 +440,147 @@ export function ChatView({
     }
   }
 
+  const oneLineSummary = summaryText
+    ? summaryText.replace(/\s+/g, ' ').trim().slice(0, 140)
+    : 'Aún no hay suficiente conversación para resumir.'
+
   return (
-    <div className={cn('flex h-full min-h-0 min-w-0 flex-1 flex-col bg-[var(--uta-bg)]', className)}>
-      <div className="relative z-20 shrink-0 border-b border-[var(--uta-hairline)] bg-white/95 backdrop-blur-md">
-        <div className="flex h-14 items-center gap-2 px-3 sm:px-4">
-          {onBack && (
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 shrink-0 md:hidden"
-              onClick={onBack}
-              aria-label="Volver a conversaciones"
-            >
-              <ArrowLeft className="size-4" />
-            </Button>
-          )}
-
-          <div
-            className="flex size-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white shadow-sm"
-            style={{ backgroundColor: avatarBg }}
-            aria-hidden
-          >
-            {getInitials(name)}
-          </div>
-
-          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
-            <h2 className="truncate text-[15px] font-semibold tracking-tight text-[var(--uta-text)]">
-              {name}
-            </h2>
-            <span
-              className={cn(
-                'hidden shrink-0 items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[11px] font-semibold transition-ui sm:inline-flex',
-                meta.bg,
+    <div
+      className={cn(
+        'flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-[var(--line)] bg-white',
+        className,
+      )}
+    >
+      {/* Cabecera póster navy / carmesí */}
+      <div
+        className={cn(
+          'relative z-20 shrink-0 px-5 py-5 text-white sm:px-6',
+          humanMode ? 'bg-[var(--crimson)]' : 'bg-[var(--navy)]',
+        )}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              {onBack && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 shrink-0 text-white hover:bg-white/15 hover:text-white md:hidden"
+                  onClick={onBack}
+                  aria-label="Volver a conversaciones"
+                >
+                  <ArrowLeft className="size-4" />
+                </Button>
               )}
-            >
-              <StateIcon className={cn('size-3', meta.color)} />
+              <h2 className="truncate text-[clamp(1.25rem,2.4vw,1.875rem)] font-bold tracking-wide text-white uppercase">
+                {name}
+              </h2>
+            </div>
+
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <span className="rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-[var(--navy)] uppercase">
+                {meta.emoji} {meta.label}
+              </span>
               <span
                 className={cn(
-                  'size-1.5 rounded-full transition-[background-color] duration-200',
-                  meta.dot,
-                  thermoPulse && 'thermo-pulse',
+                  'rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide uppercase',
+                  humanMode ? 'text-[var(--crimson)]' : 'text-[var(--navy)]',
                 )}
-              />
-              {meta.label}
-            </span>
-            <LeadTimeline states={timelineStates} />
-            {conversation.ai_paused ? (
-              <span className="hidden shrink-0 items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 sm:inline-flex">
-                <PauseCircle className="size-3" />
-                Asesor
+              >
+                {humanMode ? 'Operador' : 'IA'}
               </span>
-            ) : (
-              <span className="hidden shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 sm:inline-flex">
-                <PlayCircle className="size-3" />
-                IA
+              <span
+                className={cn(
+                  'rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide uppercase',
+                  humanMode ? 'text-[var(--crimson)]' : 'text-[var(--navy)]',
+                )}
+              >
+                Telegram
               </span>
+              {conversation.injection_attempts > 0 && (
+                <span className="inline-flex items-center gap-1 rounded bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-[var(--crimson)] uppercase">
+                  <ShieldAlert className="size-3" />
+                  {conversation.injection_attempts}
+                </span>
+              )}
+            </div>
+
+            {chips.length > 0 && (
+              <div className="mt-2">
+                <ProfileChipsRow chips={chips} />
+              </div>
             )}
-            {conversation.injection_attempts > 0 && (
-              <Badge variant="destructive" className="hidden h-5 shrink-0 gap-0.5 px-1.5 text-[10px] sm:inline-flex">
-                <ShieldAlert className="size-3" />
-                {conversation.injection_attempts}
-              </Badge>
-            )}
+
+            <button
+              type="button"
+              onClick={() => summaryText && setSummaryOpen((o) => !o)}
+              className="mt-3 max-w-[80ch] text-left text-sm text-white/90 focus-visible:outline-none"
+              aria-expanded={summaryOpen}
+            >
+              <strong className="font-semibold text-white">Resumen:</strong>{' '}
+              {oneLineSummary}
+              {summaryText ? (
+                <ChevronDown
+                  className={cn(
+                    'ml-1 inline size-3.5 transition-ui',
+                    summaryOpen && 'rotate-180',
+                  )}
+                />
+              ) : null}
+            </button>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5">
-            {summaryText ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                className="h-8 gap-1 px-2 text-xs"
-                onClick={() => setSummaryOpen((o) => !o)}
-                aria-expanded={summaryOpen}
-                aria-label={summaryOpen ? 'Cerrar resumen' : 'Abrir resumen'}
-              >
-                Resumen
-                <ChevronDown
-                  className={cn('size-3.5 transition-ui', summaryOpen && 'rotate-180')}
-                />
-              </Button>
-            ) : null}
-            {conversation.ai_paused ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="inline-flex cursor-not-allowed">
-                    <Button
-                      type="button"
-                      size="sm"
-                      className="h-8 bg-[var(--uta-primary)] px-2.5 text-xs opacity-40 grayscale hover:bg-[var(--uta-primary)]"
-                      disabled
-                      aria-disabled
-                    >
-                      Tomar control
-                    </Button>
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Ya estás atendiendo esta conversación
-                </TooltipContent>
-              </Tooltip>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {humanMode ? (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex cursor-not-allowed">
+                      <button
+                        type="button"
+                        disabled
+                        className="cursor-not-allowed rounded-md bg-white/70 px-4 py-2 text-sm font-semibold text-[var(--red)] opacity-60"
+                      >
+                        Tomar control
+                      </button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    Ya estás atendiendo esta conversación
+                  </TooltipContent>
+                </Tooltip>
+                <button
+                  type="button"
+                  onClick={() => void handleRelease()}
+                  disabled={releasing}
+                  className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-[var(--crimson)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
+                >
+                  {releasing ? 'Devolviendo…' : 'Devolver a la IA'}
+                </button>
+              </>
             ) : (
-              <Button
+              <button
                 type="button"
-                size="sm"
-                className="h-8 bg-[var(--uta-primary)] px-2.5 text-xs hover:bg-[var(--uta-primary-mid)]"
                 onClick={() => void handleTakeover()}
                 disabled={takingOver}
+                className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-[var(--red)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
               >
                 {takingOver ? 'Tomando…' : 'Tomar control'}
-              </Button>
+              </button>
             )}
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className={cn(
-                'h-8 px-2.5 text-xs',
-                !conversation.ai_paused &&
-                  'cursor-not-allowed opacity-40 grayscale hover:bg-background hover:text-foreground',
-              )}
-              onClick={() => void handleRelease()}
-              disabled={releasing || !conversation.ai_paused}
-            >
-              {releasing ? 'Devolviendo…' : 'Devolver a la IA'}
-            </Button>
           </div>
         </div>
-
-        {chips.length > 0 && (
-          <div className="flex h-7 items-center border-t border-[var(--uta-hairline)]/60 px-3 sm:px-4">
-            <ProfileChipsRow chips={chips} className="w-full" />
-          </div>
-        )}
 
         {summaryOpen && summaryText && (
           <div
             ref={summaryPanelRef}
-            className="absolute inset-x-0 top-full z-30 max-h-[40%] overflow-y-auto border-b border-amber-200/80 bg-amber-50 shadow-[var(--uta-shadow-lift)] banner-enter"
+            className="mt-3 max-h-48 overflow-y-auto rounded-md bg-black/20 p-3 banner-enter"
             role="dialog"
             aria-label="Resumen para el asesor"
           >
-            <div className="space-y-2 px-4 py-3">
-              <ProfileChipsRow
-                chips={chips}
-                className="[&_span]:border-amber-200/80 [&_span]:bg-white/70"
-              />
-              <div className="space-y-0.5 text-[13px] text-amber-950/90">
-                {renderSummaryText(summaryText)}
-              </div>
+            <div className="space-y-0.5 text-sm text-white/90">
+              {renderSummaryText(summaryText)}
             </div>
           </div>
         )}
@@ -635,49 +590,49 @@ export function ChatView({
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="chat-pattern h-full min-h-0 overflow-y-auto"
+          className="h-full min-h-0 overflow-y-auto px-5 py-5 sm:px-6"
         >
-          <div className="flex flex-col gap-2 px-4 py-4 sm:px-6">
-            {messages.length === 0 ? (
-              <p className="py-10 text-center text-sm text-[var(--uta-text-muted)]">
-                Aún no hay mensajes en esta conversación.
-              </p>
-            ) : (
-              items.map((item) => {
-                if (item.type === 'day') {
-                  return (
-                    <div key={item.key} className="my-2 flex items-center justify-center">
-                      <span className="rounded-full border border-[var(--uta-border)] bg-white/90 px-3 py-0.5 text-[11px] font-medium text-[var(--uta-text-muted)] shadow-sm">
-                        {item.label}
-                      </span>
-                    </div>
-                  )
-                }
+          {messages.length === 0 ? (
+            <p className="py-10 text-center text-sm text-[var(--muted)]">
+              Aún no hay mensajes en esta conversación.
+            </p>
+          ) : (
+            items.map((item) => {
+              if (item.type === 'day') {
                 return (
-                  <MessageBubble
-                    key={item.key}
-                    message={item.message}
-                    showLabel={item.showLabel}
-                    animate={animateFrom !== null && item.index >= animateFrom}
-                  />
+                  <div key={item.key} className="my-2 flex items-center justify-center">
+                    <span className="text-[11px] font-medium text-[var(--muted)]">
+                      — {item.label} —
+                    </span>
+                  </div>
                 )
-              })
-            )}
-            <div ref={bottomRef} />
-          </div>
+              }
+              if (item.type === 'system') {
+                return <SystemSeparator key={item.key} label={item.label} />
+              }
+              return (
+                <MessageBubble
+                  key={item.key}
+                  message={item.message}
+                  animate={animateFrom !== null && item.index >= animateFrom}
+                />
+              )
+            })
+          )}
+          <div ref={bottomRef} />
         </div>
 
         {!stickToBottom && (
           <button
             type="button"
             onClick={scrollToBottom}
-            className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[var(--uta-hairline)] bg-white/95 px-3 py-1.5 text-[12px] font-medium text-[var(--uta-primary)] shadow-[var(--uta-shadow-lift)] backdrop-blur-sm transition-ui hover:bg-[var(--uta-primary-soft)] active:scale-[0.97]"
+            className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--navy)] shadow-sm transition-ui hover:bg-[var(--mist)]"
             aria-label="Ir al final del chat"
           >
             <ArrowDown className="size-3.5" />
             Ir al final
             {newBelow > 0 && (
-              <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--uta-primary)] px-1.5 text-[10px] font-semibold text-white tabular-nums">
+              <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--red)] px-1.5 text-[10px] font-semibold text-white tabular-nums">
                 {newBelow > 99 ? '99+' : newBelow}
               </span>
             )}
@@ -687,14 +642,14 @@ export function ChatView({
 
       <form
         onSubmit={(e) => void handleSubmit(e)}
-        className="shrink-0 border-t border-[var(--uta-hairline)] bg-white/95 px-3 py-2 backdrop-blur-md"
+        className="shrink-0 border-t border-[var(--line)] bg-white"
       >
-        <div className="mb-1.5 flex items-center gap-2">
+        <div className="flex items-center gap-2 px-5 pt-3 sm:px-6">
           <Button
             type="button"
             size="sm"
             variant="ghost"
-            className="h-7 shrink-0 gap-1 px-2 text-[11px]"
+            className="h-7 shrink-0 gap-1 px-2 text-[11px] text-[var(--ink)]"
             onClick={() => setTemplatesOpen((o) => !o)}
             aria-expanded={templatesOpen}
             aria-label={templatesOpen ? 'Ocultar plantillas' : 'Mostrar plantillas'}
@@ -709,7 +664,7 @@ export function ChatView({
                   key={t}
                   type="button"
                   onClick={() => setDraft(t)}
-                  className="h-7 shrink-0 rounded-full border border-[var(--uta-hairline)] bg-[var(--uta-bg)] px-2.5 text-[11px] text-[var(--uta-text)] transition-ui hover:border-[var(--uta-primary)] hover:bg-[var(--uta-primary-soft)] active:scale-[0.97]"
+                  className="h-7 shrink-0 rounded-full border border-[var(--line)] bg-[var(--mist)] px-2.5 text-[11px] text-[var(--ink)] transition-ui hover:border-[var(--red)]"
                 >
                   {t.length > 36 ? `${t.slice(0, 35)}…` : t}
                 </button>
@@ -718,42 +673,29 @@ export function ChatView({
           )}
         </div>
 
-        <div className="flex items-end gap-2">
+        <div className="flex gap-2.5 px-5 pt-2 sm:px-6">
           <Textarea
             ref={textareaRef}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Escribe como el bot…"
+            placeholder="Escribe como el bot… (Enter envía, Shift+Enter nueva línea)"
             rows={1}
-            className="min-h-[44px] max-h-[132px] resize-none overflow-y-auto rounded-2xl py-2.5 text-[15px] leading-[1.5] shadow-[var(--uta-shadow-soft)]"
+            className="min-h-[46px] max-h-[160px] flex-1 resize-y rounded-md border-[var(--line)] py-2.5 text-[15px] shadow-none focus-visible:ring-[var(--red)]"
             disabled={sending}
           />
           <Button
             type="submit"
-            size="icon"
-            className="mb-0.5 h-11 w-11 shrink-0 rounded-xl bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
+            className="mb-0.5 h-11 shrink-0 self-end rounded-md bg-[var(--red)] px-5 font-semibold text-white hover:bg-[var(--crimson)]"
             disabled={sending || !draft.trim()}
-            aria-label="Enviar mensaje"
           >
-            <Send />
+            Enviar
           </Button>
         </div>
 
-        <div className="mt-1 flex items-center justify-between gap-2 text-[11px] leading-none text-[var(--uta-text-muted)]">
-          <p className="min-w-0 truncate">
-            <kbd className="rounded border border-[var(--uta-border)] bg-[var(--uta-bg)] px-1">Enter</kbd>
-            {' '}envía ·{' '}
-            <kbd className="rounded border border-[var(--uta-border)] bg-[var(--uta-bg)] px-1">
-              Shift+Enter
-            </kbd>
-            {' '}salto
-            {!conversation.ai_paused && (
-              <span className="ml-2 text-amber-700">· Al enviar, tomarás el control</span>
-            )}
-          </p>
-          <span className="shrink-0 tabular-nums">{draft.length}</span>
-        </div>
+        <p className="px-5 pt-1.5 pb-3 text-xs text-[var(--muted)] sm:px-6">
+          Al enviar, la IA se pausa y tu mensaje llega por el mismo bot.
+        </p>
       </form>
     </div>
   )

@@ -24,3 +24,17 @@ export function truncate(text: string, max = 72): string {
   if (normalized.length <= max) return normalized
   return `${normalized.slice(0, max - 1)}…`
 }
+
+/** Hora corta en español (p. ej. "12:22 p. m."). */
+export function formatClockTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('es-EC', {
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+export function formatLatencyShort(ms: number | null | undefined): string | null {
+  if (ms == null || Number.isNaN(ms)) return null
+  if (ms < 1000) return `${Math.round(ms)} ms`
+  return `${(ms / 1000).toFixed(1)} s`
+}

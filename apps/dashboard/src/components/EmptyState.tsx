@@ -1,4 +1,3 @@
-import { MessagesSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface EmptyStateProps {
@@ -9,20 +8,17 @@ export function EmptyState({ className }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        'flex h-full flex-col items-center justify-center gap-4 px-6 text-center',
+        'flex h-full flex-col items-center justify-center gap-3 border border-[var(--line)] bg-white px-8 text-center',
         className,
       )}
     >
-      <div className="rounded-3xl bg-[var(--uta-primary-soft)] p-5 text-[var(--uta-primary)] shadow-[var(--uta-shadow-soft)]">
-        <MessagesSquare className="size-10" strokeWidth={1.5} />
-      </div>
-      <div className="max-w-sm space-y-1.5">
-        <h2 className="text-base font-semibold tracking-tight text-[var(--uta-text)]">
-          Selecciona una conversación
+      <div className="max-w-[44ch]">
+        <h2 className="mb-2 text-[22px] font-semibold text-[var(--ink)]">
+          Elige una conversación
         </h2>
-        <p className="text-sm text-[var(--uta-text-muted)]">
-          Elige un chat de la lista para ver el historial, el termómetro del lead y tomar el
-          control cuando haga falta.
+        <p className="text-sm text-[var(--text)]">
+          Los mensajes llegan en tiempo real. Toma el control para pausar la IA y
+          responder desde el mismo bot.
         </p>
       </div>
     </div>

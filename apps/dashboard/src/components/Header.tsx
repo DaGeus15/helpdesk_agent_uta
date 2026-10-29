@@ -1,22 +1,66 @@
-import { useState, type ReactNode } from 'react'
-import { BarChart3, BookOpen, LogOut, Menu, MessageSquare, X } from 'lucide-react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { GraduationCap, LogOut, Menu, Send, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
+import { useCourses } from '@/hooks/useCourses'
+import { api, type CatalogSyncStatus } from '@/lib/api'
+import { TELEGRAM_BOT_URL } from '@/lib/courses'
 import { cn } from '@/lib/utils'
 
 export type DashboardView = 'conversations' | 'metrics' | 'courses'
+
+const TELEGRAM_HANDLE = '@HelpdeskUTA15Bot'
 
 interface HeaderProps {
   isLive: boolean
   view: DashboardView
   onViewChange: (view: DashboardView) => void
-  /** Tira compacta de KPIs (solo vista Conversaciones). */
+  attentionCount?: number
+  /** @deprecated KPI strip removido; se mantiene por compatibilidad de props. */
   kpiStrip?: ReactNode
 }
 
-export function Header({ isLive, view, onViewChange, kpiStrip }: HeaderProps) {
+function formatSyncClock(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleTimeString('es-EC', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+export function Header({
+  isLive,
+  view,
+  onViewChange,
+  attentionCount = 0,
+}: HeaderProps) {
   const { username, logout } = useAuth()
+  const { courses } = useCourses()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [syncStatus, setSyncStatus] = useState<CatalogSyncStatus | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void api
+      .getCatalogStatus()
+      .then((status) => {
+        if (!cancelled) setSyncStatus(status)
+      })
+      .catch(() => {
+        /* panel usable sin API */
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [view])
+
+  const openCourses = useMemo(
+    () => courses.filter((c) => c.status === 'inscripciones_abiertas').length,
+    [courses],
+  )
+  const published = syncStatus?.lastRun?.total ?? courses.length
+  const syncedAt =
+    syncStatus?.lastRun?.finished_at ?? syncStatus?.lastRun?.started_at ?? null
 
   function selectView(next: DashboardView) {
     onViewChange(next)
@@ -24,173 +68,231 @@ export function Header({ isLive, view, onViewChange, kpiStrip }: HeaderProps) {
   }
 
   return (
-    <header className="relative z-30 w-full shrink-0 border-b border-white/10 bg-[rgba(10,42,94,0.88)] text-white shadow-[0_8px_24px_rgba(10,42,94,0.18)] backdrop-blur-xl">
-      <div className="relative flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-[10px] font-bold tracking-wide shadow-inner">
-            CA
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold tracking-tight">
-              CTT-FISEI · Talleres Tecnológicos UTA
-            </p>
-          </div>
-          <span
-            className={cn(
-              'ml-1 hidden items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium sm:inline-flex',
-              isLive
-                ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-100'
-                : 'border-white/20 bg-white/10 text-white/70',
-            )}
-            title={isLive ? 'Canal Realtime suscrito' : 'Sin suscripción en vivo'}
+    <header className="relative z-30 w-full shrink-0 bg-white">
+      {/* Placa superior blanca con logo CTT */}
+      <div className="border-b border-[#e6e4ec] bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+          <a
+            href="https://ctt-talleresfisei.uta.edu.ec/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 focus-visible:outline-none"
           >
-            <span
-              className={cn(
-                'size-1.5 rounded-full',
-                isLive ? 'live-dot bg-emerald-400' : 'bg-white/40',
-              )}
+            <img
+              src="/logo-ctt.png"
+              alt="FISEI · CTT Talleres Tecnológicos"
+              className="block h-12 w-auto"
+              width={220}
+              height={91}
             />
-            En vivo
-          </span>
-        </div>
+          </a>
 
-        <nav
-          className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-0.5 rounded-xl bg-white/10 p-1 md:flex"
-          aria-label="Vistas del panel"
-        >
-          <ViewTab
-            active={view === 'conversations'}
-            onClick={() => selectView('conversations')}
-            icon={<MessageSquare className="size-3.5" />}
-            label="Conversaciones"
-          />
-          <ViewTab
-            active={view === 'metrics'}
-            onClick={() => selectView('metrics')}
-            icon={<BarChart3 className="size-3.5" />}
-            label="Métricas"
-          />
-          <ViewTab
-            active={view === 'courses'}
-            onClick={() => selectView('courses')}
-            icon={<BookOpen className="size-3.5" />}
-            label="Cursos"
-          />
-        </nav>
+          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-x-6 gap-y-3 sm:gap-x-8">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2" aria-label="Estado de los canales">
+              <ChannelStatus
+                icon={<Send className="size-5" />}
+                color="var(--telegram)"
+                title="Telegram"
+                subtitle={
+                  <a
+                    href={TELEGRAM_BOT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[var(--red)] underline-offset-2 hover:underline"
+                  >
+                    {TELEGRAM_HANDLE}
+                  </a>
+                }
+                ok
+              />
+              <ChannelStatus
+                icon={<GraduationCap className="size-5" />}
+                color="var(--navy)"
+                title={
+                  openCourses === 1
+                    ? '1 curso con inscripción vigente'
+                    : `${openCourses} cursos con inscripción vigente`
+                }
+                subtitle={
+                  <span>
+                    de {published} publicados · sincronizado {formatSyncClock(syncedAt)}
+                  </span>
+                }
+                ok={openCourses > 0}
+              />
+            </div>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <span
-            className={cn(
-              'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium sm:hidden',
-              isLive
-                ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-100'
-                : 'border-white/20 bg-white/10 text-white/70',
-            )}
-          >
-            <span
-              className={cn(
-                'size-1.5 rounded-full',
-                isLive ? 'live-dot bg-emerald-400' : 'bg-white/40',
-              )}
-            />
-            En vivo
-          </span>
-          {username && (
-            <span className="hidden max-w-[100px] truncate text-xs text-white/90 sm:inline sm:max-w-[160px]">
-              {username}
-            </span>
-          )}
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={logout}
-            aria-label="Cerrar sesión"
-            className="hidden h-8 rounded-xl border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white sm:inline-flex"
-          >
-            <LogOut className="size-3.5" />
-            <span className="hidden sm:inline">Cerrar sesión</span>
-          </Button>
-          <Button
-            type="button"
-            size="icon"
-            variant="outline"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            aria-expanded={menuOpen}
-            className="h-8 w-8 rounded-xl border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white md:hidden"
-          >
-            {menuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-          </Button>
+            <div className="hidden items-center gap-3 sm:flex">
+              {username ? (
+                <span className="max-w-[140px] truncate text-sm font-medium text-[var(--ink)]">
+                  {username}
+                </span>
+              ) : null}
+              <button
+                type="button"
+                onClick={logout}
+                className="text-[13px] font-semibold text-[var(--red)] underline underline-offset-[3px] focus-visible:outline-none"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={menuOpen}
+              className="h-9 w-9 rounded-md border-[var(--line)] text-[var(--ink)] md:hidden"
+            >
+              {menuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+            </Button>
+          </div>
         </div>
       </div>
 
+      {/* Barra de pestañas */}
+      <nav className="border-b border-[var(--line)] bg-white" aria-label="Secciones">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-1.5 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1" role="tablist">
+            <TabButton
+              active={view === 'conversations'}
+              onClick={() => selectView('conversations')}
+              badge={attentionCount > 0 ? attentionCount : undefined}
+            >
+              Bandeja en vivo
+            </TabButton>
+            <TabButton
+              active={view === 'metrics'}
+              onClick={() => selectView('metrics')}
+            >
+              Métricas
+            </TabButton>
+            <TabButton
+              active={view === 'courses'}
+              onClick={() => selectView('courses')}
+            >
+              Cursos
+            </TabButton>
+            <span
+              className={cn(
+                'hidden items-center text-[13px] sm:inline-flex',
+                isLive ? 'live-pulse text-[var(--good)]' : 'text-[var(--muted)]',
+              )}
+              title={isLive ? 'Canal Realtime suscrito' : 'Sin suscripción en vivo'}
+            >
+              {isLive ? 'En vivo' : 'Sin conexión'}
+            </span>
+          </div>
+        </div>
+      </nav>
+
       {menuOpen && (
-        <div className="border-t border-white/10 px-4 py-3 md:hidden">
+        <div className="border-b border-[var(--line)] px-4 py-3 md:hidden">
           <div className="flex flex-col gap-1">
             <MobileNavItem
               active={view === 'conversations'}
               onClick={() => selectView('conversations')}
-              icon={<MessageSquare className="size-4" />}
-              label="Conversaciones"
+              label="Bandeja en vivo"
+              badge={attentionCount > 0 ? attentionCount : undefined}
             />
             <MobileNavItem
               active={view === 'metrics'}
               onClick={() => selectView('metrics')}
-              icon={<BarChart3 className="size-4" />}
               label="Métricas"
             />
             <MobileNavItem
               active={view === 'courses'}
               onClick={() => selectView('courses')}
-              icon={<BookOpen className="size-4" />}
               label="Cursos"
             />
             <button
               type="button"
               onClick={logout}
-              className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm text-white/85 transition-ui hover:bg-white/10"
+              className="mt-1 flex items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm text-[var(--red)] transition-ui hover:bg-[var(--mist)]"
             >
               <LogOut className="size-4" />
               Cerrar sesión
               {username ? (
-                <span className="ml-auto truncate text-xs text-white/60">{username}</span>
+                <span className="ml-auto truncate text-xs text-[var(--muted)]">{username}</span>
               ) : null}
             </button>
           </div>
         </div>
       )}
-
-      {kpiStrip}
     </header>
   )
 }
 
-function ViewTab({
+function ChannelStatus({
+  icon,
+  color,
+  title,
+  subtitle,
+  ok,
+}: {
+  icon: ReactNode
+  color: string
+  title: ReactNode
+  subtitle: ReactNode
+  ok?: boolean
+}) {
+  return (
+    <div className="grid grid-cols-[auto_1fr] items-center gap-x-3">
+      <span
+        className="row-span-2 grid size-10 place-items-center rounded-full"
+        style={{
+          background: `color-mix(in srgb, ${color} 12%, #ffffff)`,
+          color,
+        }}
+      >
+        {icon}
+      </span>
+      <strong className="text-[15px] font-semibold text-[var(--ink)]">{title}</strong>
+      <small className="flex items-center gap-2 text-[13px] text-[var(--red)]">
+        <span
+          className={cn(
+            'inline-block size-2 shrink-0 rounded-full',
+            ok ? 'bg-[var(--good)]' : 'bg-[var(--muted)]',
+          )}
+        />
+        {subtitle}
+      </small>
+    </div>
+  )
+}
+
+function TabButton({
   active,
   onClick,
-  icon,
-  label,
+  children,
+  badge,
 }: {
   active: boolean
   onClick: () => void
-  icon: ReactNode
-  label: string
+  children: ReactNode
+  badge?: number
 }) {
   return (
     <button
       type="button"
+      role="tab"
+      aria-selected={active}
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-ui focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
+        'border-b-[3px] border-transparent px-0.5 py-2.5 text-base transition-ui focus-visible:outline-none',
         active
-          ? 'bg-white text-[var(--uta-primary)] shadow-sm'
-          : 'text-white/80 hover:bg-white/10 hover:text-white',
+          ? 'border-[var(--red)] font-semibold text-[var(--ink)]'
+          : 'font-medium text-[var(--ink)] hover:text-[var(--navy)]',
       )}
-      aria-current={active ? 'page' : undefined}
     >
-      {icon}
-      {label}
+      {children}
+      {badge != null && (
+        <span className="ml-1 inline-flex min-w-[1.35rem] items-center justify-center rounded-full bg-[var(--red)] px-1.5 py-px text-xs font-semibold text-white tabular-nums">
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
     </button>
   )
 }
@@ -198,28 +300,32 @@ function ViewTab({
 function MobileNavItem({
   active,
   onClick,
-  icon,
   label,
+  badge,
 }: {
   active: boolean
   onClick: () => void
-  icon: ReactNode
   label: string
+  badge?: number
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        'flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-ui',
+        'flex items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm transition-ui',
         active
-          ? 'bg-white/15 font-medium text-white'
-          : 'text-white/80 hover:bg-white/10',
+          ? 'bg-[var(--mist)] font-semibold text-[var(--ink)]'
+          : 'text-[var(--text)] hover:bg-[var(--mist)]',
       )}
       aria-current={active ? 'page' : undefined}
     >
-      {icon}
       {label}
+      {badge != null && (
+        <span className="ml-auto inline-flex min-w-[1.35rem] items-center justify-center rounded-full bg-[var(--red)] px-1.5 text-xs font-semibold text-white">
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
     </button>
   )
 }

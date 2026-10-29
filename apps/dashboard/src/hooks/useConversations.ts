@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import {
   MOCK_CONVERSATIONS,
   getLastMessagePreview,
+  getLastMessageRole,
 } from '@/mocks'
 import { USE_MOCKS, hasSupabaseEnv } from '@/lib/env'
 import { supabase } from '@/lib/supabase'
@@ -10,6 +11,7 @@ import type { Conversation, LeadState, Message, PausedReason } from '@/types'
 
 export interface ConversationWithPreview extends Conversation {
   last_message_preview: string
+  last_message_role?: Message['role'] | null
 }
 
 const ADVISOR_REASONS: PausedReason[] = ['frustration', 'user_request']
@@ -24,12 +26,14 @@ function upsertConversation(
   list: ConversationWithPreview[],
   next: Conversation,
   preview?: string,
+  role?: Message['role'] | null,
 ): ConversationWithPreview[] {
   const existing = list.find((c) => c.id === next.id)
   const withPreview: ConversationWithPreview = {
     ...next,
     last_message_preview:
       preview ?? existing?.last_message_preview ?? next.summary ?? 'Sin mensajes',
+    last_message_role: role ?? existing?.last_message_role ?? null,
   }
   const without = list.filter((c) => c.id !== next.id)
   return sortByLastMessage([...without, withPreview])
@@ -63,6 +67,7 @@ function buildMockConversations(): ConversationWithPreview[] {
     MOCK_CONVERSATIONS.map((c) => ({
       ...c,
       last_message_preview: getLastMessagePreview(c.id),
+      last_message_role: getLastMessageRole(c.id),
     })),
   )
 }
@@ -128,11 +133,11 @@ export function useConversations() {
       const convs = (convData ?? []) as Conversation[]
       const ids = convs.map((c) => c.id)
 
-      const previewByConv = new Map<string, string>()
+      const previewByConv = new Map<string, { content: string; role: Message['role'] }>()
       if (ids.length > 0) {
         const { data: msgData } = await client
           .from('messages')
-          .select('conversation_id, content, created_at')
+          .select('conversation_id, content, created_at, role')
           .in('conversation_id', ids)
           .order('created_at', { ascending: false })
           .limit(Math.max(ids.length * 3, 50))
@@ -140,7 +145,10 @@ export function useConversations() {
         if (!cancelled && msgData) {
           for (const row of msgData) {
             if (!previewByConv.has(row.conversation_id)) {
-              previewByConv.set(row.conversation_id, row.content)
+              previewByConv.set(row.conversation_id, {
+                content: row.content,
+                role: row.role as Message['role'],
+              })
             }
           }
         }
@@ -150,10 +158,14 @@ export function useConversations() {
 
       setConversations(
         sortByLastMessage(
-          convs.map((c) => ({
-            ...c,
-            last_message_preview: previewByConv.get(c.id) ?? (c.summary || 'Sin mensajes'),
-          })),
+          convs.map((c) => {
+            const preview = previewByConv.get(c.id)
+            return {
+              ...c,
+              last_message_preview: preview?.content ?? (c.summary || 'Sin mensajes'),
+              last_message_role: preview?.role ?? null,
+            }
+          }),
         ),
       )
       setLoading(false)
@@ -197,6 +209,7 @@ export function useConversations() {
                 message_count: existing.message_count + 1,
               },
               message.content,
+              message.role,
             )
           })
           if (message.conversation_id !== selectedIdRef.current) {
