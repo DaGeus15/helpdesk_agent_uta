@@ -1,23 +1,54 @@
-import { useState, type FormEvent } from 'react'
-import { Mic, PauseCircle, PlayCircle, Send, ShieldAlert } from 'lucide-react'
+import {
+  useEffect,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+  type RefObject,
+} from 'react'
+import {
+  ChevronDown,
+  ChevronUp,
+  Mic,
+  PauseCircle,
+  PlayCircle,
+  Send,
+  ShieldAlert,
+} from 'lucide-react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
+import { api, ApiError } from '@/lib/api'
 import { cn, formatRelativeTime } from '@/lib/utils'
 import { getLeadStateMeta } from '@/lib/lead-state'
 import type { ConversationWithPreview } from '@/hooks/useConversations'
-import type { Message } from '@/types'
+import type { LeadProfile, Message } from '@/types'
 
 interface ChatViewProps {
   conversation: ConversationWithPreview
   messages: Message[]
+  bottomRef: RefObject<HTMLDivElement | null>
 }
 
 function roleLabel(role: Message['role']): string | null {
   if (role === 'assistant') return 'IA'
   if (role === 'operator') return 'Asesor'
   return null
+}
+
+function profileChips(profile: LeadProfile): Array<{ label: string; value: string }> {
+  const entries: Array<[string, string | undefined]> = [
+    ['Nombre', profile.name],
+    ['Interés', profile.interest],
+    ['Nivel', profile.level],
+    ['Disponibilidad', profile.availability],
+    ['Presupuesto', profile.budget],
+    ['Contacto', profile.contact],
+  ]
+  return entries
+    .filter(([, v]) => Boolean(v))
+    .map(([label, value]) => ({ label, value: value! }))
 }
 
 function MessageBubble({ message }: { message: Message }) {
@@ -72,15 +103,80 @@ function MessageBubble({ message }: { message: Message }) {
   )
 }
 
-export function ChatView({ conversation, messages }: ChatViewProps) {
+function errorMessage(err: unknown): string {
+  if (err instanceof ApiError) return err.message
+  if (err instanceof Error) return err.message
+  return 'Error desconocido'
+}
+
+export function ChatView({ conversation, messages, bottomRef }: ChatViewProps) {
   const [draft, setDraft] = useState('')
+  const [sending, setSending] = useState(false)
+  const [takingOver, setTakingOver] = useState(false)
+  const [releasing, setReleasing] = useState(false)
+  const [advisorSummary, setAdvisorSummary] = useState<string | null>(null)
+  const [summaryOpen, setSummaryOpen] = useState(true)
+
   const meta = getLeadStateMeta(conversation.lead_state)
   const Icon = meta.Icon
   const name = conversation.display_name ?? conversation.telegram_username ?? 'Sin nombre'
+  const chips = profileChips(conversation.profile)
+  const summaryText = advisorSummary ?? conversation.summary
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    // Wired in a later task (operator sendMessage)
+  useEffect(() => {
+    setDraft('')
+    setAdvisorSummary(null)
+    setSummaryOpen(true)
+  }, [conversation.id])
+
+  async function handleTakeover() {
+    setTakingOver(true)
+    try {
+      const res = await api.takeover(conversation.id)
+      setAdvisorSummary(res.summary)
+      setSummaryOpen(true)
+      toast.success('Control tomado', { description: 'La IA quedó en pausa' })
+    } catch (err) {
+      toast.error('No se pudo tomar control', { description: errorMessage(err) })
+    } finally {
+      setTakingOver(false)
+    }
+  }
+
+  async function handleRelease() {
+    setReleasing(true)
+    try {
+      await api.release(conversation.id)
+      toast.success('Conversación devuelta a la IA')
+    } catch (err) {
+      toast.error('No se pudo devolver a la IA', { description: errorMessage(err) })
+    } finally {
+      setReleasing(false)
+    }
+  }
+
+  async function handleSubmit(e?: FormEvent) {
+    e?.preventDefault()
+    const text = draft.trim()
+    if (!text || sending) return
+
+    setSending(true)
+    try {
+      await api.sendMessage(conversation.id, text)
+      setDraft('')
+      // El mensaje llega por Realtime; no lo duplicamos en estado local.
+    } catch (err) {
+      toast.error('No se pudo enviar el mensaje', { description: errorMessage(err) })
+    } finally {
+      setSending(false)
+    }
+  }
+
+  function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      void handleSubmit()
+    }
   }
 
   return (
@@ -91,23 +187,33 @@ export function ChatView({ conversation, messages }: ChatViewProps) {
             <h2 className="truncate text-base font-semibold">{name}</h2>
             <span
               className={cn(
-                'inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium',
+                'inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium transition-colors duration-300',
                 meta.bg,
               )}
             >
-              <span className={cn('size-1.5 rounded-full', meta.dot)} />
-              <Icon className={cn('size-3', meta.color)} />
+              <span className={cn('size-1.5 rounded-full transition-colors duration-300', meta.dot)} />
+              <Icon className={cn('size-3 transition-colors duration-300', meta.color)} />
               {meta.label}
             </span>
             {conversation.ai_paused ? (
               <Badge variant="warning" className="gap-1">
                 <PauseCircle className="size-3" />
-                IA pausada
+                IA en pausa — atendiendo un asesor
               </Badge>
             ) : (
-              <Badge variant="secondary" className="gap-1">
+              <Badge
+                variant="secondary"
+                className="gap-1 border-emerald-200 bg-emerald-50 text-emerald-700"
+              >
                 <PlayCircle className="size-3" />
                 IA activa
+              </Badge>
+            )}
+            {conversation.injection_attempts > 0 && (
+              <Badge variant="destructive" className="gap-1">
+                <ShieldAlert className="size-3" />
+                {conversation.injection_attempts} injection
+                {conversation.injection_attempts > 1 ? 's' : ''}
               </Badge>
             )}
           </div>
@@ -117,39 +223,90 @@ export function ChatView({ conversation, messages }: ChatViewProps) {
         </div>
 
         <div className="flex shrink-0 gap-2">
-          <Button type="button" size="sm" disabled title="Próximamente">
-            Tomar control
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => void handleTakeover()}
+            disabled={takingOver || conversation.ai_paused}
+          >
+            {takingOver ? 'Tomando…' : 'Tomar control'}
           </Button>
-          <Button type="button" size="sm" variant="outline" disabled title="Próximamente">
-            Devolver a la IA
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => void handleRelease()}
+            disabled={releasing || !conversation.ai_paused}
+          >
+            {releasing ? 'Devolviendo…' : 'Devolver a la IA'}
           </Button>
         </div>
       </div>
+
+      {summaryText && (
+        <div className="border-b bg-amber-50/60">
+          <button
+            type="button"
+            className="flex w-full items-center justify-between gap-2 px-4 py-2 text-left text-sm font-medium text-amber-900"
+            onClick={() => setSummaryOpen((o) => !o)}
+          >
+            <span>Resumen para el asesor</span>
+            {summaryOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+          </button>
+          {summaryOpen && (
+            <div className="space-y-2 px-4 pb-3">
+              {chips.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {chips.map((chip) => (
+                    <span
+                      key={chip.label}
+                      className="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-white px-2 py-0.5 text-[11px] text-amber-950"
+                    >
+                      <span className="font-medium text-amber-700">{chip.label}:</span>
+                      {chip.value}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs leading-relaxed text-amber-950/90 whitespace-pre-wrap">
+                {summaryText}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <ScrollArea className="flex-1">
         <div className="flex flex-col gap-3 bg-[radial-gradient(circle_at_top,_#eef2ff_0%,_transparent_55%)] px-4 py-4">
           {messages.map((m) => (
             <MessageBubble key={m.id} message={m} />
           ))}
+          <div ref={bottomRef} />
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSubmit} className="border-t bg-card p-3">
+      <form onSubmit={(e) => void handleSubmit(e)} className="border-t bg-card p-3">
         <div className="flex items-end gap-2">
           <Textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Escribe como el bot…"
             rows={2}
             className="min-h-[44px] resize-none"
-            disabled
+            disabled={sending}
           />
-          <Button type="submit" size="icon" disabled aria-label="Enviar">
+          <Button
+            type="submit"
+            size="icon"
+            disabled={sending || !draft.trim()}
+            aria-label="Enviar"
+          >
             <Send />
           </Button>
         </div>
         <p className="mt-1.5 text-[11px] text-muted-foreground">
-          El envío como operador se habilitará al conectar la API.
+          Enter envía · Shift+Enter salto de línea. El mensaje aparece por Realtime.
         </p>
       </form>
     </div>

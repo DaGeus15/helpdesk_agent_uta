@@ -4,7 +4,14 @@ export type MessageRole = 'user' | 'assistant' | 'operator'
 
 export type MessageSource = 'text' | 'voice'
 
-export type PausedReason = 'frustration' | 'user_request' | 'operator' | null
+/** Reasons the AI can be paused — keep the union broad for API/DB values. */
+export type PausedReason =
+  | 'frustration'
+  | 'user_request'
+  | 'operator_takeover'
+  | 'operator_message'
+  | (string & {})
+  | null
 
 export type HandoverEventType = 'paused' | 'resumed'
 
