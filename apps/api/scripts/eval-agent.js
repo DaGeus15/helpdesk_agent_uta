@@ -1,7 +1,7 @@
 /*
  * Batería automática del agente según la rúbrica (docs/PRUEBAS.md).
  * Uso (desde apps/api, con .env y build hecho):
- *   TELEGRAM_MODE=webhook PUBLIC_API_URL=<url-api> node scripts/eval-agent.js
+ *   TELEGRAM_MODE=webhook PUBLIC_API_URL=<url-api> [ONLY=9,10] node scripts/eval-agent.js
  * Cada caso usa un chat de prueba propio (ids 9900xx) y al final se borran de la base.
  */
 require('reflect-metadata');
@@ -42,7 +42,8 @@ const CASES = [
   const results = [];
   let chatId = 990000;
 
-  for (const c of CASES) {
+  const only = process.env.ONLY ? process.env.ONLY.split(',') : null;
+  for (const c of CASES.filter((x) => !only || only.includes(String(x.id)))) {
     chatId += 1;
     let reply = '';
     let started = Date.now();
