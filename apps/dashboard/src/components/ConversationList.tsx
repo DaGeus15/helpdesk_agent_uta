@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { Search } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
@@ -27,7 +27,7 @@ const FILTERS: Array<{ id: 'all' | LeadState; label: string }> = [
 
 function SkeletonCard() {
   return (
-    <div className="animate-pulse rounded-lg border border-[var(--uta-border)] bg-white px-3 py-2.5">
+    <div className="animate-pulse rounded-2xl border border-[var(--uta-hairline)] bg-white px-3 py-2.5 shadow-[var(--uta-shadow-soft)]">
       <div className="flex items-start gap-2.5">
         <div className="size-9 shrink-0 rounded-full bg-slate-200" />
         <div className="min-w-0 flex-1 space-y-2">
@@ -56,12 +56,29 @@ export function ConversationList({
   const [stateFilter, setStateFilter] = useState<'all' | LeadState>('all')
   const [now, setNow] = useState(() => Date.now())
   const [flashIds, setFlashIds] = useState<Set<string>>(() => new Set())
+  const [focusIndex, setFocusIndex] = useState(0)
   const prevActivityRef = useRef<Map<string, string>>(new Map())
   const primedRef = useRef(false)
+  const searchRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 30_000)
     return () => window.clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    function onKey(e: globalThis.KeyboardEvent) {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return
+      const tag = (e.target as HTMLElement | null)?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) {
+        return
+      }
+      e.preventDefault()
+      searchRef.current?.focus()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [])
 
   useEffect(() => {
@@ -131,16 +148,51 @@ export function ConversationList({
     return counts
   }, [conversations])
 
+  const selectedFilterIndex = FILTERS.findIndex((f) => f.id === stateFilter)
+
+  useEffect(() => {
+    if (filtered.length === 0) {
+      setFocusIndex(0)
+      return
+    }
+    const idx = selectedId ? filtered.findIndex((c) => c.id === selectedId) : -1
+    setFocusIndex(idx >= 0 ? idx : 0)
+  }, [filtered, selectedId, stateFilter, query])
+
+  function handleListKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (filtered.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setFocusIndex((i) => {
+        const next = Math.min(i + 1, filtered.length - 1)
+        onSelect(filtered[next].id)
+        return next
+      })
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setFocusIndex((i) => {
+        const next = Math.max(i - 1, 0)
+        onSelect(filtered[next].id)
+        return next
+      })
+    } else if (e.key === 'Enter' && filtered[focusIndex]) {
+      e.preventDefault()
+      onSelect(filtered[focusIndex].id)
+    }
+  }
+
   return (
     <aside
       className={cn(
-        'flex h-full w-full flex-col border-r border-[var(--uta-border)] bg-white md:w-[360px] md:shrink-0',
+        'flex h-full w-full flex-col border-r border-[var(--uta-hairline)] bg-[#fbfcfe] md:w-[360px] md:shrink-0',
         className,
       )}
     >
-      <div className="panel-header space-y-2 border-b border-[var(--uta-border)] px-4 py-3">
+      <div className="panel-header space-y-3 border-b border-[var(--uta-hairline)] bg-white/80 px-4 py-3 backdrop-blur-md">
         <div>
-          <h2 className="text-[15px] font-semibold text-[var(--uta-text)]">Conversaciones</h2>
+          <h2 className="text-[15px] font-semibold tracking-tight text-[var(--uta-text)]">
+            Conversaciones
+          </h2>
           <p className="text-xs text-[var(--uta-text-muted)]">
             {filtered.length} visibles · {conversations.length} total
             {stateFilter !== 'all' ? ` · filtro: ${filterCounts[stateFilter]}` : ''}
@@ -148,37 +200,65 @@ export function ConversationList({
         </div>
 
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-[var(--uta-text-muted)]" />
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-[var(--uta-text-muted)]" />
           <Input
+            ref={searchRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por nombre o usuario…"
-            className="h-9 pl-8 text-[13px]"
+            aria-label="Buscar conversaciones"
+            className="h-10 rounded-xl border-transparent bg-[#eef1f6] pl-9 pr-10 text-[13px] shadow-none focus-visible:border-[rgba(30,79,163,0.25)] focus-visible:bg-white focus-visible:ring-[rgba(30,79,163,0.25)]"
           />
+          <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded-md border border-[var(--uta-hairline)] bg-white/80 px-1.5 py-0.5 text-[10px] font-medium text-[var(--uta-text-muted)]">
+            /
+          </kbd>
         </div>
 
-        <div className="flex flex-wrap gap-1">
+        {/* Segmented control estilo iOS */}
+        <div
+          role="tablist"
+          aria-label="Filtrar por estado"
+          className="relative grid grid-cols-5 gap-0.5 rounded-xl bg-[#e8ecf3] p-1"
+        >
+          <span
+            aria-hidden
+            className="absolute top-1 bottom-1 rounded-lg bg-white shadow-[0_1px_3px_rgba(15,23,42,0.12)] transition-ui"
+            style={{
+              width: `calc((100% - 0.25rem) / 5)`,
+              left: `calc(0.125rem + ${Math.max(selectedFilterIndex, 0)} * ((100% - 0.25rem) / 5))`,
+            }}
+          />
           {FILTERS.map((f) => (
             <button
               key={f.id}
               type="button"
+              role="tab"
+              aria-selected={stateFilter === f.id}
               onClick={() => setStateFilter(f.id)}
               className={cn(
-                'rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-ui',
+                'relative z-10 truncate rounded-lg px-1 py-1.5 text-[10px] font-semibold transition-ui focus-visible:ring-2 focus-visible:ring-[rgba(30,79,163,0.35)] focus-visible:outline-none active:scale-[0.97]',
                 stateFilter === f.id
-                  ? 'border-[var(--uta-primary)] bg-[var(--uta-primary-soft)] text-[var(--uta-primary)]'
-                  : 'border-[var(--uta-border)] bg-white text-[var(--uta-text-muted)] hover:bg-[var(--uta-bg)]',
+                  ? 'text-[var(--uta-primary)]'
+                  : 'text-[var(--uta-text-muted)] hover:text-[var(--uta-text)]',
               )}
+              title={`${f.label} (${filterCounts[f.id]})`}
             >
-              {f.label}
-              <span className="ml-1 tabular-nums opacity-70">{filterCounts[f.id]}</span>
+              <span className="block truncate">{f.label.split(' ')[0]}</span>
+              <span className="block tabular-nums opacity-70">{filterCounts[f.id]}</span>
             </button>
           ))}
         </div>
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="flex flex-col gap-2 p-2">
+        <div
+          ref={listRef}
+          tabIndex={0}
+          role="listbox"
+          aria-label="Lista de conversaciones"
+          onKeyDown={handleListKeyDown}
+          className="flex flex-col gap-2 p-2 focus-visible:outline-none"
+        >
           {loading && conversations.length === 0 ? (
             <>
               <SkeletonCard />
@@ -193,16 +273,29 @@ export function ConversationList({
                 : 'No hay conversaciones con ese filtro.'}
             </p>
           ) : (
-            filtered.map((c) => (
-              <ConversationCard
+            filtered.map((c, i) => (
+              <div
                 key={c.id}
-                conversation={c}
-                selected={c.id === selectedId}
-                unread={unread[c.id] ?? 0}
-                flash={flashIds.has(c.id)}
-                now={now}
-                onSelect={() => onSelect(c.id)}
-              />
+                role="option"
+                aria-selected={c.id === selectedId}
+                data-focused={i === focusIndex || undefined}
+                className={cn(
+                  'rounded-2xl',
+                  i === focusIndex && c.id !== selectedId && 'ring-2 ring-[rgba(30,79,163,0.2)]',
+                )}
+              >
+                <ConversationCard
+                  conversation={c}
+                  selected={c.id === selectedId}
+                  unread={unread[c.id] ?? 0}
+                  flash={flashIds.has(c.id)}
+                  now={now}
+                  onSelect={() => {
+                    setFocusIndex(i)
+                    onSelect(c.id)
+                  }}
+                />
+              </div>
             ))
           )}
         </div>

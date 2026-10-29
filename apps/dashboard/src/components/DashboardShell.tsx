@@ -36,7 +36,14 @@ export function DashboardShell() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <Toaster position="top-right" richColors closeButton />
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        toastOptions={{
+          className: 'banner-enter !rounded-2xl !border-[var(--uta-hairline)] !shadow-[var(--uta-shadow-lift)]',
+        }}
+      />
       <div className="flex h-screen flex-col overflow-hidden bg-[var(--uta-bg)]">
         <ConfigBanner missing={missing} />
         <Header isLive={isLive && configured} />

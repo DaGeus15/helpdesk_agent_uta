@@ -132,8 +132,9 @@ function MessageBubble({
     >
       <div
         className={cn(
-          'max-w-[85%] rounded-2xl px-3.5 py-2 text-[15px] shadow-sm sm:max-w-[75%]',
-          isUser && 'rounded-bl-md border border-[var(--uta-border)] bg-white text-[var(--uta-text)]',
+          'max-w-[85%] rounded-[20px] px-3.5 py-2 text-[15px] shadow-[var(--uta-shadow-soft)] sm:max-w-[75%]',
+          isUser &&
+            'rounded-bl-md border border-[var(--uta-hairline)] bg-white text-[var(--uta-text)]',
           isAssistant && 'rounded-br-md bg-[var(--uta-primary-soft)] text-[var(--uta-text)]',
           isOperator && 'rounded-br-md bg-[var(--uta-primary)] text-white',
         )}
@@ -219,10 +220,12 @@ export function ChatView({
   const [stickToBottom, setStickToBottom] = useState(true)
   const [newBelow, setNewBelow] = useState(0)
   const [animateFrom, setAnimateFrom] = useState<number | null>(null)
+  const [thermoPulse, setThermoPulse] = useState(false)
 
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const prevCountRef = useRef(0)
   const convIdRef = useRef(conversation.id)
+  const prevLeadRef = useRef(conversation.lead_state)
 
   const meta = getLeadStateMeta(conversation.lead_state)
   const StateIcon = meta.Icon
@@ -266,9 +269,19 @@ export function ChatView({
     setStickToBottom(true)
     setNewBelow(0)
     setAnimateFrom(null)
+    setThermoPulse(false)
     prevCountRef.current = 0
     convIdRef.current = conversation.id
+    prevLeadRef.current = conversation.lead_state
   }, [conversation.id])
+
+  useEffect(() => {
+    if (prevLeadRef.current === conversation.lead_state) return
+    prevLeadRef.current = conversation.lead_state
+    setThermoPulse(true)
+    const t = window.setTimeout(() => setThermoPulse(false), 450)
+    return () => window.clearTimeout(t)
+  }, [conversation.lead_state])
 
   useEffect(() => {
     const prev = prevCountRef.current
@@ -360,7 +373,7 @@ export function ChatView({
 
   return (
     <div className={cn('flex h-full min-w-0 flex-1 flex-col bg-[var(--uta-bg)]', className)}>
-      <div className="panel-header flex flex-col gap-2 border-b border-[var(--uta-border)] bg-white px-4 py-3">
+      <div className="panel-header flex flex-col gap-2 border-b border-[var(--uta-hairline)] bg-white/90 px-4 py-3 backdrop-blur-md">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -376,15 +389,23 @@ export function ChatView({
                   <ArrowLeft className="size-4" />
                 </Button>
               )}
-              <h2 className="truncate text-[17px] font-semibold text-[var(--uta-text)]">{name}</h2>
+              <h2 className="truncate text-[17px] font-semibold tracking-tight text-[var(--uta-text)]">
+                {name}
+              </h2>
               <span
                 className={cn(
-                  'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[13px] font-semibold transition-ui',
+                  'inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-[13px] font-semibold transition-ui',
                   meta.bg,
                 )}
               >
                 <StateIcon className={cn('size-4', meta.color)} />
-                <span className={cn('size-2 rounded-full', meta.dot)} />
+                <span
+                  className={cn(
+                    'size-2 rounded-full transition-[background-color] duration-200',
+                    meta.dot,
+                    thermoPulse && 'thermo-pulse',
+                  )}
+                />
                 {meta.label}
               </span>
               <LeadTimeline states={timelineStates} />
@@ -457,17 +478,20 @@ export function ChatView({
             className="flex w-full items-center justify-between gap-2 px-4 py-2 text-left text-sm font-medium text-amber-900 transition-ui"
             onClick={() => setSummaryOpen((o) => !o)}
             aria-expanded={summaryOpen}
+            aria-label={summaryOpen ? 'Colapsar resumen' : 'Expandir resumen'}
           >
             <span>Resumen para el asesor</span>
             {summaryOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
           </button>
-          {summaryOpen && (
-            <div className="px-4 pb-3">
-              <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-amber-950/90">
-                {summaryText}
-              </p>
+          <div className="summary-collapse" data-open={summaryOpen ? 'true' : 'false'}>
+            <div>
+              <div className="px-4 pb-3">
+                <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-amber-950/90">
+                  {summaryText}
+                </p>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -511,7 +535,7 @@ export function ChatView({
           <button
             type="button"
             onClick={scrollToBottom}
-            className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[var(--uta-border)] bg-white px-3 py-1.5 text-[12px] font-medium text-[var(--uta-primary)] shadow-md transition-ui hover:bg-[var(--uta-primary-soft)]"
+            className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[var(--uta-hairline)] bg-white/95 px-3 py-1.5 text-[12px] font-medium text-[var(--uta-primary)] shadow-[var(--uta-shadow-lift)] backdrop-blur-sm transition-ui hover:bg-[var(--uta-primary-soft)] active:scale-[0.97]"
             aria-label="Ir al final del chat"
           >
             <ArrowDown className="size-3.5" />
@@ -527,7 +551,7 @@ export function ChatView({
 
       <form
         onSubmit={(e) => void handleSubmit(e)}
-        className="border-t border-[var(--uta-border)] bg-white p-3"
+        className="border-t border-[var(--uta-hairline)] bg-white/95 p-3 backdrop-blur-md"
       >
         <div className="mb-2 flex flex-wrap gap-1.5">
           {QUICK_TEMPLATES.map((t) => (
@@ -535,7 +559,7 @@ export function ChatView({
               key={t}
               type="button"
               onClick={() => setDraft(t)}
-              className="rounded-full border border-[var(--uta-border)] bg-[var(--uta-bg)] px-2.5 py-1 text-[11px] text-[var(--uta-text)] transition-ui hover:border-[var(--uta-primary)] hover:bg-[var(--uta-primary-soft)]"
+              className="rounded-full border border-[var(--uta-hairline)] bg-[var(--uta-bg)] px-2.5 py-1 text-[11px] text-[var(--uta-text)] transition-ui hover:border-[var(--uta-primary)] hover:bg-[var(--uta-primary-soft)] active:scale-[0.97]"
             >
               {t.length > 36 ? `${t.slice(0, 35)}…` : t}
             </button>
@@ -548,15 +572,15 @@ export function ChatView({
             onKeyDown={handleKeyDown}
             placeholder="Escribe como el bot…"
             rows={2}
-            className="min-h-[48px] resize-none text-[15px]"
+            className="min-h-[48px] resize-none rounded-2xl text-[15px] shadow-[var(--uta-shadow-soft)]"
             disabled={sending}
           />
           <Button
             type="submit"
             size="icon"
-            className="bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
+            className="rounded-xl bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
             disabled={sending || !draft.trim()}
-            aria-label="Enviar"
+            aria-label="Enviar mensaje"
           >
             <Send />
           </Button>

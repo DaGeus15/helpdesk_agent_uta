@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { ShieldAlert } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { avatarColorFromName, getInitials, getLeadStateMeta } from '@/lib/lead-state'
@@ -33,24 +34,37 @@ export function ConversationCard({
   const name = conversation.display_name ?? conversation.telegram_username ?? 'Sin nombre'
   const alert = needsAdvisor(conversation)
   const avatarBg = avatarColorFromName(name)
+  const [thermoPulse, setThermoPulse] = useState(false)
+  const prevStateRef = useRef(conversation.lead_state)
+
+  useEffect(() => {
+    if (prevStateRef.current !== conversation.lead_state) {
+      prevStateRef.current = conversation.lead_state
+      setThermoPulse(true)
+      const t = window.setTimeout(() => setThermoPulse(false), 450)
+      return () => window.clearTimeout(t)
+    }
+  }, [conversation.lead_state])
 
   return (
     <button
       type="button"
       onClick={onSelect}
+      aria-label={`Conversación con ${name}`}
+      aria-current={selected ? 'true' : undefined}
       className={cn(
-        'w-full rounded-lg border border-transparent px-3 py-2.5 text-left transition-ui',
+        'w-full rounded-2xl border px-3 py-2.5 text-left transition-ui focus-visible:ring-2 focus-visible:ring-[rgba(30,79,163,0.35)] focus-visible:outline-none active:scale-[0.99]',
         selected
-          ? 'border-[var(--uta-primary-soft)] border-l-[3px] border-l-[var(--uta-primary)] bg-[var(--uta-primary-soft)]'
-          : 'bg-white hover:border-[var(--uta-border)] hover:bg-[#f8fafc]',
-        alert && !selected && 'border-red-200 bg-red-50/70 hover:bg-red-50',
+          ? 'border-[rgba(30,79,163,0.2)] border-l-[3px] border-l-[var(--uta-primary)] bg-[var(--uta-primary-soft)] shadow-[var(--uta-shadow-soft)]'
+          : 'border-[var(--uta-hairline)] bg-white shadow-[var(--uta-shadow-soft)] hover:-translate-y-px hover:shadow-[var(--uta-shadow-lift)]',
+        alert && !selected && 'border-red-200/80 bg-red-50/70 hover:bg-red-50',
         alert && selected && 'border-red-300 border-l-red-600 bg-red-50/90',
         flash && 'card-flash',
       )}
     >
       <div className="flex items-start gap-2.5">
         <div
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold text-white"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold text-white shadow-sm"
           style={{ backgroundColor: avatarBg }}
           aria-hidden
         >
@@ -59,9 +73,11 @@ export function ConversationCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <p className="truncate text-[15px] font-semibold text-[var(--uta-text)]">{name}</p>
+            <p className="truncate text-[15px] font-semibold tracking-tight text-[var(--uta-text)]">
+              {name}
+            </p>
             <div className="flex shrink-0 flex-col items-end gap-1">
-              <span className="text-[11px] text-[var(--uta-text-muted)]">
+              <span className="text-[11px] tabular-nums text-[var(--uta-text-muted)]">
                 {formatRelativeTime(conversation.last_message_at, now)}
               </span>
               {unread > 0 && (
@@ -79,11 +95,17 @@ export function ConversationCard({
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
             <span
               className={cn(
-                'inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium transition-ui',
+                'inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[11px] font-medium transition-ui',
                 meta.bg,
               )}
             >
-              <span className={cn('size-1.5 rounded-full', meta.dot)} />
+              <span
+                className={cn(
+                  'size-1.5 rounded-full transition-[background-color] duration-200',
+                  meta.dot,
+                  thermoPulse && 'thermo-pulse',
+                )}
+              />
               {meta.label}
             </span>
 
