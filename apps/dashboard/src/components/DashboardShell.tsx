@@ -52,15 +52,12 @@ export function DashboardShell() {
               conversations={conversations}
               selectedId={selectedId}
               unread={unread}
+              loading={loading}
               onSelect={setSelectedId}
               className={showChatOnMobile ? 'hidden md:flex' : 'flex'}
             />
             <main className="min-h-0 min-w-0 flex-1">
-              {loading && conversations.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-sm text-[var(--uta-text-muted)]">
-                  Cargando conversaciones…
-                </div>
-              ) : error && conversations.length === 0 ? (
+              {error && conversations.length === 0 ? (
                 <div className="flex h-full items-center justify-center px-6 text-center text-sm text-red-600">
                   {error}
                 </div>

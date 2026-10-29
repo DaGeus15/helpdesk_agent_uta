@@ -84,9 +84,5 @@ export function useMessages(conversationId: string | null) {
     }
   }, [conversationId])
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
   return { messages, loading, bottomRef }
 }

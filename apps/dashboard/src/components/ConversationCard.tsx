@@ -8,10 +8,12 @@ interface ConversationCardProps {
   conversation: ConversationWithPreview
   selected: boolean
   unread?: number
+  flash?: boolean
+  now?: number
   onSelect: () => void
 }
 
-function needsAdvisor(conversation: ConversationWithPreview): boolean {
+export function needsAdvisor(conversation: ConversationWithPreview): boolean {
   return (
     conversation.ai_paused &&
     (conversation.paused_reason === 'frustration' ||
@@ -23,6 +25,8 @@ export function ConversationCard({
   conversation,
   selected,
   unread = 0,
+  flash = false,
+  now = Date.now(),
   onSelect,
 }: ConversationCardProps) {
   const meta = getLeadStateMeta(conversation.lead_state)
@@ -41,11 +45,12 @@ export function ConversationCard({
           : 'bg-white hover:border-[var(--uta-border)] hover:bg-[#f8fafc]',
         alert && !selected && 'border-red-200 bg-red-50/70 hover:bg-red-50',
         alert && selected && 'border-red-300 border-l-red-600 bg-red-50/90',
+        flash && 'card-flash',
       )}
     >
       <div className="flex items-start gap-2.5">
         <div
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold text-white"
           style={{ backgroundColor: avatarBg }}
           aria-hidden
         >
@@ -54,10 +59,10 @@ export function ConversationCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <p className="truncate text-sm font-semibold text-[var(--uta-text)]">{name}</p>
+            <p className="truncate text-[15px] font-semibold text-[var(--uta-text)]">{name}</p>
             <div className="flex shrink-0 flex-col items-end gap-1">
               <span className="text-[11px] text-[var(--uta-text-muted)]">
-                {formatRelativeTime(conversation.last_message_at)}
+                {formatRelativeTime(conversation.last_message_at, now)}
               </span>
               {unread > 0 && (
                 <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--uta-primary)] px-1.5 text-[10px] font-semibold text-white tabular-nums">
@@ -67,7 +72,7 @@ export function ConversationCard({
             </div>
           </div>
 
-          <p className="mt-0.5 line-clamp-2 text-xs text-[var(--uta-text-muted)]">
+          <p className="mt-0.5 line-clamp-2 text-[13px] text-[var(--uta-text-muted)]">
             {truncate(conversation.last_message_preview, 90)}
           </p>
 
