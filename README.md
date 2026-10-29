@@ -5,6 +5,8 @@ Proyecto para la **Hackathon UTA 2026 · Ecosistema Multi-Agente para Ventas** (
 - **Módulo A — Agente en Telegram:** asesora "Andrea" con tono humano: perfila al prospecto, resuelve dudas del pénsum con el catálogo oficial, maneja objeciones y guía la inscripción. Entiende notas de voz.
 - **Módulo B — Panel de mando:** dashboard web en tiempo real con todos los chats concurrentes, termómetro del lead (interesado, dudoso, frustrado, lead caliente), toma de control, envío como bot y "Devolver a la IA".
 
+Producción: bot [@HelpdeskUTA15Bot](https://t.me/HelpdeskUTA15Bot) · panel https://helpdesk-agent-uta.vercel.app (usuario `admin`, contraseña `admin`) · API https://codeandes-api.onrender.com/health
+
 Documentación: [arquitectura](docs/ARCHITECTURE.md) · [plan](docs/PLAN.md) · [catálogo](docs/CATALOGO.md) · [batería de pruebas](docs/PRUEBAS.md) · [guion de demo](docs/DEMO.md) · [reto](docs/RETO.md)
 
 ## Arquitectura en 30 segundos
@@ -71,6 +73,8 @@ Requisitos: Node ≥ 20 y pnpm (`corepack enable`).
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Proyecto Supabase; clave secreta (`sb_secret_…` o service role), solo en el servidor |
 | `DASHBOARD_ORIGIN` | Orígenes permitidos por CORS, separados por comas |
 | `CONTEXT_WINDOW_MESSAGES` / `SUMMARY_EVERY_N_MESSAGES` | Ventana de contexto (12) y frecuencia del resumen (8) |
+| `OPERATOR_USERNAME` / `OPERATOR_PASSWORD` | Credenciales del panel (por defecto `admin` / `admin`) |
+| `AUTH_TOKEN_SECRET` / `AUTH_TOKEN_TTL_HOURS` | Firma y duración del token del operador (opcional; 12 h) |
 
 ### Variables del dashboard (`apps/dashboard/.env`)
 
@@ -101,5 +105,6 @@ Requisitos: Node ≥ 20 y pnpm (`corepack enable`).
 ## Seguridad y limitaciones conocidas
 
 - La clave secreta de Supabase solo vive en la API. El dashboard usa la clave pública con RLS de solo lectura y escribe a través de la API.
-- Demo: el panel no tiene login de operador. El siguiente paso sería Supabase Auth con políticas `to authenticated` y una API key de operador.
+- **Login del operador:** `POST /auth/login` con `OPERATOR_USERNAME`/`OPERATOR_PASSWORD` (por defecto `admin`/`admin`; cámbialos en producción) devuelve un token HMAC con caducidad (`AUTH_TOKEN_TTL_HOURS`). Todos los endpoints `/operator/*` exigen `Authorization: Bearer`.
+- Limitación conocida: la lectura en tiempo real usa la clave pública de Supabase con RLS de solo lectura. El siguiente paso sería Supabase Auth con políticas `to authenticated`.
 - Precios y promociones salen solo de la base de datos. El LLM no puede crearlos y la salida se valida contra el catálogo.

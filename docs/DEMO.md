@@ -1,6 +1,6 @@
 # Guion de demo (5 minutos) — CodeAndes Academy
 
-**Preparación (antes de subir):** dashboard abierto en la URL de Vercel en el proyector; dos teléfonos (o Telegram Desktop + móvil) con el bot abierto; despertar la API de Render con `GET /health` 2 minutos antes; tener a mano los mensajes de `docs/PRUEBAS.md`.
+**Preparación (antes de subir):** dashboard abierto en https://helpdesk-agent-uta.vercel.app con sesión iniciada (`admin` / `admin`) en el proyector; bot @HelpdeskUTA15Bot; dos teléfonos (o Telegram Desktop + móvil) con el bot abierto; despertar la API de Render con `GET /health` 2 minutos antes; tener a mano los mensajes de `docs/PRUEBAS.md`.
 
 ## 0:00 – 0:30 · El problema y la propuesta
 "Un centro de capacitación recibe prospectos a cualquier hora. Los bots de menú espantan y responder tarde pierde ventas. Construimos un modelo híbrido: Andrea, una asesora con IA en Telegram, y un panel de mando donde un humano ve todos los chats en vivo y entra cuando hace falta, sin que el cliente note el cambio."
@@ -51,5 +51,5 @@
 
 **Preguntas incómodas**
 - *¿Y si Gemini cae o se agota la cuota?* → Hay una cadena de modelos (`gemini-2.5-flash` → `2.5-flash-lite` → `2.0-flash`): ante un 429 o 503 se usa el siguiente, cada uno con su propia cuota. Además hay timeout de 25 s, un reintento de validación y una respuesta segura que ofrece un asesor. El proveedor se cambia por variable de entorno.
-- *¿Por qué el panel no tiene login?* → Por el tiempo de la hackathon. El RLS ya es de solo lectura y toda escritura pasa por la API. El siguiente paso es Supabase Auth con políticas `to authenticated`.
+- *¿Y la seguridad del panel?* → Hay login del operador con un token HMAC que caduca, y todo `/operator/*` exige `Bearer`. La lectura en tiempo real usa la clave pública con RLS de solo lectura. El siguiente paso es Supabase Auth con políticas `to authenticated` y credenciales por operador.
 - *¿Cómo escala?* → La API es stateless salvo la cola por chat en memoria, que se movería a Redis o una cola si se escala horizontalmente. Supabase escala el Realtime.
