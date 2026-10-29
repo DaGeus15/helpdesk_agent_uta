@@ -8,6 +8,7 @@ import {
 } from '../llm-provider.interface';
 
 const CALL_TIMEOUT_MS = 25_000;
+const DEFAULT_FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.0-flash'];
 
 export class GeminiProvider implements LlmProvider {
   readonly name = 'gemini';
@@ -17,10 +18,12 @@ export class GeminiProvider implements LlmProvider {
 
   constructor(apiKey: string, models: string) {
     this.ai = new GoogleGenAI({ apiKey });
-    this.models = models
+    const configured = models
       .split(',')
       .map((m) => m.trim())
       .filter(Boolean);
+    // Siempre hay respaldo, aunque GEMINI_MODEL nombre un único modelo.
+    this.models = [...new Set([...configured, ...DEFAULT_FALLBACK_MODELS])];
   }
 
   async generateStructured<T>(
