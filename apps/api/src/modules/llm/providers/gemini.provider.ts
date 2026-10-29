@@ -130,6 +130,8 @@ export class GeminiProvider implements LlmProvider {
       model: this.model,
       contents: params.contents,
       config: {
+        // Sin "thinking": el turno conversacional no lo necesita y baja la latencia.
+        thinkingConfig: { thinkingBudget: 0 },
         ...params.config,
         httpOptions: {
           ...params.config?.httpOptions,
