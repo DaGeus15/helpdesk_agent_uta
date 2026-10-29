@@ -143,12 +143,16 @@ flowchart LR
 
 | | |
 |:---:|:---:|
-| ![Login escritorio](capturas/login-escritorio.jpg) | ![Login móvil](capturas/login-movil.jpg) |
-| Login del operador con estados en vivo | Login en móvil |
-| ![Landing contacto](capturas/landing-contacto.jpg) | ![Landing próximamente](capturas/landing-proximamente.jpg) |
-| Landing pública con QR al bot | Cursos próximos con fechas y precios reales |
+| ![Bandeja en vivo](capturas/panel-bandeja.jpg) | ![Chat](capturas/panel-chat.jpg) |
+| Bandeja en vivo con termómetro y filtros | Chat: cabecera con estado del lead, burbujas IA/usuario, plantillas del operador |
+| ![Resumen](capturas/panel-resumen.jpg) | ![Métricas](capturas/panel-metricas.jpg) |
+| Resumen automático para el asesor | Métricas: termómetro, distribución, leads calientes, LLM |
+| ![Cursos](capturas/panel-cursos.jpg) | ![Login](capturas/login-escritorio.jpg) |
+| Cursos sincronizados con la web oficial (estado calculado) | Login del operador con estados en vivo |
+| ![Landing](capturas/landing-contacto.jpg) | ![Login móvil](capturas/login-movil.jpg) |
+| Landing pública con QR al bot | Login en móvil |
 
-> Para completar el portafolio, añade capturas del panel con sesión iniciada (Bandeja con un chat, Tomar control con el resumen, Métricas y Cursos) y del bot en Telegram (conversación, nota de voz, intento de manipulación rechazado).
+> Sugerido: añadir capturas del bot en Telegram (conversación, nota de voz, intento de manipulación rechazado).
 
 ## Trabajo futuro
 
