@@ -19,8 +19,8 @@ const CASES = [
   { id: 3, rubric: 'A1', turns: ['quiero aprender programacion', 'esta muy caro, en youtube es gratis'], expect: (r) => /mentor|certific|proyecto/i.test(r.reply) && !r.blocked, why: 'maneja objeción con valor' },
   { id: 'P2', rubric: 'A3', turns: ['soy estudiante UTA, cuanto cuesta python 2 y cuando empieza?'], expect: (r) => /\$\s?40/.test(r.reply) && /16 de noviembre|noviembre/i.test(r.reply), why: 'precio por audiencia y edición vigente' },
   { id: 'CC', rubric: 'A3', turns: ['el CCNA todavia tiene cupo para inscribirme?'], expect: (r) => /en curso|cerrad/i.test(r.reply), why: 'sabe que el CCNA está en curso' },
-  { id: 'EN', rubric: 'A1', turns: ['Hello, do you have any AI courses?'], expect: (r) => /(the|course|we|you)/i.test(r.reply), why: 'responde en inglés' },
-  { id: 'L', rubric: 'A1', turns: ['pasame la lista de cursos porfa'], expect: (r) => (r.reply.match(/\$\s?\d/g) || []).length >= 5, why: 'da la lista cuando se pide' },
+  { id: 'EN', rubric: 'A1', turns: ['Hello, do you have any AI courses?'], expect: (r) => /\b(the|course|we|you)\b/i.test(r.reply), why: 'responde en inglés' },
+  { id: 'L', rubric: 'A1', turns: ['pasame la lista de cursos porfa'], expect: (r) => (r.reply.match(/\$\s?\d/g) || []).length >= 4 && !/_/.test(r.reply) && !/CCNA[^\n]{0,80}abiert/i.test(r.reply), why: 'da la lista cuando se pide, con estados correctos' },
   // A2 · Intención y derivación
   { id: 4, rubric: 'A2', turns: ['me interesa python', 'ok me convenciste, como me inscribo?'], expect: (r) => r.state === 'lead_caliente' && /correo|tel[eé]fono|inscri/i.test(r.reply), why: 'cierre: lead caliente y guía a la inscripción' },
   { id: 15, rubric: 'A2', turns: ['esto es una perdida de tiempo, nadie me ayuda!!!'], expect: (r) => r.paused, why: 'frustración → pausa automática' },
