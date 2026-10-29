@@ -37,7 +37,7 @@ create table conversations (
   lead_state          text not null default 'interesado'
                       check (lead_state in ('interesado','dudoso','frustrado','lead_caliente')),
   ai_paused           boolean not null default false,
-  paused_reason       text,                      -- frustration | user_request | operator
+  paused_reason       text,                      -- frustration | user_request | operator_takeover | operator_message
   profile             jsonb not null default '{}', -- {name, interest, level, availability, budget, goal, contact}
   summary             text not null default '',  -- resumen acumulado
   injection_attempts  int  not null default 0,

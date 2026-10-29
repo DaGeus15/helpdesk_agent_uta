@@ -21,9 +21,9 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 
 ## Fase 1 — Esqueleto (11:45 → 12:00)
 
-- [ ] **T1.1 API (Cursor A):** monorepo pnpm (`pnpm-workspace.yaml`, `package.json` raíz con `dev` usando `concurrently`), NestJS en `apps/api` con módulos vacíos `telegram`, `agent`, `llm`, `conversations`, `operator`, `catalog`, `supabase` (cliente con service role), `ConfigModule` validado con zod, `GET /health`, CORS desde `DASHBOARD_ORIGIN`, `.env.example`.
-- [ ] **T1.2 Dashboard (Cursor B, en paralelo):** Vite + React + TS + Tailwind + shadcn/ui en `apps/dashboard`, cliente Supabase, cliente API, layout de 2 columnas (lista | chat) con datos mock, `.env.example`.
-- [ ] **T1.3 SQL (Claude):** `supabase/migrations/001_init.sql` (de `ARCHITECTURE.md` §3) y `supabase/seed.sql` (de `CATALOGO.md`). Dayle los pega en el SQL Editor de Supabase.
+- [x] **T1.1 API (Cursor A):** monorepo pnpm (`pnpm-workspace.yaml`, `package.json` raíz con `dev` usando `concurrently`), NestJS en `apps/api` con módulos vacíos `telegram`, `agent`, `llm`, `conversations`, `operator`, `catalog`, `supabase` (cliente con service role), `ConfigModule` validado con zod, `GET /health`, CORS desde `DASHBOARD_ORIGIN`, `.env.example`.
+- [x] **T1.2 Dashboard (Cursor B, en paralelo):** Vite + React + TS + Tailwind + shadcn/ui en `apps/dashboard`, cliente Supabase, cliente API, layout de 2 columnas (lista | chat) con datos mock, `.env.example`.
+- [x] **T1.3 SQL (Claude):** `supabase/migrations/001_init.sql` (de `ARCHITECTURE.md` §3) y `supabase/seed.sql` (de `CATALOGO.md`). Dayle los pega en el SQL Editor de Supabase.
 - Criterio: `pnpm dev` levanta ambos; `/health` responde; tablas y catálogo creados en Supabase.
 
 ## Fase 2 — Bot conversacional (12:00 → 12:20)
