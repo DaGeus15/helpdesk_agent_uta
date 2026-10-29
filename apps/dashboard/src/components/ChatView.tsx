@@ -39,7 +39,7 @@ interface ChatViewProps {
 }
 
 const QUICK_TEMPLATES = [
-  'Hola, soy tu asesor de CodeAndes 👋',
+  'Hola, soy tu asesor de CTT-FISEI 👋',
   '¿Te ayudo a completar tu inscripción?',
   'Te comparto los horarios disponibles',
   'Gracias por tu paciencia 🙏',

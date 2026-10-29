@@ -1,10 +1,12 @@
+import { useState } from 'react'
 import { Toaster } from 'sonner'
-import { Header } from '@/components/Header'
+import { Header, type DashboardView } from '@/components/Header'
 import { MetricsBar } from '@/components/MetricsBar'
 import { ConversationList } from '@/components/ConversationList'
 import { ChatView } from '@/components/ChatView'
 import { EmptyState } from '@/components/EmptyState'
 import { ConfigBanner } from '@/components/ConfigBanner'
+import { CoursesView } from '@/components/CoursesView'
 import { Footer } from '@/components/Footer'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useConversations } from '@/hooks/useConversations'
@@ -18,6 +20,7 @@ import { getMissingEnvVars } from '@/lib/env'
  */
 export function DashboardShell() {
   const missing = getMissingEnvVars()
+  const [view, setView] = useState<DashboardView>('conversations')
   const {
     conversations,
     selected,
@@ -33,6 +36,7 @@ export function DashboardShell() {
   const metrics = useMetrics(conversations)
 
   const showChatOnMobile = Boolean(selectedId)
+  const showConversations = view === 'conversations'
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -46,10 +50,16 @@ export function DashboardShell() {
       />
       <div className="flex h-screen flex-col overflow-hidden bg-[var(--uta-bg)]">
         <ConfigBanner missing={missing} />
-        <Header isLive={isLive && configured} />
-        <MetricsBar metrics={metrics} />
+        <Header
+          isLive={isLive && configured}
+          view={view}
+          onViewChange={setView}
+        />
+        {showConversations && <MetricsBar metrics={metrics} />}
 
-        {!configured ? (
+        {view === 'courses' ? (
+          <CoursesView />
+        ) : !configured ? (
           <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-[var(--uta-text-muted)]">
             Configura las variables VITE_* para cargar conversaciones en vivo.
           </div>

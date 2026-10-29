@@ -88,7 +88,7 @@ export const MOCK_MESSAGES: Message[] = [
     conversation_id: '11111111-1111-1111-1111-111111111111',
     role: 'assistant',
     content:
-      '¡Hola María! Soy Andrea de CodeAndes. Sí, Python Fundamentos tiene horario Lun-Mié 19:00-21:00. ¿Buscas cambiar de carrera o reforzar lo que ya sabes?',
+      '¡Hola María! Soy Andrea de los Talleres CTT-FISEI. Fundamentos de Python 1 está en curso (oct–nov 2026), modalidad autodidacta en Cisco NetAcad. ¿Eres estudiante UTA?',
     source: 'text',
     intent: 'consulta_horario',
     lead_state: 'interesado',
