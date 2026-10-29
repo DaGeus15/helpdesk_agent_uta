@@ -8,7 +8,11 @@ import {
 } from '../llm-provider.interface';
 
 const CALL_TIMEOUT_MS = 25_000;
-const DEFAULT_FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+const DEFAULT_FALLBACK_MODELS = [
+  'gemini-2.5-flash-lite',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+];
 
 export class GeminiProvider implements LlmProvider {
   readonly name = 'gemini';

@@ -7,6 +7,7 @@ import { SummaryService } from './summary.service';
 @Injectable()
 export class MessageRouterService {
   private readonly logger = new Logger(MessageRouterService.name);
+  private readonly lastHoldingAt = new Map<string, number>();
 
   constructor(
     private readonly conversations: ConversationsService,
@@ -39,7 +40,7 @@ export class MessageRouterService {
       this.logger.debug(
         `Conversation ${current.id} paused — skipping inference`,
       );
-      return null;
+      return this.holdingReply(current.id);
     }
 
     const result = await this.agent.handle(current, msg.text);
@@ -88,4 +89,41 @@ export class MessageRouterService {
 
     return output.reply;
   }
+
+  /**
+   * Con la IA pausada no se infiere, pero el usuario nunca se queda en silencio:
+   * si ningún asesor ha escrito en los últimos minutos, se envía (sin LLM) un aviso de espera,
+   * como mucho uno cada HOLDING_COOLDOWN_MS.
+   */
+  private async holdingReply(conversationId: string): Promise<string | null> {
+    const now = Date.now();
+    const lastHolding = this.lastHoldingAt.get(conversationId) ?? 0;
+    if (now - lastHolding < HOLDING_COOLDOWN_MS) {
+      return null;
+    }
+
+    const recent = await this.conversations.getRecentMessages(conversationId, 10);
+    const lastOperator = [...recent].reverse().find((m) => m.role === 'operator');
+    if (
+      lastOperator &&
+      now - new Date(lastOperator.created_at).getTime() < OPERATOR_ACTIVE_MS
+    ) {
+      return null;
+    }
+
+    this.lastHoldingAt.set(conversationId, now);
+    await this.conversations.addMessage({
+      conversationId,
+      role: 'assistant',
+      content: HOLDING_MESSAGE,
+      source: 'text',
+      intent: 'espera_asesor',
+    });
+    return HOLDING_MESSAGE;
+  }
 }
+
+const HOLDING_MESSAGE =
+  '¡Recibido! 🙌 Un asesor del equipo de CodeAndes ya está revisando tu conversación y te responde en unos minutos.';
+const HOLDING_COOLDOWN_MS = 5 * 60 * 1000;
+const OPERATOR_ACTIVE_MS = 3 * 60 * 1000;
