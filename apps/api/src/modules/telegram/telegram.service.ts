@@ -80,6 +80,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       this.logger.error(
         `Failed to send Telegram message to ${chatId}: ${String(error)}`,
       );
+      throw error;
     }
   }
 
