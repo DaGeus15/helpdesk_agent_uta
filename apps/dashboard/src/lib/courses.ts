@@ -151,6 +151,30 @@ export function formatDateRange(
   return start || end || null
 }
 
+/** Formats an ISO date as "30 de octubre" (Spanish day + month, no year). */
+export function formatSpanishDayMonth(isoDate?: string | null): string | null {
+  if (!isoDate) return null
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(isoDate)
+  if (!match) return null
+  const y = Number(match[1])
+  const m = Number(match[2])
+  const d = Number(match[3])
+  const date = new Date(Date.UTC(y, m - 1, d, 12))
+  return date.toLocaleDateString('es-EC', {
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  })
+}
+
+export function minPriceFromTiers(course: CourseRow): number | null {
+  const tiers = Array.isArray(course.price_tiers) ? course.price_tiers : []
+  if (tiers.length > 0) {
+    return Math.min(...tiers.map((t) => t.price_usd))
+  }
+  return course.price_usd ?? null
+}
+
 export function sortCoursesByStatus(a: Course, b: Course): number {
   const orderDiff =
     COURSE_STATUS_META[a.status].order - COURSE_STATUS_META[b.status].order

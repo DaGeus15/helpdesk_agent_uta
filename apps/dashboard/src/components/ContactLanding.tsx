@@ -7,12 +7,31 @@ import {
   CAMPUS_ADDRESS,
   CONTACT_EMAILS,
   TELEGRAM_BOT_URL,
+  formatSpanishDayMonth,
 } from '@/lib/courses'
 
 export function ContactLanding() {
   const { courses, loading, error, configured } = useCourses()
   const open = courses.filter((c) => c.status === 'inscripciones_abiertas')
+  const upcoming = courses
+    .filter((c) => c.status === 'proximamente')
+    .slice()
+    .sort((a, b) =>
+      (a.enrollment_start ?? a.start_date ?? '').localeCompare(
+        b.enrollment_start ?? b.start_date ?? '',
+      ),
+    )
   const running = courses.filter((c) => c.status === 'en_curso')
+  const nextEnrollmentDate =
+    upcoming
+      .map((c) => c.enrollment_start)
+      .filter((d): d is string => Boolean(d))
+      .sort()[0] ??
+    upcoming
+      .map((c) => c.start_date)
+      .filter((d): d is string => Boolean(d))
+      .sort()[0]
+  const nextEnrollmentLabel = formatSpanishDayMonth(nextEnrollmentDate)
 
   return (
     <div className="min-h-screen bg-[var(--mist)]">
@@ -91,12 +110,33 @@ export function ContactLanding() {
               </p>
               {open.length === 0 ? (
                 <p className="mt-4 rounded-lg border border-[var(--line)] bg-white px-4 py-6 text-sm text-[var(--muted)]">
-                  No hay inscripciones abiertas en este momento. Escríbenos por
-                  Telegram para conocer la próxima convocatoria.
+                  {upcoming.length > 0 && nextEnrollmentLabel
+                    ? `Las próximas inscripciones abren el ${nextEnrollmentLabel}. Escríbenos por Telegram para reservar tu cupo.`
+                    : 'No hay inscripciones abiertas en este momento. Escríbenos por Telegram para conocer la próxima convocatoria.'}
                 </p>
               ) : (
                 <div className="mt-5 grid gap-5 sm:grid-cols-2">
                   {open.map((course) => (
+                    <CourseCard key={course.id} course={course} compact />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="mt-12">
+              <h2 className="text-lg font-semibold text-[var(--navy)] sm:text-xl">
+                Próximamente
+              </h2>
+              <p className="mt-1 text-sm text-[var(--text)]">
+                Talleres con inscripción próxima a abrir
+              </p>
+              {upcoming.length === 0 ? (
+                <p className="mt-4 rounded-lg border border-[var(--line)] bg-white px-4 py-6 text-sm text-[var(--muted)]">
+                  No hay cursos anunciados como próximos por ahora.
+                </p>
+              ) : (
+                <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                  {upcoming.map((course) => (
                     <CourseCard key={course.id} course={course} compact />
                   ))}
                 </div>

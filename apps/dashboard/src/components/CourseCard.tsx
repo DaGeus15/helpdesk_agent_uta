@@ -4,6 +4,8 @@ import {
   COURSE_STATUS_META,
   formatDateRange,
   formatMoney,
+  formatSpanishDayMonth,
+  minPriceFromTiers,
   type Course,
 } from '@/lib/courses'
 import { cn } from '@/lib/utils'
@@ -22,14 +24,16 @@ export function CourseCard({ course, compact = false }: CourseCardProps) {
   const syllabus = course.syllabus ?? []
   const tiers = course.price_tiers ?? []
   const isOpen = course.status === 'inscripciones_abiertas'
-  const isPast =
-    course.status === 'finalizado' || course.status === 'proximamente'
+  const isUpcoming = course.status === 'proximamente'
+  const isPast = course.status === 'finalizado'
+  const enrollFrom = formatSpanishDayMonth(course.enrollment_start)
+  const priceFrom = minPriceFromTiers(course)
 
   return (
     <article
       className={cn(
         'flex flex-col overflow-hidden rounded-lg bg-[var(--mist)]',
-        isPast && !isOpen && 'opacity-95',
+        (isPast || isUpcoming) && !isOpen && 'opacity-95',
       )}
     >
       <div
@@ -57,11 +61,22 @@ export function CourseCard({ course, compact = false }: CourseCardProps) {
         )}
 
         <dl className="grid grid-cols-[auto_1fr] gap-x-3.5 gap-y-1 text-[13px]">
-          {enrollRange && (
+          {isUpcoming && enrollFrom ? (
             <>
               <dt className="font-semibold text-[var(--ink)]">Inscripciones</dt>
-              <dd className="m-0 whitespace-pre-line text-[var(--text)]">{enrollRange}</dd>
+              <dd className="m-0 text-[var(--text)]">
+                Inscripciones desde {enrollFrom}
+              </dd>
             </>
+          ) : (
+            enrollRange && (
+              <>
+                <dt className="font-semibold text-[var(--ink)]">Inscripciones</dt>
+                <dd className="m-0 whitespace-pre-line text-[var(--text)]">
+                  {enrollRange}
+                </dd>
+              </>
+            )
           )}
           {runRange && (
             <>
@@ -83,17 +98,26 @@ export function CourseCard({ course, compact = false }: CourseCardProps) {
               <dd className="m-0 whitespace-pre-line text-[var(--text)]">{schedule}</dd>
             </>
           )}
-          {(tiers.length > 0 || course.price_usd != null) && (
+          {isUpcoming && priceFrom != null ? (
             <>
-              <dt className="font-semibold text-[var(--ink)]">Precios</dt>
-              <dd className="m-0 whitespace-pre-line text-[var(--text)]">
-                {tiers.length > 0
-                  ? tiers
-                      .map((t) => `${t.audience}: $${formatMoney(t.price_usd)}`)
-                      .join('\n')
-                  : `Público general: $${formatMoney(course.price_usd!)}`}
+              <dt className="font-semibold text-[var(--ink)]">Precio</dt>
+              <dd className="m-0 text-[var(--text)]">
+                Precio desde ${formatMoney(priceFrom)}
               </dd>
             </>
+          ) : (
+            (tiers.length > 0 || course.price_usd != null) && (
+              <>
+                <dt className="font-semibold text-[var(--ink)]">Precios</dt>
+                <dd className="m-0 whitespace-pre-line text-[var(--text)]">
+                  {tiers.length > 0
+                    ? tiers
+                        .map((t) => `${t.audience}: $${formatMoney(t.price_usd)}`)
+                        .join('\n')
+                    : `Público general: $${formatMoney(course.price_usd!)}`}
+                </dd>
+              </>
+            )
           )}
         </dl>
 
@@ -140,15 +164,26 @@ export function CourseCard({ course, compact = false }: CourseCardProps) {
               Formulario de inscripción
             </a>
           )}
-          {course.source_url && (
+          {isUpcoming && course.source_url ? (
             <a
               href={course.source_url}
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-[var(--red)] underline-offset-2 hover:underline"
+              className="inline-flex items-center rounded-md bg-[var(--navy)] px-4 py-2.5 font-semibold text-white no-underline transition-ui hover:bg-[var(--ink)]"
             >
-              Ver en la web del CTT
+              Ver en la web
             </a>
+          ) : (
+            course.source_url && (
+              <a
+                href={course.source_url}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-[var(--red)] underline-offset-2 hover:underline"
+              >
+                Ver en la web del CTT
+              </a>
+            )
           )}
         </div>
       </div>
