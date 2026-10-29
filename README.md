@@ -1,5 +1,7 @@
 # CTT-FISEI · Talleres Tecnológicos UTA — Agente de ventas en Telegram + Panel de mando
 
+[![CI](https://github.com/DaGeus15/helpdesk_agent_uta/actions/workflows/ci.yml/badge.svg)](https://github.com/DaGeus15/helpdesk_agent_uta/actions/workflows/ci.yml)
+
 Proyecto para la **Hackathon UTA 2026 · Ecosistema Multi-Agente para Ventas** (FISEI). Modelo híbrido IA–humano para los **Talleres Tecnológicos CTT-FISEI** de la Universidad Técnica de Ambato:
 
 - **Módulo A — Agente en Telegram:** asesora "Andrea" con tono humano: perfila al prospecto, resuelve dudas con el catálogo real de CTT-FISEI, maneja objeciones y guía la inscripción. Entiende notas de voz.
@@ -7,7 +9,7 @@ Proyecto para la **Hackathon UTA 2026 · Ecosistema Multi-Agente para Ventas** (
 
 Producción: bot [@HelpdeskUTA15Bot](https://t.me/HelpdeskUTA15Bot) · panel https://helpdesk-agent-uta.vercel.app (usuario `admin`, contraseña `admin`) · API https://codeandes-api.onrender.com/health
 
-Documentación: [arquitectura](docs/ARCHITECTURE.md) · [plan](docs/PLAN.md) · [catálogo](docs/CATALOGO.md) · [batería de pruebas](docs/PRUEBAS.md) · [guion de demo](docs/DEMO.md) · [decisiones y seguridad](docs/DECISIONES.md) · [reto](docs/RETO.md)
+Documentación: [arquitectura](docs/ARCHITECTURE.md) · [plan](docs/PLAN.md) · [catálogo](docs/CATALOGO.md) · [batería de pruebas](docs/PRUEBAS.md) · [guion de demo](docs/DEMO.md) · [decisiones y seguridad](docs/DECISIONES.md) · [runbook](docs/RUNBOOK.md) · [reto](docs/RETO.md)
 
 ## Arquitectura en 30 segundos
 

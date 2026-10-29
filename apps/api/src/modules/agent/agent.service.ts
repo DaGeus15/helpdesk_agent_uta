@@ -13,6 +13,7 @@ import {
 } from '../llm/llm-provider.interface';
 import { AgentOutput, agentOutputJsonSchema } from './agent.schema';
 import { SYSTEM_PROMPT } from './prompts/system-prompt';
+import { sanitizeUserText } from './user-message.logic';
 
 export interface AgentResult {
   output: AgentOutput;
@@ -170,9 +171,6 @@ function sumUsage(a: LlmUsage, b: LlmUsage): LlmUsage {
   };
 }
 
-function sanitizeUserText(text: string): string {
-  return text.replace(/<\/?mensaje_usuario>/gi, '').trim();
-}
 
 /**
  * Map DB messages to LLM turns. Skip the trailing user message if it already

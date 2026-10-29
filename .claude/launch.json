@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "api", "exec", "node", "dist/main.js"],
+      "port": 3000,
+      "env": {
+        "TELEGRAM_MODE": "webhook",
+        "PUBLIC_API_URL": "https://codeandes-api.onrender.com",
+        "CATALOG_SYNC_ENABLED": "false"
+      }
+    },
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "dashboard", "dev"],
+      "port": 5173
+    }
+  ]
+}
