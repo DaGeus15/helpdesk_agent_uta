@@ -213,8 +213,22 @@ function computeStatus(
   course: Omit<Course, 'status'>,
   today: string,
 ): CourseStatus {
-  const { enrollment_start, enrollment_end, start_date, end_date, site_status } =
-    course;
+  const {
+    enrollment_start,
+    enrollment_end,
+    start_date,
+    end_date,
+    site_status,
+    enroll_open_on_site,
+  } = course;
+
+  // Web listing button wins over date windows (may open before enrollment_start).
+  if (
+    enroll_open_on_site &&
+    (!enrollment_end || today <= enrollment_end)
+  ) {
+    return 'inscripciones_abiertas';
+  }
 
   if (
     enrollment_start &&
@@ -340,6 +354,7 @@ function mapCourse(row: Record<string, unknown>, today: string): Course {
         ? null
         : String(row.enrollment_form_url),
     site_status: row.site_status == null ? null : String(row.site_status),
+    enroll_open_on_site: Boolean(row.enroll_open_on_site),
     active: Boolean(row.active),
   };
   return { ...base, status: computeStatus(base, today) };

@@ -222,6 +222,7 @@ export class CatalogSyncService
       source_url: c.source_url,
       enrollment_form_url: c.enrollment_form_url,
       site_status: c.site_status,
+      enroll_open_on_site: c.enroll_open_on_site,
       active: true,
     };
   }

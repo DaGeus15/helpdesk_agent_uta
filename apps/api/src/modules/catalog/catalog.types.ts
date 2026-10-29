@@ -40,6 +40,8 @@ export interface Course {
   source_url: string | null;
   enrollment_form_url: string | null;
   site_status: string | null;
+  /** Listing shows INSCRIBIRME; web accepts enrollments even before enrollment_start. */
+  enroll_open_on_site: boolean;
   active: boolean;
   /** Derived; not stored in DB. */
   status: CourseStatus;

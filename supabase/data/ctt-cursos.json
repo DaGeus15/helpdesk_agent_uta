@@ -62,6 +62,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso1.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -239,6 +240,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso2.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -316,6 +318,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso3.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -381,6 +384,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso4.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -506,6 +510,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso5.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -601,6 +606,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso6.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -731,6 +737,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso7.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -856,6 +863,7 @@
       }
     ],
     "site_status": "cerrado",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso8.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -998,6 +1006,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso9.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1065,6 +1074,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso13.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1132,6 +1142,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso14.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1214,6 +1225,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso15.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1346,6 +1358,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso16.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1483,6 +1496,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso17.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1550,6 +1564,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": false,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso18.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1617,6 +1632,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": true,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso19.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1739,6 +1755,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": true,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso20.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true
@@ -1806,6 +1823,7 @@
       }
     ],
     "site_status": "abierto",
+    "enroll_open_on_site": true,
     "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso21.php",
     "enrollment_form_url": "https://docs.google.com/forms/d/e/1FAIpQLSeWhh69h-nGZYQvWkFIyR1riMYBOc61CC7YmWL49XBo64I3zA/viewform",
     "active": true

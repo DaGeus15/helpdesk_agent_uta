@@ -53,9 +53,18 @@ async function main() {
 
   const withPrices = courses.filter((c) => c.price_tiers.length > 0);
   const withForms = courses.filter((c) => c.enrollment_form_url);
+  const withEnrollBtn = courses.filter((c) => c.enroll_open_on_site);
   console.log(
-    `\nScraped ${courses.length} courses, ${withPrices.length} with prices, ${withForms.length} with enrollment form (${durationMs}ms).`,
+    `\nScraped ${courses.length} courses, ${withPrices.length} with prices, ${withForms.length} with enrollment form, ${withEnrollBtn.length} with INSCRIBIRME (${durationMs}ms).`,
   );
+  if (withEnrollBtn.length) {
+    console.log('INSCRIBIRME on listing:');
+    for (const c of withEnrollBtn) {
+      console.log(
+        `  - ${c.id} ${c.name} (enroll ${c.enrollment_start || '?'}→${c.enrollment_end || '?'})`,
+      );
+    }
+  }
 
   mkdirSync(dirname(JSON_OUT), { recursive: true });
   writeFileSync(JSON_OUT, JSON.stringify(courses, null, 2), 'utf8');
