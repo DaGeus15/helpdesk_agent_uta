@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
-    "start:prod": "node dist/main.js"
+    "start:prod": "NODE_EXTRA_CA_CERTS=certs/sectigo-dv-r36.pem node dist/main.js"
   },
   "dependencies": {
     "@google/genai": "^1.0.0",
