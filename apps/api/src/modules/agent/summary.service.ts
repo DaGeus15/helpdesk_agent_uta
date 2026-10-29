@@ -7,7 +7,7 @@ import {
   type LlmProvider,
 } from '../llm/llm-provider.interface';
 
-const SUMMARY_SYSTEM = `Eres un asistente interno. Resume conversaciones de ventas de CodeAndes Academy en español, máximo 100 palabras, para que un asesor humano retome el chat en segundos.
+const SUMMARY_SYSTEM = `Eres un asistente interno. Resume conversaciones de inscripción a los Talleres Tecnológicos CTT-FISEI (UTA) en español, máximo 100 palabras, para que un asesor humano retome el chat en segundos.
 Formato: texto plano SIN markdown ni asteriscos, 4-5 líneas que empiecen así:
 Lead: quién es (solo datos confirmados).
 Interés: cursos o temas.

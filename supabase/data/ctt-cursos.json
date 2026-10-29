@@ -1,0 +1,1795 @@
+[
+  {
+    "id": "ctt-1",
+    "n": 1,
+    "name": "FUNDAMENTOS DE PYTHON 1",
+    "list_title": "FUNDAMENTOS DE PYTHON 1",
+    "description": "",
+    "objectives": "• Comprender los conceptos básicos de programación aprendiendo a usar Python para resolver problemas mediante algoritmos y estructuras lógicas.\n• Escribir y ejecutar programas simples en Python aplicando elementos clave como variables, operadores y estructuras condicionales para automatizar tareas.\n• Utilizar estructuras de datos básicas como listas y diccionarios para almacenar, organizar y manipular información de manera eficiente.\n• Dominar el uso de bucles e iteraciones para gestionar flujos de trabajo repetitivos en los programas.\n• Implementar funciones y trabajar con módulos para estructurar código reutilizable y organizar proyectos de forma profesional.\n• Prepararse para el uso de Python en contextos prácticos explorando aplicaciones básicas en áreas como el análisis de datos y la automatización de procesos.",
+    "outcomes": "• Comprender los conceptos básicos de programación aprendiendo a usar Python para resolver problemas mediante algoritmos y estructuras lógicas.\n• Escribir y ejecutar programas simples en Python aplicando elementos clave como variables, operadores y estructuras condicionales para automatizar tareas.\n• Utilizar estructuras de datos básicas como listas y diccionarios para almacenar, organizar y manipular información de manera eficiente.\n• Dominar el uso de bucles e iteraciones para gestionar flujos de trabajo repetitivos en los programas.\n• Implementar funciones y trabajar con módulos para estructurar código reutilizable y organizar proyectos de forma profesional.\n• Prepararse para el uso de Python en contextos prácticos explorando aplicaciones básicas en áreas como el análisis de datos y la automatización de procesos.",
+    "enrollment_raw": "15 de febrero al 02 de marzo de 2025",
+    "enrollment_start": "2025-02-15",
+    "enrollment_end": "2025-03-02",
+    "cupo": "Ilimitado",
+    "location": "Virtual a través de la plataforma CISCO.",
+    "start_date": "2025-03-01",
+    "end_date": "2025-03-30",
+    "course_dates_raw": "Del 01 de marzo al 30 de marzo de 2025",
+    "schedule": "A elección del participante",
+    "schedules": [
+      "A elección del participante"
+    ],
+    "modality": "Virtual auto-didacta (Self-paced)",
+    "total_hours": 32,
+    "prerequisites": null,
+    "certificate": "Certificado digital de asistencia y aprobación.",
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (Último periodo)",
+        "price_usd": 30
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 40
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 50
+      }
+    ],
+    "price_usd": 50,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introducción a Python y programación informática",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Tipos de datos, variables, operaciones básicas de entradasalida y operadores básicos",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Valores booleanos, ejecución condicional, bucles, listas y procesamiento de listas, operaciones lógicas y bit a bit",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Funciones, tuplas, diccionarios, excepciones y procesamiento de datos.",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso1.php",
+    "active": true
+  },
+  {
+    "id": "ctt-2",
+    "n": 2,
+    "name": "FUNDAMENTOS DE PYTHON 2",
+    "list_title": "Fundamentos de Python 2",
+    "description": "",
+    "objectives": "• Aplicar el manejo de excepciones en programas Python para identificar y\ngestionar errores, mejorando la robustez y fiabilidad del código.\n• Profundizar en estructuras de datos avanzadas como conjuntos y matrices\nmultidimensionales para resolver problemas complejos de almacenamiento y\nprocesamiento de información\n• Diseñar programas modulares utilizando programación orientada a objetos\n(OOP), incorporando clases, objetos, herencia y encapsulación para\ndesarrollar soluciones escalables.\n• Manejar y procesar archivos en diferentes formatos para la lectura, escritura y\nmanipulación de datos persistentes en aplicaciones.\n• Explorar el uso de bibliotecas estándar y externas de Python para ampliar la\nfuncionalidad de los programas y trabajar con tareas específicas como\nmanejo de fechas, cálculos matemáticos y acceso a internet..",
+    "outcomes": "• Aplicar el manejo de excepciones en programas Python para identificar y\ngestionar errores, mejorando la robustez y fiabilidad del código.\n• Profundizar en estructuras de datos avanzadas como conjuntos y matrices\nmultidimensionales para resolver problemas complejos de almacenamiento y\nprocesamiento de información\n• Diseñar programas modulares utilizando programación orientada a objetos\n(OOP), incorporando clases, objetos, herencia y encapsulación para\ndesarrollar soluciones escalables.\n• Manejar y procesar archivos en diferentes formatos para la lectura, escritura y\nmanipulación de datos persistentes en aplicaciones.\n• Explorar el uso de bibliotecas estándar y externas de Python para ampliar la\nfuncionalidad de los programas y trabajar con tareas específicas como\nmanejo de fechas, cálculos matemáticos y acceso a internet..",
+    "enrollment_raw": "Del 15 de marzo al 07 de abril de 2025.",
+    "enrollment_start": "2025-03-15",
+    "enrollment_end": "2025-04-07",
+    "cupo": "Ilimitado",
+    "location": "Virtual a través de la plataforma CISCO.",
+    "start_date": "2025-04-05",
+    "end_date": "2025-05-04",
+    "course_dates_raw": "Del 05 de abril al 04 de mayo del 2025",
+    "schedule": "A elección del participante",
+    "schedules": [
+      "A elección del participante"
+    ],
+    "modality": "Curso virtual auto-didacta (Self-paced)",
+    "total_hours": 40,
+    "prerequisites": null,
+    "certificate": "Certificado digital de asistencia y aprobación con validación QR.",
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 40
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 50
+      },
+      {
+        "audience": "Estudiantes UTA (Último periodo)",
+        "price_usd": 30
+      }
+    ],
+    "price_usd": 50,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Módulos, Paquetes y PIP",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "¿Qué es un módulo y para qué lo necesitamos?",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Importación y uso de módulos.",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Revisión de algunos módulos útiles de Python.",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "¿Qué es un paquete y en qué se diferencia de un módulo?",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Construcción y uso de paquetes",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "PIP: La navaja suiza y el mantenimiento de paquetes.",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Caracteres, cadenas y excepciones avanzadas",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Caracteres, cadenas y estándares de codificación",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Cadenas y listas: similitudes y diferencias.",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Métodos de listas.",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Métodos de cadenas.",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "La forma en que Python maneja los errores en tiempo de ejecución",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Controlar el flujo de errores usando try y except",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "La jerarquía de excepciones.",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Evaluación.",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Programación orientada a objetos en Python",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Conceptos básicos de programación orientada a objetos.",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Del enfoque procedimental al de objetos: motivaciones y beneficios.",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Clases, objetos, propiedades, y métodos.",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Herencia y polimorfismo",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Excepción como objecto.",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Trabajar con archivos y utilidades",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Generadores, iteradores y cierres.",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Trabajar con sistemas de archivos, árboles de directorios y archivos",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Módulos seleccionados de la biblioteca estándar de Python (os, date, datetime, calendar).",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso2.php",
+    "active": true
+  },
+  {
+    "id": "ctt-3",
+    "n": 3,
+    "name": "JAVASCRIPT ESSENTIALS 1",
+    "list_title": "JavaScript Essentials 1",
+    "description": "El curso JavaScript Essentials 1 es una introducción integral al mundo de la\nprogramación utilizando JavaScript, un lenguaje clave en el desarrollo de\naplicaciones web y móviles. A través de seis módulos, los estudiantes aprenderán\ndesde los fundamentos de la programación, como variables, tipos de datos y\noperadores, hasta conceptos más avanzados como estructuras de control,\nfunciones, manejo de errores y depuración de código.\nEl curso está diseñado para principiantes, sin requerir experiencia previa en\nprogramación, y utiliza herramientas prácticas como entornos de desarrollo en\nlínea y navegadores web para ejecutar y probar código. Al finalizar, los estudiantes\nno solo dominarán los fundamentos de JavaScript, sino que también estarán\npreparados para aplicar las mejores prácticas de programación y resolver\nproblemas de forma algorítmica.",
+    "objectives": "• Aprender los fundamentos de programación, como el manejo de variables,\ntipos de datos, estructuras de control y operadores en JavaScript.\n• Diseñar y desarrollar aplicaciones que interactúen con los usuarios mediante\ncuadros de diálogo (alert, confirm, prompt) y manipulación básica del DOM\n• Integrar JavaScript en aplicaciones web, entender su interacción con HTML y\nCSS, y explorar su uso en aplicaciones del lado cliente.",
+    "outcomes": "El curso JavaScript Essentials 1 es una introducción integral al mundo de la\nprogramación utilizando JavaScript, un lenguaje clave en el desarrollo de\naplicaciones web y móviles. A través de seis módulos, los estudiantes aprenderán\ndesde los fundamentos de la programación, como variables, tipos de datos y\noperadores, hasta conceptos más avanzados como estructuras de control,\nfunciones, manejo de errores y depuración de código.\nEl curso está diseñado para principiantes, sin requerir experiencia previa en\nprogramación, y utiliza herramientas prácticas como entornos de desarrollo en\nlínea y navegadores web para ejecutar y probar código. Al finalizar, los estudiantes\nno solo dominarán los fundamentos de JavaScript, sino que también estarán\npreparados para aplicar las mejores prácticas de programación y resolver\nproblemas de forma algorítmica.\n\n• Aprender los fundamentos de programación, como el manejo de variables,\ntipos de datos, estructuras de control y operadores en JavaScript.\n• Diseñar y desarrollar aplicaciones que interactúen con los usuarios mediante\ncuadros de diálogo (alert, confirm, prompt) y manipulación básica del DOM\n• Integrar JavaScript en aplicaciones web, entender su interacción con HTML y\nCSS, y explorar su uso en aplicaciones del lado cliente.",
+    "enrollment_raw": "Del 17 de febrero al 03 de marzo de 2025.",
+    "enrollment_start": "2025-02-17",
+    "enrollment_end": "2025-03-03",
+    "cupo": null,
+    "location": null,
+    "start_date": "2025-03-01",
+    "end_date": "2025-03-31",
+    "course_dates_raw": "01-marzo a 31-marzo-2025.",
+    "schedule": "Curso virtual auto-didacta (Self-paced)",
+    "schedules": [
+      "Curso virtual auto-didacta (Self-paced)"
+    ],
+    "modality": "Virtual - eLearning",
+    "total_hours": 40,
+    "prerequisites": "Ninguno",
+    "certificate": null,
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA",
+        "price_usd": 30
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 40
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 50
+      }
+    ],
+    "price_usd": 50,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introducción Introducción a JavaScript y a la programación de",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Variables y Tipos Variables, tipos de datos primitivos y complejos, conversión de tipos, comentarios",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Operadores Operadores aritméticos, lógicos, de comparación y de",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Control de Flujo Ejecución condicional (if-else, switch-case); bucles (for,",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Funciones Declaración y uso de funciones, variables locales, parámetros, retorno de valores, funciones como miembros",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Manejo de Errores Manejo de errores y excepciones (try-catch, throw);",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso3.php",
+    "active": true
+  },
+  {
+    "id": "ctt-4",
+    "n": 4,
+    "name": "JAVASCRIPT ESSENTIALS 2",
+    "list_title": "JavaScript Essentials 2",
+    "description": "JavaScript Essentials 2 es un curso avanzado diseñado para profundizar en las\ncapacidades de programación con JavaScript, abordando conceptos\navanzados como la programación orientada a objetos (OOP), técnicas\nfuncionales y asincrónicas. A través de un enfoque práctico, los estudiantes\naprenderán a analizar y resolver problemas del mundo real, trabajar con\nestructuras de datos complejas y desarrollar aplicaciones más eficientes y\nescalables. Este curso prepara a los participantes construir un portafolio profesional\nque demuestre habilidades avanzadas en el desarrollo de aplicaciones con\nJavaScript",
+    "objectives": "• Comprender e implementar clases y programación basada en clases para\nestructurar aplicaciones siguiendo principios modernos de diseño orientado a\nobjetos.\n• Explorar y utilizar objetos integrados y estructuras avanzadas como Map, Set y\nJSON para optimizar el manejo de datos y mejorar el rendimiento de las\naplicaciones\n• Aplicar técnicas avanzadas de programación funcional y asincrónica usando\nclosures, funciones de orden superior, generadores y promesas para gestionar\ntareas complejas y asincrónicas.\n• Desarrollar habilidades analíticas y prácticas en resolución de problemas\naplicando conceptos de JavaScript en proyectos prácticos para construir un\nportafolio competitivo",
+    "outcomes": "JavaScript Essentials 2 es un curso avanzado diseñado para profundizar en las\ncapacidades de programación con JavaScript, abordando conceptos\navanzados como la programación orientada a objetos (OOP), técnicas\nfuncionales y asincrónicas. A través de un enfoque práctico, los estudiantes\naprenderán a analizar y resolver problemas del mundo real, trabajar con\nestructuras de datos complejas y desarrollar aplicaciones más eficientes y\nescalables. Este curso prepara a los participantes construir un portafolio profesional\nque demuestre habilidades avanzadas en el desarrollo de aplicaciones con\nJavaScript\n\n• Comprender e implementar clases y programación basada en clases para\nestructurar aplicaciones siguiendo principios modernos de diseño orientado a\nobjetos.\n• Explorar y utilizar objetos integrados y estructuras avanzadas como Map, Set y\nJSON para optimizar el manejo de datos y mejorar el rendimiento de las\naplicaciones\n• Aplicar técnicas avanzadas de programación funcional y asincrónica usando\nclosures, funciones de orden superior, generadores y promesas para gestionar\ntareas complejas y asincrónicas.\n• Desarrollar habilidades analíticas y prácticas en resolución de problemas\naplicando conceptos de JavaScript en proyectos prácticos para construir un\nportafolio competitivo",
+    "enrollment_raw": null,
+    "enrollment_start": null,
+    "enrollment_end": null,
+    "cupo": null,
+    "location": null,
+    "start_date": "2025-04-05",
+    "end_date": "2025-05-04",
+    "course_dates_raw": "05-abril a 04-mayo-2025",
+    "schedule": null,
+    "schedules": [],
+    "modality": "Curso virtual auto-didacta (Self-paced)",
+    "total_hours": 50,
+    "prerequisites": "JavaScript.",
+    "certificate": null,
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Objetos sin clases Manipulación de objetos, comparación, clonación,",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Clases y programación basada en clases Declaración de clases, propiedades, herencia,",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Objetos integrados Uso de objetos como String, Date, Array, Map, Set;",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Uso avanzado de funciones",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso4.php",
+    "active": true
+  },
+  {
+    "id": "ctt-5",
+    "n": 5,
+    "name": "FUNDAMENTOS DE CIENCIA Y ANALÍTICA DE DATOS",
+    "list_title": "FUNDAMENTOS DE CIENCIA Y ANALÍTICA DE DATOS",
+    "description": "Este curso lleva a los estudiantes al mundo de la ciencia y analítica de datos.\nAprenderán los aspectos básicos en los campos de la ciencia de datos, el análisis\nde datos y la ingeniería de datos para comprender mejor cómo el aprendizaje\nautomático está dando forma al futuro de los negocios, los servicios de salud, la\neducación y más.\nEl curso le enseña las herramientas fundamentales de un analista de datos.\nAprenderás a transformar, organizar y visualizar datos con herramientas de hoja de\ncálculo como Excel. También aprenderá a consultar datos de una base de datos\nrelacional utilizando SQL y a mejorar sus presentaciones de datos utilizando\npotentes herramientas de inteligencia empresarial como Tableau. Al final del\ncurso, habrás dado los pasos necesarios para iniciar una cartera de análisis de\ndatos completa con un análisis del popular conjunto de datos de películas,\nmostrando tus habilidades en Excel, SQL y Tableau.",
+    "objectives": "• Explicar las características de los datos masivos y los efectos del crecimiento de\nlos datos.\n• Examinar el rol de los datos en la Inteligencia Artificial y el Aprendizaje\nAutomático.\n• Realizar la recopilación inicial de datos y la investigación utilizando una hoja\nde cálculo.\n• Utilizar funciones y fórmulas de Excel para transformar datos para su análisis.\n• Obtener datos apropiados para el análisis estadístico de los datos.",
+    "outcomes": "Este curso lleva a los estudiantes al mundo de la ciencia y analítica de datos.\nAprenderán los aspectos básicos en los campos de la ciencia de datos, el análisis\nde datos y la ingeniería de datos para comprender mejor cómo el aprendizaje\nautomático está dando forma al futuro de los negocios, los servicios de salud, la\neducación y más.\nEl curso le enseña las herramientas fundamentales de un analista de datos.\nAprenderás a transformar, organizar y visualizar datos con herramientas de hoja de\ncálculo como Excel. También aprenderá a consultar datos de una base de datos\nrelacional utilizando SQL y a mejorar sus presentaciones de datos utilizando\npotentes herramientas de inteligencia empresarial como Tableau. Al final del\ncurso, habrás dado los pasos necesarios para iniciar una cartera de análisis de\ndatos completa con un análisis del popular conjunto de datos de películas,\nmostrando tus habilidades en Excel, SQL y Tableau.\n\n• Explicar las características de los datos masivos y los efectos del crecimiento de\nlos datos.\n• Examinar el rol de los datos en la Inteligencia Artificial y el Aprendizaje\nAutomático.\n• Realizar la recopilación inicial de datos y la investigación utilizando una hoja\nde cálculo.\n• Utilizar funciones y fórmulas de Excel para transformar datos para su análisis.\n• Obtener datos apropiados para el análisis estadístico de los datos.",
+    "enrollment_raw": null,
+    "enrollment_start": null,
+    "enrollment_end": null,
+    "cupo": null,
+    "location": null,
+    "start_date": "2025-03-01",
+    "end_date": "2025-03-30",
+    "course_dates_raw": "01-marzo a 30-marzo-2025",
+    "schedule": null,
+    "schedules": [],
+    "modality": "Curso virtual auto-didacta (Self-paced)",
+    "total_hours": 36,
+    "prerequisites": "Nivel de inglés básico.",
+    "certificate": null,
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA",
+        "price_usd": 30
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 40
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 50
+      }
+    ],
+    "price_usd": 50,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introducción a la Ciencia de Datos",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Análisis de la Experiencia",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Recopilación y Almacenamiento de Datos",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Inteligencia Artificial y Aprendizaje Automático",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Embarcarse en su Carrera en Análisis de Datos",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Fundamentos de Análisis de Datos",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Proyectos de análisis de datos",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Introducción a la recopilación e Investigación de",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Preparación y limpieza de datos para análisis",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Transformación de datos con Excel",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Analizar los datos utilizando estadísticas",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Introducción a las Bases de Datos Relacionales y SQL",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "Introducción a las consultas estructuradas",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Introducción a Tableau",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "Ética y sesgo en los datos",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Dé los siguientes pasos",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso5.php",
+    "active": true
+  },
+  {
+    "id": "ctt-6",
+    "n": 6,
+    "name": "ETHICAL HACKER",
+    "list_title": "ETHICAL HACKER",
+    "description": "",
+    "objectives": "• Analizar la mentalidad y las tácticas de los cibercriminales para fortalecer sus\nhabilidades defensivas.\n• Implementar controles de seguridad de manera más efectiva y monitorear,\nanalizar y responder a las amenazas de seguridad actuales.\n• Adquirir las habilidades necesarias para implementar seguridad y monitorear,\nanalizar y y responder a las amenazas de seguridad actuales",
+    "outcomes": "• Analizar la mentalidad y las tácticas de los cibercriminales para fortalecer sus\nhabilidades defensivas.\n• Implementar controles de seguridad de manera más efectiva y monitorear,\nanalizar y responder a las amenazas de seguridad actuales.\n• Adquirir las habilidades necesarias para implementar seguridad y monitorear,\nanalizar y y responder a las amenazas de seguridad actuales",
+    "enrollment_raw": null,
+    "enrollment_start": null,
+    "enrollment_end": null,
+    "cupo": null,
+    "location": null,
+    "start_date": "2025-04-05",
+    "end_date": "2025-05-18",
+    "course_dates_raw": "5-abril a 18-mayo-2025",
+    "schedule": null,
+    "schedules": [],
+    "modality": "MOOC",
+    "total_hours": 70,
+    "prerequisites": "Conocimientos básicos de ciberseguridad\nConocimientos básicos de programación\nConocimiento del idioma inglés",
+    "certificate": null,
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 60
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 70
+      }
+    ],
+    "price_usd": 70,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introducción al hacking ético y a las pruebas de penetración",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Planificación y alcance de una prueba de penetración Evaluación",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Recopilación de información y exploración de vulnerabilidades",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Ataques de Ingeniería Social",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Ataques de Ingeniería Social",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Explotación de vulnerabilidades basadas en aplicaciones",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "Seguridad en la nube, móvil e IoT",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Realización de técnicas de post-explotación",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "Informes y comunicación",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Ataques de Ingeniería Social",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso6.php",
+    "active": true
+  },
+  {
+    "id": "ctt-7",
+    "n": 7,
+    "name": "CONCEPTOS BÁSICOS DE REDES",
+    "list_title": "CONCEPTOS BÁSICOS DE REDES",
+    "description": "",
+    "objectives": "• Comprender cómo las redes conectan el mundo, identificando los diferentes\ntipos de redes, cómo se transmiten los datos, y el impacto del ancho de banda\ny el rendimiento en la comunicación.\n• Adquirir conocimientos prácticos para diseñar y gestionar redes, tanto\ninalámbricas como móviles, incluyendo la creación de redes domésticas, con\nun enfoque en los componentes de la red, opciones de conectividad y\nconfiguraciones de enrutadores.\n• Dominar los fundamentos de la comunicación en red, incluyendo los principios\nde la comunicación, los medios de red, la capa de acceso, el protocolo de\nInternet (IPv4 e IPv6), y comprender la importancia del direccionamiento\ndinámico con DHCP, el enrutamiento entre redes, y los servicios de la capa de\naplicación.",
+    "outcomes": "• Comprender cómo las redes conectan el mundo, identificando los diferentes\ntipos de redes, cómo se transmiten los datos, y el impacto del ancho de banda\ny el rendimiento en la comunicación.\n• Adquirir conocimientos prácticos para diseñar y gestionar redes, tanto\ninalámbricas como móviles, incluyendo la creación de redes domésticas, con\nun enfoque en los componentes de la red, opciones de conectividad y\nconfiguraciones de enrutadores.\n• Dominar los fundamentos de la comunicación en red, incluyendo los principios\nde la comunicación, los medios de red, la capa de acceso, el protocolo de\nInternet (IPv4 e IPv6), y comprender la importancia del direccionamiento\ndinámico con DHCP, el enrutamiento entre redes, y los servicios de la capa de\naplicación.",
+    "enrollment_raw": null,
+    "enrollment_start": null,
+    "enrollment_end": null,
+    "cupo": null,
+    "location": null,
+    "start_date": "2025-04-19",
+    "end_date": "2025-05-18",
+    "course_dates_raw": "19-abril a 18-mayo-2025",
+    "schedule": null,
+    "schedules": [],
+    "modality": "Presencial",
+    "total_hours": 32,
+    "prerequisites": "Ninguno",
+    "certificate": null,
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (actuales)",
+        "price_usd": 30
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 40
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 50
+      }
+    ],
+    "price_usd": 50,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Comunicación en un mundo conectado",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Componentes, tipos y conexiones de red",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Redes inalámbricas y móviles",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Crear una red domestica",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Principios de comunicación",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Medios de red",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "La capa de acceso",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "El protocolo de internet",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "IPv4 y segmentación de redes",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Formatos y reglas de direccionamiento IPv6",
+        "topics": []
+      },
+      {
+        "module": 11,
+        "title": "Direccionamiento dinámico con DHCP",
+        "topics": []
+      },
+      {
+        "module": 12,
+        "title": "Puertas de enlace a otras redes",
+        "topics": []
+      },
+      {
+        "module": 13,
+        "title": "El proceso ARP",
+        "topics": []
+      },
+      {
+        "module": 14,
+        "title": "Enrutamiento entre redes",
+        "topics": []
+      },
+      {
+        "module": 15,
+        "title": "TCP y UDP",
+        "topics": []
+      },
+      {
+        "module": 16,
+        "title": "El protocolo de internet",
+        "topics": []
+      },
+      {
+        "module": 17,
+        "title": "Utilidades de prueba de red",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso7.php",
+    "active": true
+  },
+  {
+    "id": "ctt-8",
+    "n": 8,
+    "name": "CIBERSEGURIDAD EN DISPOSITIVOS FINALES",
+    "list_title": "CIBERSEGURIDAD EN DISPOSITIVOS FINALES",
+    "description": "Este curso parte desde las bases de la ciberseguridad, con los conceptos básicos\nde ciberseguridad cibernética, explorando formas de estar seguro en línea, los\ndiferentes tipos de malware y ataques, las medidas utilizadas por las\norganizaciones para mitigar los ataques e investigando oportunidades\nprofesionales. A través de este curso, se podrán adquirir las habilidades para\nproteger la red hasta el borde, incluso hardware, software y medios, mediante la\nevaluación de la red, los sistemas operativos y los puntos finales en busca de\nvulnerabilidades, mediante el desarrollo de habilidades para mantener la\nintegridad, confidencialidad y disponibilidad.",
+    "objectives": "• Analizar los Principios Básicos de Ciberseguridad en Dispositivos Finales.\n• Explicar cómo los actores de amenazas ejecutan algunos de los tipos más comunes de ciberataques.\n• Desarrollar habilidades para proteger una red hasta el borde, incluido el hardware, el software y los medios de transmisión.\n• Utilizar las mejores prácticas de ciberseguridad para mejorar la confidencialidad, la integridad y la disponibilidad.",
+    "outcomes": "Este curso parte desde las bases de la ciberseguridad, con los conceptos básicos\nde ciberseguridad cibernética, explorando formas de estar seguro en línea, los\ndiferentes tipos de malware y ataques, las medidas utilizadas por las\norganizaciones para mitigar los ataques e investigando oportunidades\nprofesionales. A través de este curso, se podrán adquirir las habilidades para\nproteger la red hasta el borde, incluso hardware, software y medios, mediante la\nevaluación de la red, los sistemas operativos y los puntos finales en busca de\nvulnerabilidades, mediante el desarrollo de habilidades para mantener la\nintegridad, confidencialidad y disponibilidad.\n\n• Analizar los Principios Básicos de Ciberseguridad en Dispositivos Finales.\n• Explicar cómo los actores de amenazas ejecutan algunos de los tipos más comunes de ciberataques.\n• Desarrollar habilidades para proteger una red hasta el borde, incluido el hardware, el software y los medios de transmisión.\n• Utilizar las mejores prácticas de ciberseguridad para mejorar la confidencialidad, la integridad y la disponibilidad.",
+    "enrollment_raw": "Del 20 de abril al 20 de mayo de 2025",
+    "enrollment_start": "2025-04-20",
+    "enrollment_end": "2025-05-20",
+    "cupo": "Mínimo 15, Máximo 25",
+    "location": null,
+    "start_date": "2025-05-17",
+    "end_date": "2025-06-15",
+    "course_dates_raw": "Del 17-mayo al 15-junio-2025",
+    "schedule": null,
+    "schedules": [],
+    "modality": "Virtual",
+    "total_hours": 40,
+    "prerequisites": "Ninguno",
+    "certificate": "Curso con certificado digital QR",
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA",
+        "price_usd": 30
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 40
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 50
+      }
+    ],
+    "price_usd": 50,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introducción a la Ciberseguridad",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Introducción a la Ciberseguridad",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Ataques, conceptos y técnicas",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Protegiendo sus datos y su privacidad",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Protegiendo a la organización",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "¿Su futuro estará relacionado con la ciberseguridad?",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Seguridad de Terminales",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Amenazas, vulnerabilidades y ataques a la ciberseguridad",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Protección de redes",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Ataque a los fundamentos Capítulo 4: Atacando lo que hacemos",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Comunicación de red Inalámbrica",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Infraestructura de seguridad de redes",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "El sistema Operativo Windows",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Descripción General de Linux",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "Protección de terminales",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Principios, prácticas y procesos de ciberseguridad",
+        "topics": []
+      }
+    ],
+    "site_status": "cerrado",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso8.php",
+    "active": true
+  },
+  {
+    "id": "ctt-9",
+    "n": 9,
+    "name": "ADMINISTRACIÓN Y DEFENSA DE AMENAZAS CIBERNÉTICAS",
+    "list_title": "ADMINISTRACIÓN Y DEFENSA DE AMENAZAS CIBERNÉTICAS",
+    "description": "Este curso cubre diferentes métodos para monitorear la red y cómo evaluar las\nalertas de seguridad. Se profundiza en las herramientas y técnicas utilizadas para\nproteger la red, incluido el control de acceso, firewalls, seguridad en la nube y\ncriptografía. Permite explorar la gobernanza en la ciberseguridad y la gestión de\namenazas, mediante el desarrollo de políticas para que la organización cumpla\ncon los estándares de ética y los marcos legales y regulatorios.",
+    "objectives": "• Explicar los enfoques para la defensa de la seguridad de la red.\n• Implementar listas de control de acceso (ACL), firewall para filtrar el tráfico y\nmitigar los ataques a la red.\n• Determinar las técnicas criptográficas que se requieren para garantizar la\nconfidencialidad, la integridad y la autenticidad.\n• Impulsar el desarrollo de proyectos de mejora continua dentro del campo empresarial.",
+    "outcomes": "Este curso cubre diferentes métodos para monitorear la red y cómo evaluar las\nalertas de seguridad. Se profundiza en las herramientas y técnicas utilizadas para\nproteger la red, incluido el control de acceso, firewalls, seguridad en la nube y\ncriptografía. Permite explorar la gobernanza en la ciberseguridad y la gestión de\namenazas, mediante el desarrollo de políticas para que la organización cumpla\ncon los estándares de ética y los marcos legales y regulatorios.\n\n• Explicar los enfoques para la defensa de la seguridad de la red.\n• Implementar listas de control de acceso (ACL), firewall para filtrar el tráfico y\nmitigar los ataques a la red.\n• Determinar las técnicas criptográficas que se requieren para garantizar la\nconfidencialidad, la integridad y la autenticidad.\n• Impulsar el desarrollo de proyectos de mejora continua dentro del campo empresarial.",
+    "enrollment_raw": "Del 01 de mayo al 03 de junio de 2025",
+    "enrollment_start": "2025-05-01",
+    "enrollment_end": "2025-06-03",
+    "cupo": null,
+    "location": "Plataforma: Virtual, plataforma:CISCO",
+    "start_date": "2025-05-31",
+    "end_date": "2025-07-05",
+    "course_dates_raw": "Del 31-mayo al 05-julio-2025",
+    "schedule": "Curso MOOC desarrollado en el aula virtual de los talleres tecnológicos, sin horarios específicos de conexión.",
+    "schedules": [
+      "Curso MOOC desarrollado en el aula virtual de los talleres tecnológicos, sin horarios específicos de conexión."
+    ],
+    "modality": "MOOC",
+    "total_hours": 50,
+    "prerequisites": "Conocimientos básicos de ciberseguridad.\nConocimientos básicos de redes",
+    "certificate": "Curso MOOC - certificado digital de aprobación con validación QR",
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (Último periodo)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Defensa de la Red",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Comprendiendo la Defensa",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Defensa de Sistemas y Redes",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Control de Acceso",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Listas de Control de Acceso",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Tecnologías de Firewall",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Firewalls de Política Basados en Zonas",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "Seguridad en la Nube",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Criptografía",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "Tecnologías y Protocolos",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Datos de Seguridad de la Red",
+        "topics": []
+      },
+      {
+        "module": 11,
+        "title": "Evaluación de Alertas",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Administración de Amenazas Cibernéticas",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Gobernanza y Cumplimiento",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Pruebas de seguridad de red",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Inteligencia de amenazas",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Evaluación de la vulnerabilidad de los endpoints",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Gestión de Riesgos y Controles de Seguridad",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Forense digital y Análisis y respuesta a incidentes",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso9.php",
+    "active": true
+  },
+  {
+    "id": "ctt-13",
+    "n": 13,
+    "name": "Arduino desde cero: Electrónica, Programación y Automatización",
+    "list_title": "ARDUINO DESDE CERO: ELECTRÓNICA, PROGRAMACIÓN Y AUTOMATIZACIÓN",
+    "description": "",
+    "objectives": "• Capacitar en el diseño, programación y ejecución de proyectos con Arduino, desde configuraciones básicas\n(entradas/salidas digitales, estructuras de control) hasta aplicaciones avanzadas (control de motores,\ncomunicación serial/I2C y automatización).\n• Desarrollar habilidades prácticas en electrónica y sistemas integrados, incluyendo el manejo de sensores\nanalógicos/digitales, modulación PWM, integración con herramientas como LabVIEW, y optimización de recursos\nmediante interrupciones y técnicas de bajo consumo.\n• Fomentar la creación de soluciones innovadoras y eficientes en automatización, prototipado y adquisición\nde datos, aplicables en contextos educativos, industriales o de desarrollo tecnológico.",
+    "outcomes": "• Capacitar en el diseño, programación y ejecución de proyectos con Arduino, desde configuraciones básicas\n(entradas/salidas digitales, estructuras de control) hasta aplicaciones avanzadas (control de motores,\ncomunicación serial/I2C y automatización).\n• Desarrollar habilidades prácticas en electrónica y sistemas integrados, incluyendo el manejo de sensores\nanalógicos/digitales, modulación PWM, integración con herramientas como LabVIEW, y optimización de recursos\nmediante interrupciones y técnicas de bajo consumo.\n• Fomentar la creación de soluciones innovadoras y eficientes en automatización, prototipado y adquisición\nde datos, aplicables en contextos educativos, industriales o de desarrollo tecnológico.",
+    "enrollment_raw": "Del 19 de mayo al 04 de junio de 2025",
+    "enrollment_start": "2025-05-19",
+    "enrollment_end": "2025-06-04",
+    "cupo": "Mínimo 15, máximo 25 participantes",
+    "location": "Laboratorio asignado - FISEI",
+    "start_date": "2025-06-30",
+    "end_date": "2025-06-30",
+    "course_dates_raw": "Del 07 al 30 de junio de 2025",
+    "schedule": "8:00 - 14:00 (Sábados)",
+    "schedules": [
+      "8:00 - 14:00 (Sábados)"
+    ],
+    "modality": "Presencial",
+    "total_hours": 40,
+    "prerequisites": "• Ninguno",
+    "certificate": "Certificado digital de asistencia y aprobación con validación QR",
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (Último periodo)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Clase 1",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Clase 2",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Clase 3",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Clase 4",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso13.php",
+    "active": true
+  },
+  {
+    "id": "ctt-14",
+    "n": 14,
+    "name": "La Ley de Protección de Datos en el Ecuador: Claves Legales y Técnicas para el Cumplimiento Normativo",
+    "list_title": "LA LEY DE PROTECCIÓN DE DATOS EN EL ECUADOR",
+    "description": "",
+    "objectives": "• Comprender los fundamentos jurídicos, principios rectores y alcance de la Ley Orgánica de Protección de\nDatos Personales y su reglamento en el contexto ecuatoriano.\n• Identificar los derechos que asisten a los titulares de datos personales y las responsabilidades de los\ndistintos actores involucrados en su tratamiento (responsables, encargados, delegados de protección,\nentre otros).\n• Aplicar buenas prácticas y herramientas para la protección de datos personales en organizaciones públicas\ny privadas, con base en ejemplos reales, normativa internacional comparada y estándares como el GDPR europeo.",
+    "outcomes": "• Comprender los fundamentos jurídicos, principios rectores y alcance de la Ley Orgánica de Protección de\nDatos Personales y su reglamento en el contexto ecuatoriano.\n• Identificar los derechos que asisten a los titulares de datos personales y las responsabilidades de los\ndistintos actores involucrados en su tratamiento (responsables, encargados, delegados de protección,\nentre otros).\n• Aplicar buenas prácticas y herramientas para la protección de datos personales en organizaciones públicas\ny privadas, con base en ejemplos reales, normativa internacional comparada y estándares como el GDPR europeo.",
+    "enrollment_raw": "Del 15 de Mayo al 04 de Junio de 2025",
+    "enrollment_start": "2025-05-15",
+    "enrollment_end": "2025-06-04",
+    "cupo": "Mínimo 15, máximo 20 participantes",
+    "location": "CTT – FISEI / Laboratorio asignado",
+    "start_date": "2025-06-30",
+    "end_date": "2025-06-30",
+    "course_dates_raw": "Del 07 al 30 de junio de 2025",
+    "schedule": "8:00 - 13:00 (Sábados)",
+    "schedules": [
+      "8:00 - 13:00 (Sábados)"
+    ],
+    "modality": "Presencial",
+    "total_hours": 32,
+    "prerequisites": "• Ninguno",
+    "certificate": "Certificado digital de asistencia y aprobación con validación QR",
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (Último periodo)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Fundamentos de la Protección de Datos Personales: Contexto Nacional e Internacional",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Derechos del Titular y Obligaciones de los Responsables del Tratamiento",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Gestión y Seguridad de los Datos en Organizaciones",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Aplicación Práctica y Casos Reales",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso14.php",
+    "active": true
+  },
+  {
+    "id": "ctt-15",
+    "n": 15,
+    "name": "Inteligencia Artificial para la Gestión de Recursos Humanos",
+    "list_title": "INTELIGENCIA ARTIFICIAL PARA LA GESTIÓN DE RECURSOS HUMANOS",
+    "description": "",
+    "objectives": "• Entender los fundamentos y el impacto de la inteligencia artificial en el ámbito de\nlos Recursos Humanos.\n• Explorar y dominar el uso de herramientas de IA gratuitas para hacer más eficiente\nel proceso de atracción y selección de talento.\n• Implementar soluciones basadas en IA que mejoren la experiencia de onboarding e\nintegración de nuevos colaboradores.",
+    "outcomes": "• Entender los fundamentos y el impacto de la inteligencia artificial en el ámbito de\nlos Recursos Humanos.\n• Explorar y dominar el uso de herramientas de IA gratuitas para hacer más eficiente\nel proceso de atracción y selección de talento.\n• Implementar soluciones basadas en IA que mejoren la experiencia de onboarding e\nintegración de nuevos colaboradores.",
+    "enrollment_raw": "Del 14 de Mayo al 03 de Junio de 2025",
+    "enrollment_start": "2025-05-14",
+    "enrollment_end": "2025-06-03",
+    "cupo": "Sin límite específico",
+    "location": "Virtual",
+    "start_date": "2025-06-30",
+    "end_date": "2025-06-30",
+    "course_dates_raw": "Del 04 al 30 de junio de 2025",
+    "schedule": "7:00 PM - 10:00 PM (Miércoles y Jueves)",
+    "schedules": [
+      "7:00 PM - 10:00 PM (Miércoles y Jueves)"
+    ],
+    "modality": "Virtual",
+    "total_hours": 32,
+    "prerequisites": "• Ninguno",
+    "certificate": "Certificado digital de asistencia y aprobación con validación QR",
+    "instructors": null,
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (Último periodo)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, Docentes y Administrativos UTA",
+        "price_usd": 60
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 80
+      }
+    ],
+    "price_usd": 80,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introducción a la Inteligencia Artificial",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Prompt Engineering",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Creación de Presentaciones con IA",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Extensiones para la productividad con IA",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "La IA como motor de selección del personal",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Inteligencia Artificial generativa: innovación y aplicaciones",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "Consideraciones éticas sobre IA",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso15.php",
+    "active": true
+  },
+  {
+    "id": "ctt-16",
+    "n": 16,
+    "name": "CCNA: Introducción a las redes – Preparación Cisco Certified Network Associate",
+    "list_title": "INTRODUCCIÓN A LAS REDES – PREPARACIÓN CCNA",
+    "description": "El curso CCNA: Introducción a las redes proporciona los fundamentos teóricos y prácticos para comprender cómo funcionan las redes de datos. Aborda los modelos OSI y TCP/IP, Ethernet, configuración básica de switches y routers, direccionamiento IPv4 e IPv6, protocolos de comunicación, seguridad y la construcción de una red pequeña.",
+    "objectives": "• Comprender los modelos y protocolos de comunicación de redes.\n• Configurar y verificar dispositivos de red como switches y routers.\n• Aplicar direccionamiento IPv4 e IPv6 y conceptos de seguridad en una red pequeña.",
+    "outcomes": "El curso CCNA: Introducción a las redes proporciona los fundamentos teóricos y prácticos para comprender cómo funcionan las redes de datos. Aborda los modelos OSI y TCP/IP, Ethernet, configuración básica de switches y routers, direccionamiento IPv4 e IPv6, protocolos de comunicación, seguridad y la construcción de una red pequeña.\n\n• Comprender los modelos y protocolos de comunicación de redes.\n• Configurar y verificar dispositivos de red como switches y routers.\n• Aplicar direccionamiento IPv4 e IPv6 y conceptos de seguridad en una red pequeña.",
+    "enrollment_raw": "Del 01 de octubre de 2026 al 15 de octubre de 2026",
+    "enrollment_start": "2026-10-01",
+    "enrollment_end": "2026-10-15",
+    "cupo": "Mínimo 5, máximo 20",
+    "location": "Talleres Tecnológicos FISEI, Campus Huachi, Ambato; sesiones virtuales según cronograma.",
+    "start_date": "2026-10-16",
+    "end_date": "2026-12-05",
+    "course_dates_raw": "Del 16 de octubre de 2026 al 05 de diciembre de 2026",
+    "schedule": "Sesiones virtuales los viernes de 19:00 a 21:00 y sesiones presenciales los sábados de 08:00 a 13:00, más trabajo autónomo, según la planificación.",
+    "schedules": [
+      "Sesiones virtuales los viernes de 19:00 a 21:00 y sesiones presenciales los sábados de 08:00 a 13:00, más trabajo autónomo, según la planificación."
+    ],
+    "modality": "Híbrida",
+    "total_hours": 70,
+    "prerequisites": "Ninguno.",
+    "certificate": "Certificado digital de aprobación con validación QR.",
+    "instructors": "Ing. Livio Danilo Miniguano, Mg.; Ing. Daniel Maldonado Ruiz, Ph.D.",
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (hasta último período)",
+        "price_usd": 120
+      },
+      {
+        "audience": "Graduados, docentes y personal administrativo UTA",
+        "price_usd": 150
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 180
+      }
+    ],
+    "price_usd": 180,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Networking Today",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Basic Switch and End Device Configuration",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Protocols and Models",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Physical Layer",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Number Systems",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Data Link Layer",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "Ethernet Switching",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Network Layer",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "Address Resolution",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Basic Router Configuration",
+        "topics": []
+      },
+      {
+        "module": 11,
+        "title": "IPv4 Addressing",
+        "topics": []
+      },
+      {
+        "module": 12,
+        "title": "IPv6 Addressing",
+        "topics": []
+      },
+      {
+        "module": 13,
+        "title": "ICMP",
+        "topics": []
+      },
+      {
+        "module": 14,
+        "title": "Transport Layer",
+        "topics": []
+      },
+      {
+        "module": 15,
+        "title": "Application Layer",
+        "topics": []
+      },
+      {
+        "module": 16,
+        "title": "Network Security Fundamentals",
+        "topics": []
+      },
+      {
+        "module": 17,
+        "title": "Build a Small Network",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso16.php",
+    "active": true
+  },
+  {
+    "id": "ctt-17",
+    "n": 17,
+    "name": "Linux Essentials – Preparación Linux Essentials Certificate",
+    "list_title": "PREPARACIÓN LINUX ESSENTIALS CERTIFICATE",
+    "description": "El curso Linux Essentials introduce el sistema operativo Linux y los fundamentos del software libre y de código abierto. Permite adquirir competencias iniciales para trabajar con distribuciones Linux, navegar por el sistema de archivos, administrar usuarios y permisos, ejecutar comandos y aplicar nociones de administración y seguridad.",
+    "objectives": "• Instalar y configurar un sistema operativo Linux con procedimientos básicos.\n• Administrar archivos, directorios, usuarios, grupos y permisos desde la línea de comandos.\n• Gestionar procesos, servicios y tareas de Linux.\n• Aplicar buenas prácticas iniciales de administración y seguridad.",
+    "outcomes": "El curso Linux Essentials introduce el sistema operativo Linux y los fundamentos del software libre y de código abierto. Permite adquirir competencias iniciales para trabajar con distribuciones Linux, navegar por el sistema de archivos, administrar usuarios y permisos, ejecutar comandos y aplicar nociones de administración y seguridad.\n\n• Instalar y configurar un sistema operativo Linux con procedimientos básicos.\n• Administrar archivos, directorios, usuarios, grupos y permisos desde la línea de comandos.\n• Gestionar procesos, servicios y tareas de Linux.\n• Aplicar buenas prácticas iniciales de administración y seguridad.",
+    "enrollment_raw": "Del 01 de octubre de 2026 al 15 de octubre de 2026",
+    "enrollment_start": "2026-10-01",
+    "enrollment_end": "2026-10-15",
+    "cupo": "Mínimo 5, sin cupo máximo especificado",
+    "location": "Virtual, plataforma Cisco NetAcad.",
+    "start_date": "2026-10-16",
+    "end_date": "2026-12-05",
+    "course_dates_raw": "Del 16 de octubre de 2026 al 05 de diciembre de 2026",
+    "schedule": "Modalidad autodidacta; el participante avanza en la plataforma dentro del período de ejecución.",
+    "schedules": [
+      "Modalidad autodidacta; el participante avanza en la plataforma dentro del período de ejecución."
+    ],
+    "modality": "Virtual autodidacta (Self-paced)",
+    "total_hours": 70,
+    "prerequisites": "Ninguno.",
+    "certificate": "Certificado digital de aprobación con validación QR.",
+    "instructors": "Ing. Carlos Vargas, Mg.",
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (hasta último período)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, docentes y personal administrativo UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introduction to Linux",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Operating Systems",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Working in Linux",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Open Source Software and Licensing",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Command Line Skills",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Getting Help",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "Navigating the Filesystem",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Managing Files and Directories",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "Archiving and Compression",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Working With Text",
+        "topics": []
+      },
+      {
+        "module": 11,
+        "title": "Basic Scripting",
+        "topics": []
+      },
+      {
+        "module": 12,
+        "title": "Understanding Computer Hardware",
+        "topics": []
+      },
+      {
+        "module": 13,
+        "title": "Where Data is Stored",
+        "topics": []
+      },
+      {
+        "module": 14,
+        "title": "Network Configuration",
+        "topics": []
+      },
+      {
+        "module": 15,
+        "title": "System and User Security",
+        "topics": []
+      },
+      {
+        "module": 16,
+        "title": "Creating Users and Groups",
+        "topics": []
+      },
+      {
+        "module": 17,
+        "title": "Ownership and Permissions",
+        "topics": []
+      },
+      {
+        "module": 18,
+        "title": "Special Directories and Files",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso17.php",
+    "active": true
+  },
+  {
+    "id": "ctt-18",
+    "n": 18,
+    "name": "Fundamentos de Python 1 – Certified Entry-Level Python",
+    "list_title": "FUNDAMENTOS DE PYTHON 1",
+    "description": "Fundamentos de Python 1 de Cisco NetAcad introduce la programación con Python mediante ejercicios y actividades. Los participantes estudian lógica, variables, operadores, entrada y salida de datos, condiciones, bucles, listas, funciones y procesamiento básico de información.",
+    "objectives": "• Comprender los conceptos fundamentales de la programación y la lógica algorítmica.\n• Desarrollar programas sencillos con variables, operadores y condicionales.\n• Utilizar listas, bucles, funciones y diccionarios para resolver problemas.\n• Organizar soluciones en módulos y preparar aplicaciones prácticas.",
+    "outcomes": "Fundamentos de Python 1 de Cisco NetAcad introduce la programación con Python mediante ejercicios y actividades. Los participantes estudian lógica, variables, operadores, entrada y salida de datos, condiciones, bucles, listas, funciones y procesamiento básico de información.\n\n• Comprender los conceptos fundamentales de la programación y la lógica algorítmica.\n• Desarrollar programas sencillos con variables, operadores y condicionales.\n• Utilizar listas, bucles, funciones y diccionarios para resolver problemas.\n• Organizar soluciones en módulos y preparar aplicaciones prácticas.",
+    "enrollment_raw": "Del 01 de octubre de 2026 al 15 de octubre de 2026",
+    "enrollment_start": "2026-10-01",
+    "enrollment_end": "2026-10-15",
+    "cupo": "Mínimo 5, sin cupo máximo especificado",
+    "location": "Virtual, plataforma Cisco NetAcad.",
+    "start_date": "2026-10-16",
+    "end_date": "2026-11-16",
+    "course_dates_raw": "Del 16 de octubre de 2026 al 16 de noviembre de 2026",
+    "schedule": "Modalidad autodidacta; actividades y evaluaciones en línea.",
+    "schedules": [
+      "Modalidad autodidacta; actividades y evaluaciones en línea."
+    ],
+    "modality": "Virtual autodidacta (Self-paced)",
+    "total_hours": 32,
+    "prerequisites": "Ninguno.",
+    "certificate": "Certificado digital de asistencia y aprobación con validación QR.",
+    "instructors": "Ing. Carlos Vargas, Mg.",
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (hasta último período)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, docentes y personal administrativo UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Introducción a Python y programación informática",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Tipos de datos, variables, operaciones básicas de entrada-salida y operadores básicos",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Valores booleanos, ejecución condicional, bucles, listas y procesamiento de listas, operaciones lógicas y bit a bit",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Funciones, tuplas, diccionarios, excepciones y procesamiento de datos",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso18.php",
+    "active": true
+  },
+  {
+    "id": "ctt-19",
+    "n": 19,
+    "name": "Preparación GitHub Certified: Agentic AI Developer (GH-600)",
+    "list_title": "GITHUB CERTIFIED: AGENTIC AI DEVELOPER (GH-600)",
+    "description": "Capacitación inicial de agentes de inteligencia artificial aplicados al ciclo de vida del desarrollo de software. Abarca Git y GitHub, colaboración, GitHub Actions, GitHub Copilot, instrucciones para agentes, uso de herramientas y fundamentos de Model Context Protocol (MCP), evaluación, controles de seguridad y un proyecto integrador.",
+    "objectives": "• Aplicar Git, GitHub, SDLC y automatización básica con GitHub Actions en trabajo colaborativo.\n• Configurar agentes de codificación con GitHub Copilot, instrucciones personalizadas y fundamentos de MCP.\n• Evaluar y supervisar agentes mediante criterios de éxito, guardrails y revisión humana; desarrollar un proyecto integrador.",
+    "outcomes": "Capacitación inicial de agentes de inteligencia artificial aplicados al ciclo de vida del desarrollo de software. Abarca Git y GitHub, colaboración, GitHub Actions, GitHub Copilot, instrucciones para agentes, uso de herramientas y fundamentos de Model Context Protocol (MCP), evaluación, controles de seguridad y un proyecto integrador.\n\n• Aplicar Git, GitHub, SDLC y automatización básica con GitHub Actions en trabajo colaborativo.\n• Configurar agentes de codificación con GitHub Copilot, instrucciones personalizadas y fundamentos de MCP.\n• Evaluar y supervisar agentes mediante criterios de éxito, guardrails y revisión humana; desarrollar un proyecto integrador.",
+    "enrollment_raw": "Del 30 de octubre de 2026 al 13 de noviembre de 2026",
+    "enrollment_start": "2026-10-30",
+    "enrollment_end": "2026-11-13",
+    "cupo": "Mínimo 5, máximo 25",
+    "location": "Virtual por Zoom.",
+    "start_date": "2026-11-14",
+    "end_date": "2026-12-05",
+    "course_dates_raw": "Del 14 de noviembre de 2026 al 05 de diciembre de 2026",
+    "schedule": "Sesiones virtuales el 14, 21 y 28 de noviembre y el 5 de diciembre de 2026, de 08:00 a 14:00; 24 horas de clase y 8 de trabajo autónomo.",
+    "schedules": [
+      "Sesiones virtuales el 14, 21 y 28 de noviembre y el 5 de diciembre de 2026, de 08:00 a 14:00; 24 horas de clase y 8 de trabajo autónomo."
+    ],
+    "modality": "Virtual",
+    "total_hours": 32,
+    "prerequisites": "Conocimientos básicos de programación y manejo de computador. No se requiere experiencia previa con IA agéntica, MCP ni GitHub Copilot.",
+    "certificate": "Certificado digital de asistencia y aprobación con validación QR.",
+    "instructors": "Ing. Javier Santiago Vargas Paredes, Mg.",
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (hasta último período)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, docentes y personal administrativo UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Fundamentos de GitHub, SDLC e IA Agéntica",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Arquitectura del Agente e Integración con el SDLC",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Herramientas, MCP, Memoria, Estado y Ejecución",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Evaluación, Multiagente, Guardrails y Proyecto Integrador",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso19.php",
+    "active": true
+  },
+  {
+    "id": "ctt-20",
+    "n": 20,
+    "name": "Preparación Arduino Certification Program",
+    "list_title": "PREPARACIÓN ARDUINO CERTIFICATION PROGRAM",
+    "description": "Formación teórico-práctica en electricidad, circuitos de corriente continua, lectura de esquemas, instrumentación y programación de microcontroladores Arduino Uno. Se estudian leyes eléctricas, uso del multímetro, Arduino IDE, pines digitales y analógicos, PWM, comunicación serial y prácticas sobre protoboard.",
+    "objectives": "• Aplicar las leyes fundamentales de circuitos eléctricos en montaje y medición en protoboard.\n• Desarrollar programas estructurados en C/C++ utilizando Arduino IDE.\n• Integrar sensores y entradas analógicas para adquisición de datos y control básico.",
+    "outcomes": "Formación teórico-práctica en electricidad, circuitos de corriente continua, lectura de esquemas, instrumentación y programación de microcontroladores Arduino Uno. Se estudian leyes eléctricas, uso del multímetro, Arduino IDE, pines digitales y analógicos, PWM, comunicación serial y prácticas sobre protoboard.\n\n• Aplicar las leyes fundamentales de circuitos eléctricos en montaje y medición en protoboard.\n• Desarrollar programas estructurados en C/C++ utilizando Arduino IDE.\n• Integrar sensores y entradas analógicas para adquisición de datos y control básico.",
+    "enrollment_raw": "Del 30 de octubre de 2026 al 13 de noviembre de 2026",
+    "enrollment_start": "2026-10-30",
+    "enrollment_end": "2026-11-13",
+    "cupo": "Mínimo 5, máximo 30",
+    "location": "Talleres de Innovación y Desarrollo Tecnológico FISEI, Campus Huachi, Ambato.",
+    "start_date": "2026-11-14",
+    "end_date": "2026-12-05",
+    "course_dates_raw": "Del 14 de noviembre de 2026 al 05 de diciembre de 2026",
+    "schedule": "Clases presenciales los días 14, 21 y 28 de noviembre y 5 de diciembre de 2026. Confirmar el horario exacto con la coordinación.",
+    "schedules": [
+      "Clases presenciales los días 14, 21 y 28 de noviembre y 5 de diciembre de 2026. Confirmar el horario exacto con la coordinación."
+    ],
+    "modality": "Presencial",
+    "total_hours": 32,
+    "prerequisites": "Conocimientos básicos de matemáticas y manejo general de herramientas informáticas.",
+    "certificate": "Certificado digital de asistencia y aprobación emitido por FISEI-UTA, con validación QR.",
+    "instructors": "Ing. Carlos Luis Vargas Guevara, Mg.; Ing. Jesús Israel Guamán Molina, Mg.",
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (hasta último período)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, docentes y personal administrativo UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "FUNDAMENTOS DE ELECTRICIDAD Y LEYES DE CIRCUITOS.",
+        "topics": []
+      },
+      {
+        "module": 1,
+        "title": "Clase 1",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Clase 2",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "ARQUITECTURA ARDUINO Y ENTORNO IDE.",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Clase 3",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Clase 4",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "ENTRADAS Y SALIDAS DIGITALES (GPIO)",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "Clase 5",
+        "topics": []
+      },
+      {
+        "module": 6,
+        "title": "Clase 6",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "SEÑALES ANALÓGICAS Y CONVERSIÓN ADC",
+        "topics": []
+      },
+      {
+        "module": 7,
+        "title": "Clase 7",
+        "topics": []
+      },
+      {
+        "module": 8,
+        "title": "Clase 8",
+        "topics": []
+      },
+      {
+        "module": 5,
+        "title": "ESTRUCTURAS DE CONTROL Y COMUNICACIÓN SERIAL",
+        "topics": []
+      },
+      {
+        "module": 9,
+        "title": "Clase 9",
+        "topics": []
+      },
+      {
+        "module": 10,
+        "title": "Clase 10",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso20.php",
+    "active": true
+  },
+  {
+    "id": "ctt-21",
+    "n": 21,
+    "name": "Fundamentos de Python 2 – Certified Associate Python Programmer",
+    "list_title": "FUNDAMENTOS DE PYTHON 2",
+    "description": "Fundamentos de Python 2 de Cisco NetAcad amplía los conocimientos del primer nivel. Profundiza en módulos, paquetes, PIP, cadenas y excepciones, programación orientada a objetos, herencia, polimorfismo y trabajo con archivos, para desarrollar programas más sólidos y modulares.",
+    "objectives": "• Aplicar manejo de excepciones para mejorar la robustez de los programas.\n• Utilizar estructuras de datos más avanzadas para resolver problemas.\n• Diseñar soluciones de programación orientada a objetos con clases, herencia y encapsulación.\n• Trabajar con archivos y bibliotecas de Python.",
+    "outcomes": "Fundamentos de Python 2 de Cisco NetAcad amplía los conocimientos del primer nivel. Profundiza en módulos, paquetes, PIP, cadenas y excepciones, programación orientada a objetos, herencia, polimorfismo y trabajo con archivos, para desarrollar programas más sólidos y modulares.\n\n• Aplicar manejo de excepciones para mejorar la robustez de los programas.\n• Utilizar estructuras de datos más avanzadas para resolver problemas.\n• Diseñar soluciones de programación orientada a objetos con clases, herencia y encapsulación.\n• Trabajar con archivos y bibliotecas de Python.",
+    "enrollment_raw": "Del 30 de octubre de 2026 al 15 de noviembre de 2026",
+    "enrollment_start": "2026-10-30",
+    "enrollment_end": "2026-11-15",
+    "cupo": "Mínimo 5, sin cupo máximo especificado",
+    "location": "Virtual, plataforma Cisco NetAcad.",
+    "start_date": "2026-11-16",
+    "end_date": "2026-12-16",
+    "course_dates_raw": "Del 16 de noviembre de 2026 al 16 de diciembre de 2026",
+    "schedule": "Modalidad autodidacta; el participante completa los módulos en línea dentro de las fechas establecidas.",
+    "schedules": [
+      "Modalidad autodidacta; el participante completa los módulos en línea dentro de las fechas establecidas."
+    ],
+    "modality": "Virtual autodidacta (Self-paced)",
+    "total_hours": 40,
+    "prerequisites": "Ninguno indicado en la planificación. Se recomienda haber cursado Fundamentos de Python 1 por la progresión de contenidos.",
+    "certificate": "Certificado digital de asistencia y aprobación con validación QR.",
+    "instructors": "Ing. Carlos Vargas, Mg.",
+    "price_tiers": [
+      {
+        "audience": "Estudiantes UTA (hasta último período)",
+        "price_usd": 40
+      },
+      {
+        "audience": "Graduados, docentes y personal administrativo UTA",
+        "price_usd": 50
+      },
+      {
+        "audience": "Público en general",
+        "price_usd": 60
+      }
+    ],
+    "price_usd": 60,
+    "syllabus": [
+      {
+        "module": 1,
+        "title": "Módulos, paquetes y PIP",
+        "topics": []
+      },
+      {
+        "module": 2,
+        "title": "Caracteres, cadenas y excepciones avanzadas",
+        "topics": []
+      },
+      {
+        "module": 3,
+        "title": "Programación orientada a objetos en Python",
+        "topics": []
+      },
+      {
+        "module": 4,
+        "title": "Trabajar con archivos y utilidades",
+        "topics": []
+      }
+    ],
+    "site_status": "abierto",
+    "source_url": "https://ctt-talleresfisei.uta.edu.ec/curso21.php",
+    "active": true
+  }
+]

@@ -1,134 +1,415 @@
-# Catálogo oficial — CodeAndes Academy
+# Catálogo oficial — Talleres Tecnológicos CTT-FISEI (UTA)
 
-Centro de capacitación tecnológica en Ambato, Ecuador. Esta es la **única fuente de verdad** comercial: el seed de Supabase (`supabase/seed.sql`) se genera a partir de este documento y el agente no puede ofrecer nada que no esté aquí.
+Fuente de verdad comercial del agente. Datos extraídos de [ctt-talleresfisei.uta.edu.ec/course.php](https://ctt-talleresfisei.uta.edu.ec/course.php) con `apps/api/scripts/scrape-ctt.mjs` → `supabase/data/ctt-cursos.json` y `supabase/seed_ctt.sql`.
+
+**Hoy (referencia America/Guayaquil): 2026-10-29**
 
 ## Datos generales
 
-- **Sede:** Av. Cevallos y Montalvo, Ambato (edificio CodeAndes, 2.º piso).
-- **Modalidad:** híbrida — clases en vivo presenciales en Ambato con transmisión online simultánea; todas las sesiones quedan grabadas.
-- **Moneda:** dólares (USD). Precios por curso completo, sin matrícula adicional.
-- **Incluye en todos los cursos:** certificado digital verificable CodeAndes, mentoría 1:1 semanal de 30 min, proyecto final para portafolio, acceso a la comunidad de egresados y bolsa de empleo con empresas aliadas de la zona centro.
-- **Formas de pago:** transferencia, tarjeta de crédito o débito, o **2 cuotas sin intereses** (50 % al inscribirse, 50 % a mitad del curso).
-- **Inscripción:** se reservan cupos con nombre completo, correo y teléfono; un asesor confirma el pago en menos de 24 h. Cupo máximo: 20 estudiantes por grupo.
-- **Garantía:** si en la primera semana el curso no es lo que esperabas, se devuelve el 100 % de lo pagado.
-- **Atención humana:** asesores de lunes a sábado, de 08:00 a 20:00.
+- **Centro:** Centro de Transferencia y Desarrollo de Tecnologías CTT-FISEI, Universidad Técnica de Ambato
+- **Sede:** Av. Los Chasquis y Río Guayllabamba, Campus Huachi, Ambato
+- **Correos:** talleresfisei@uta.edu.ec / ctt.fisei@uta.edu.ec
+- **Web / inscripción:** https://ctt-talleresfisei.uta.edu.ec
+- **Certificados:** digitales con validación QR
+- **Promociones por chat:** ninguna (la web oficial no publica descuentos para el bot)
+- **Precios:** por audiencia (estudiante UTA, graduado/docente/administrativo UTA, público general), en USD
 
-## Cursos
+## Resumen por estado (calculado para hoy)
 
-### 1. Fundamentos de Programación con Python — `python-fundamentos`
-- **Nivel:** inicial (no requiere experiencia previa) · **Duración:** 8 semanas, 6 h/semana · **Precio:** $180
-- **Inicio:** 9 de noviembre de 2026
-- **Horarios:** Lun-Mié-Vie 19:00-21:00 · Sábados 08:00-14:00
-- **Al terminar:** escribes programas en Python, automatizas tareas y tienes la base para web, datos o IA.
-- **Pénsum:**
-  1. Primeros pasos: instalación, variables, tipos de datos, entrada y salida.
-  2. Control de flujo: condicionales, bucles y manejo de errores.
-  3. Estructuras de datos y funciones: listas, diccionarios, tuplas, conjuntos, funciones y módulos.
-  4. Programación orientada a objetos: clases, herencia y buenas prácticas.
-  5. Proyecto final: automatización con archivos, APIs y Git/GitHub.
+| Estado | Cursos |
+|---|---|
+| Inscripciones abiertas | — |
+| En curso | CCNA: Introducción a las redes – Preparación Cisco Certified Network Associate; Linux Essentials – Preparación Linux Essentials Certificate; Fundamentos de Python 1 – Certified Entry-Level Python |
+| Próximamente | Preparación GitHub Certified: Agentic AI Developer (GH-600); Preparación Arduino Certification Program; Fundamentos de Python 2 – Certified Associate Python Programmer |
+| Finalizados | FUNDAMENTOS DE PYTHON 1; FUNDAMENTOS DE PYTHON 2; JAVASCRIPT ESSENTIALS 1; JAVASCRIPT ESSENTIALS 2; FUNDAMENTOS DE CIENCIA Y ANALÍTICA DE DATOS; ETHICAL HACKER; CONCEPTOS BÁSICOS DE REDES; CIBERSEGURIDAD EN DISPOSITIVOS FINALES; ADMINISTRACIÓN Y DEFENSA DE AMENAZAS CIBERNÉTICAS; Arduino desde cero: Electrónica, Programación y Automatización; La Ley de Protección de Datos en el Ecuador: Claves Legales y Técnicas para el Cumplimiento Normativo; Inteligencia Artificial para la Gestión de Recursos Humanos |
 
-### 2. Desarrollo Web Full Stack (JavaScript, React y Node.js) — `fullstack-js`
-- **Nivel:** intermedio (requiere lógica de programación básica) · **Duración:** 12 semanas, 8 h/semana · **Precio:** $350
-- **Inicio:** 16 de noviembre de 2026
-- **Horarios:** Mar-Jue 18:30-21:30 + Sábados 09:00-11:00 · Sábados 08:00-16:00
-- **Al terminar:** construyes y despliegas aplicaciones web completas listas para portafolio.
-- **Pénsum:**
-  1. HTML5, CSS3 y diseño responsive con Tailwind.
-  2. JavaScript moderno: ES6+, asincronía, fetch y el DOM.
-  3. React: componentes, hooks, estado y enrutamiento.
-  4. Backend con Node.js y Express: APIs REST y autenticación JWT.
-  5. Bases de datos con PostgreSQL y ORM Prisma.
-  6. Proyecto final: aplicación full stack desplegada en la nube.
+## Detalle por curso
 
-### 3. Ciencia de Datos con Python — `ciencia-datos`
-- **Nivel:** intermedio (requiere Python básico) · **Duración:** 10 semanas, 6 h/semana · **Precio:** $320
-- **Inicio:** 16 de noviembre de 2026
-- **Horarios:** Lun-Mié 18:00-21:00 · Sábados 14:00-20:00
-- **Al terminar:** limpias, analizas y visualizas datos reales y construyes modelos predictivos.
-- **Pénsum:**
-  1. Python para datos: NumPy y pandas.
-  2. Limpieza y transformación de datos reales.
-  3. Visualización con Matplotlib, Seaborn y Power BI.
-  4. Estadística aplicada y SQL para análisis.
-  5. Machine learning con scikit-learn: regresión, clasificación y clustering.
-  6. Proyecto final: análisis de un dataset de una empresa local con dashboard.
+### En curso
 
-### 4. Inteligencia Artificial Aplicada y LLMs — `ia-aplicada`
-- **Nivel:** avanzado (requiere Python intermedio) · **Duración:** 8 semanas, 6 h/semana · **Precio:** $380
-- **Inicio:** 23 de noviembre de 2026
-- **Horarios:** Mar-Jue 19:00-22:00 · Sábados 08:00-14:00
-- **Al terminar:** integras modelos de lenguaje en productos reales: chatbots, RAG y agentes.
-- **Pénsum:**
-  1. Fundamentos de redes neuronales y deep learning.
-  2. Modelos de lenguaje y prompt engineering.
-  3. APIs de LLMs (Gemini, OpenAI, Claude) y salidas estructuradas.
-  4. RAG: embeddings, bases vectoriales y búsqueda semántica.
-  5. Agentes con herramientas y seguridad (prompt injection).
-  6. Proyecto final: asistente inteligente desplegado.
+#### CCNA: Introducción a las redes – Preparación Cisco Certified Network Associate — `ctt-16`
+- **Estado calculado:** en_curso · **En la web:** abierto
+- **Horas:** 70 · **Modalidad:** Híbrida
+- **Inscripción:** 2026-10-01 → 2026-10-15
+- **Curso:** 2026-10-16 → 2026-12-05
+- **Horario:** Sesiones virtuales los viernes de 19:00 a 21:00 y sesiones presenciales los sábados de 08:00 a 13:00, más trabajo autónomo, según la planificación.
+- **Lugar:** Talleres Tecnológicos FISEI, Campus Huachi, Ambato; sesiones virtuales según cronograma.
+- **Precios:** Estudiantes UTA (hasta último período): $120 · Graduados, docentes y personal administrativo UTA: $150 · Público en general: $180
+- **Requisitos:** Ninguno.
+- **Certificado:** Certificado digital de aprobación con validación QR.
+- **Instructores:** Ing. Livio Danilo Miniguano, Mg.; Ing. Daniel Maldonado Ruiz, Ph.D.
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso16.php
+- **Temario (resumen):**
+  1. Networking Today
+  2. Basic Switch and End Device Configuration
+  3. Protocols and Models
+  4. Physical Layer
+  5. Number Systems
+  6. Data Link Layer
+  7. Ethernet Switching
+  8. Network Layer
+  … (+9 módulos/clases)
 
-### 5. Ciberseguridad Esencial — `ciberseguridad`
-- **Nivel:** inicial-intermedio (conocimientos básicos de computación) · **Duración:** 8 semanas, 6 h/semana · **Precio:** $290
-- **Inicio:** 9 de noviembre de 2026
-- **Horarios:** Lun-Mié 19:00-22:00 · Sábados 14:00-20:00
-- **Al terminar:** proteges redes y aplicaciones y te preparas para la certificación CompTIA Security+.
-- **Pénsum:**
-  1. Fundamentos de redes y protocolos (TCP/IP, DNS, HTTP).
-  2. Linux para seguridad y la terminal.
-  3. Amenazas, vulnerabilidades y OWASP Top 10.
-  4. Hacking ético en laboratorio controlado: reconocimiento y explotación básica.
-  5. Defensa: firewalls, monitoreo, respuesta a incidentes y preparación para Security+.
+#### Linux Essentials – Preparación Linux Essentials Certificate — `ctt-17`
+- **Estado calculado:** en_curso · **En la web:** abierto
+- **Horas:** 70 · **Modalidad:** Virtual autodidacta (Self-paced)
+- **Inscripción:** 2026-10-01 → 2026-10-15
+- **Curso:** 2026-10-16 → 2026-12-05
+- **Horario:** Modalidad autodidacta; el participante avanza en la plataforma dentro del período de ejecución.
+- **Lugar:** Virtual, plataforma Cisco NetAcad.
+- **Precios:** Estudiantes UTA (hasta último período): $40 · Graduados, docentes y personal administrativo UTA: $50 · Público en general: $60
+- **Requisitos:** Ninguno.
+- **Certificado:** Certificado digital de aprobación con validación QR.
+- **Instructores:** Ing. Carlos Vargas, Mg.
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso17.php
+- **Temario (resumen):**
+  1. Introduction to Linux
+  2. Operating Systems
+  3. Working in Linux
+  4. Open Source Software and Licensing
+  5. Command Line Skills
+  6. Getting Help
+  7. Navigating the Filesystem
+  8. Managing Files and Directories
+  … (+10 módulos/clases)
 
-### 6. Cloud y DevOps (AWS, Docker y CI/CD) — `cloud-devops`
-- **Nivel:** intermedio (requiere manejo básico de Linux o programación) · **Duración:** 10 semanas, 6 h/semana · **Precio:** $340
-- **Inicio:** 23 de noviembre de 2026
-- **Horarios:** Mar-Jue 18:00-21:00 · Sábados 08:00-14:00
-- **Al terminar:** despliegas y automatizas aplicaciones en la nube con prácticas profesionales y te preparas para AWS Cloud Practitioner.
-- **Pénsum:**
-  1. Linux, redes y Git para operaciones.
-  2. Contenedores con Docker y Docker Compose.
-  3. AWS: EC2, S3, RDS e IAM.
-  4. CI/CD con GitHub Actions.
-  5. Infraestructura como código con Terraform y monitoreo.
+#### Fundamentos de Python 1 – Certified Entry-Level Python — `ctt-18`
+- **Estado calculado:** en_curso · **En la web:** abierto
+- **Horas:** 32 · **Modalidad:** Virtual autodidacta (Self-paced)
+- **Inscripción:** 2026-10-01 → 2026-10-15
+- **Curso:** 2026-10-16 → 2026-11-16
+- **Horario:** Modalidad autodidacta; actividades y evaluaciones en línea.
+- **Lugar:** Virtual, plataforma Cisco NetAcad.
+- **Precios:** Estudiantes UTA (hasta último período): $40 · Graduados, docentes y personal administrativo UTA: $50 · Público en general: $60
+- **Requisitos:** Ninguno.
+- **Certificado:** Certificado digital de asistencia y aprobación con validación QR.
+- **Instructores:** Ing. Carlos Vargas, Mg.
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso18.php
+- **Temario (resumen):**
+  1. Introducción a Python y programación informática
+  2. Tipos de datos, variables, operaciones básicas de entrada-salida y operadores básicos
+  3. Valores booleanos, ejecución condicional, bucles, listas y procesamiento de listas, operaciones lógicas y bit a bit
+  4. Funciones, tuplas, diccionarios, excepciones y procesamiento de datos
 
-### 7. Diseño UX/UI con Figma — `ux-ui-figma`
-- **Nivel:** inicial (no requiere experiencia previa) · **Duración:** 6 semanas, 5 h/semana · **Precio:** $160
-- **Inicio:** 9 de noviembre de 2026
-- **Horarios:** Mar-Jue 19:00-21:30 · Sábados 09:00-14:00
-- **Al terminar:** diseñas interfaces centradas en el usuario y prototipos navegables para portafolio.
-- **Pénsum:**
-  1. Principios de UX e investigación con usuarios.
-  2. Arquitectura de información y wireframes.
-  3. Diseño visual: tipografía, color y sistemas de diseño.
-  4. Prototipado interactivo y pruebas de usabilidad en Figma.
-  5. Proyecto final: caso de estudio para portafolio.
+### Próximamente
 
-## Promociones oficiales (las únicas que existen)
+#### Preparación GitHub Certified: Agentic AI Developer (GH-600) — `ctt-19`
+- **Estado calculado:** proximamente · **En la web:** abierto
+- **Horas:** 32 · **Modalidad:** Virtual
+- **Inscripción:** 2026-10-30 → 2026-11-13
+- **Curso:** 2026-11-14 → 2026-12-05
+- **Horario:** Sesiones virtuales el 14, 21 y 28 de noviembre y el 5 de diciembre de 2026, de 08:00 a 14:00; 24 horas de clase y 8 de trabajo autónomo.
+- **Lugar:** Virtual por Zoom.
+- **Precios:** Estudiantes UTA (hasta último período): $40 · Graduados, docentes y personal administrativo UTA: $50 · Público en general: $60
+- **Requisitos:** Conocimientos básicos de programación y manejo de computador. No se requiere experiencia previa con IA agéntica, MCP ni GitHub Copilot.
+- **Certificado:** Certificado digital de asistencia y aprobación con validación QR.
+- **Instructores:** Ing. Javier Santiago Vargas Paredes, Mg.
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso19.php
+- **Temario (resumen):**
+  1. Fundamentos de GitHub, SDLC e IA Agéntica
+  2. Arquitectura del Agente e Integración con el SDLC
+  3. Herramientas, MCP, Memoria, Estado y Ejecución
+  4. Evaluación, Multiagente, Guardrails y Proyecto Integrador
 
-| Id | Promoción | Descuento | Aplica a | Condiciones | Vigencia |
-|---|---|---|---|---|---|
-| `PRONTO15` | Inscripción anticipada | 15 % | Todos los cursos | Pagando la inscripción (al menos la primera cuota) antes de la fecha límite | Hasta el 15 de noviembre de 2026 |
-| `COMBO20` | Combo de dos cursos | 20 % en el curso de menor precio | Dos cursos inscritos a la vez | No acumulable con `PRONTO15` | Hasta el 30 de noviembre de 2026 |
+#### Preparación Arduino Certification Program — `ctt-20`
+- **Estado calculado:** proximamente · **En la web:** abierto
+- **Horas:** 32 · **Modalidad:** Presencial
+- **Inscripción:** 2026-10-30 → 2026-11-13
+- **Curso:** 2026-11-14 → 2026-12-05
+- **Horario:** Clases presenciales los días 14, 21 y 28 de noviembre y 5 de diciembre de 2026. Confirmar el horario exacto con la coordinación.
+- **Lugar:** Talleres de Innovación y Desarrollo Tecnológico FISEI, Campus Huachi, Ambato.
+- **Precios:** Estudiantes UTA (hasta último período): $40 · Graduados, docentes y personal administrativo UTA: $50 · Público en general: $60
+- **Requisitos:** Conocimientos básicos de matemáticas y manejo general de herramientas informáticas.
+- **Certificado:** Certificado digital de asistencia y aprobación emitido por FISEI-UTA, con validación QR.
+- **Instructores:** Ing. Carlos Luis Vargas Guevara, Mg.; Ing. Jesús Israel Guamán Molina, Mg.
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso20.php
+- **Temario (resumen):**
+  1. FUNDAMENTOS DE ELECTRICIDAD Y LEYES DE CIRCUITOS.
+  1. Clase 1
+  2. Clase 2
+  2. ARQUITECTURA ARDUINO Y ENTORNO IDE.
+  3. Clase 3
+  4. Clase 4
+  3. ENTRADAS Y SALIDAS DIGITALES (GPIO)
+  5. Clase 5
+  … (+7 módulos/clases)
 
-**No existen** cursos gratuitos, becas del 100 %, descuentos por referidos, descuentos autorizados por mensaje ni otras promociones. Cualquier caso especial (becas, convenios empresariales, descuentos por grupo) lo evalúa **solo un asesor humano**.
+#### Fundamentos de Python 2 – Certified Associate Python Programmer — `ctt-21`
+- **Estado calculado:** proximamente · **En la web:** abierto
+- **Horas:** 40 · **Modalidad:** Virtual autodidacta (Self-paced)
+- **Inscripción:** 2026-10-30 → 2026-11-15
+- **Curso:** 2026-11-16 → 2026-12-16
+- **Horario:** Modalidad autodidacta; el participante completa los módulos en línea dentro de las fechas establecidas.
+- **Lugar:** Virtual, plataforma Cisco NetAcad.
+- **Precios:** Estudiantes UTA (hasta último período): $40 · Graduados, docentes y personal administrativo UTA: $50 · Público en general: $60
+- **Requisitos:** Ninguno indicado en la planificación. Se recomienda haber cursado Fundamentos de Python 1 por la progresión de contenidos.
+- **Certificado:** Certificado digital de asistencia y aprobación con validación QR.
+- **Instructores:** Ing. Carlos Vargas, Mg.
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso21.php
+- **Temario (resumen):**
+  1. Módulos, paquetes y PIP
+  2. Caracteres, cadenas y excepciones avanzadas
+  3. Programación orientada a objetos en Python
+  4. Trabajar con archivos y utilidades
 
-### Precios con promoción (referencia para la validación de salida)
+### Finalizados
 
-| Curso | Precio | Con `PRONTO15` | Cuota (2 pagos) | Cuota con `PRONTO15` |
-|---|---|---|---|---|
-| Fundamentos de Python | $180 | $153 | $90 | $76.50 |
-| Full Stack JS | $350 | $297.50 | $175 | $148.75 |
-| Ciencia de Datos | $320 | $272 | $160 | $136 |
-| IA Aplicada y LLMs | $380 | $323 | $190 | $161.50 |
-| Ciberseguridad | $290 | $246.50 | $145 | $123.25 |
-| Cloud y DevOps | $340 | $289 | $170 | $144.50 |
-| UX/UI con Figma | $160 | $136 | $80 | $68 |
+#### FUNDAMENTOS DE PYTHON 1 — `ctt-1`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 32 · **Modalidad:** Virtual auto-didacta (Self-paced)
+- **Inscripción:** 2025-02-15 → 2025-03-02
+- **Curso:** 2025-03-01 → 2025-03-30
+- **Horario:** A elección del participante
+- **Lugar:** Virtual a través de la plataforma CISCO.
+- **Precios:** Estudiantes UTA (Último periodo): $30 · Graduados, Docentes y Administrativos UTA: $40 · Público en general: $50
+- **Requisitos:** n/d
+- **Certificado:** Certificado digital de asistencia y aprobación.
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso1.php
+- **Temario (resumen):**
+  1. Introducción a Python y programación informática
+  2. Tipos de datos, variables, operaciones básicas de entradasalida y operadores básicos
+  3. Valores booleanos, ejecución condicional, bucles, listas y procesamiento de listas, operaciones lógicas y bit a bit
+  4. Funciones, tuplas, diccionarios, excepciones y procesamiento de datos.
 
-Con `COMBO20` el curso más barato del par se paga al 80 % (p. ej. Python + Ciencia de Datos = $320 + $144 = $464). La API calcula estos importes desde la base de datos; esta tabla es solo referencia humana.
+#### FUNDAMENTOS DE PYTHON 2 — `ctt-2`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 40 · **Modalidad:** Curso virtual auto-didacta (Self-paced)
+- **Inscripción:** 2025-03-15 → 2025-04-07
+- **Curso:** 2025-04-05 → 2025-05-04
+- **Horario:** A elección del participante
+- **Lugar:** Virtual a través de la plataforma CISCO.
+- **Precios:** Graduados, Docentes y Administrativos UTA: $40 · Público en general: $50 · Estudiantes UTA (Último periodo): $30
+- **Requisitos:** n/d
+- **Certificado:** Certificado digital de asistencia y aprobación con validación QR.
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso2.php
+- **Temario (resumen):**
+  1. Módulos, Paquetes y PIP
+  1. ¿Qué es un módulo y para qué lo necesitamos?
+  2. Importación y uso de módulos.
+  3. Revisión de algunos módulos útiles de Python.
+  4. ¿Qué es un paquete y en qué se diferencia de un módulo?
+  5. Construcción y uso de paquetes
+  6. PIP: La navaja suiza y el mantenimiento de paquetes.
+  2. Caracteres, cadenas y excepciones avanzadas
+  … (+18 módulos/clases)
 
-## Rutas recomendadas (para que el agente asesore, no liste)
+#### JAVASCRIPT ESSENTIALS 1 — `ctt-3`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 40 · **Modalidad:** Virtual - eLearning
+- **Inscripción:** 2025-02-17 → 2025-03-03
+- **Curso:** 2025-03-01 → 2025-03-31
+- **Horario:** Curso virtual auto-didacta (Self-paced)
+- **Lugar:** n/d
+- **Precios:** Estudiantes UTA: $30 · Graduados, Docentes y Administrativos UTA: $40 · Público en general: $50
+- **Requisitos:** Ninguno
+- **Certificado:** n/d
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso3.php
+- **Temario (resumen):**
+  1. Introducción Introducción a JavaScript y a la programación de
+  2. Variables y Tipos Variables, tipos de datos primitivos y complejos, conversión de tipos, comentarios
+  3. Operadores Operadores aritméticos, lógicos, de comparación y de
+  4. Control de Flujo Ejecución condicional (if-else, switch-case); bucles (for,
+  5. Funciones Declaración y uso de funciones, variables locales, parámetros, retorno de valores, funciones como miembros
+  6. Manejo de Errores Manejo de errores y excepciones (try-catch, throw);
 
-- **Empiezo de cero:** Python → Ciencia de Datos o Full Stack.
-- **Quiero trabajar en IA:** Python → Ciencia de Datos → IA Aplicada.
-- **Soy desarrollador y quiero crecer:** Cloud y DevOps o IA Aplicada.
-- **Me interesa el diseño:** UX/UI → Full Stack (para prototipar en código).
-- **Me interesa la seguridad:** Ciberseguridad → Cloud y DevOps.
+#### JAVASCRIPT ESSENTIALS 2 — `ctt-4`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 50 · **Modalidad:** Curso virtual auto-didacta (Self-paced)
+- **Inscripción:** ? → ?
+- **Curso:** 2025-04-05 → 2025-05-04
+- **Horario:** n/d
+- **Lugar:** n/d
+- **Precios:** Estudiantes UTA: $40 · Graduados, Docentes y Administrativos UTA: $50 · Público en general: $60
+- **Requisitos:** JavaScript.
+- **Certificado:** n/d
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso4.php
+- **Temario (resumen):**
+  1. Objetos sin clases Manipulación de objetos, comparación, clonación,
+  2. Clases y programación basada en clases Declaración de clases, propiedades, herencia,
+  3. Objetos integrados Uso de objetos como String, Date, Array, Map, Set;
+  4. Uso avanzado de funciones
+
+#### FUNDAMENTOS DE CIENCIA Y ANALÍTICA DE DATOS — `ctt-5`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 36 · **Modalidad:** Curso virtual auto-didacta (Self-paced)
+- **Inscripción:** ? → ?
+- **Curso:** 2025-03-01 → 2025-03-30
+- **Horario:** n/d
+- **Lugar:** n/d
+- **Precios:** Estudiantes UTA: $30 · Graduados, Docentes y Administrativos UTA: $40 · Público en general: $50
+- **Requisitos:** Nivel de inglés básico.
+- **Certificado:** n/d
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso5.php
+- **Temario (resumen):**
+  1. Introducción a la Ciencia de Datos
+  1. Análisis de la Experiencia
+  2. Recopilación y Almacenamiento de Datos
+  3. Inteligencia Artificial y Aprendizaje Automático
+  4. Embarcarse en su Carrera en Análisis de Datos
+  2. Fundamentos de Análisis de Datos
+  1. Proyectos de análisis de datos
+  2. Introducción a la recopilación e Investigación de
+  … (+8 módulos/clases)
+
+#### ETHICAL HACKER — `ctt-6`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 70 · **Modalidad:** MOOC
+- **Inscripción:** ? → ?
+- **Curso:** 2025-04-05 → 2025-05-18
+- **Horario:** n/d
+- **Lugar:** n/d
+- **Precios:** Estudiantes UTA: $50 · Graduados, Docentes y Administrativos UTA: $60 · Público en general: $70
+- **Requisitos:** Conocimientos básicos de ciberseguridad
+Conocimientos básicos de programación
+Conocimiento del idioma inglés
+- **Certificado:** n/d
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso6.php
+- **Temario (resumen):**
+  1. Introducción al hacking ético y a las pruebas de penetración
+  2. Planificación y alcance de una prueba de penetración Evaluación
+  3. Recopilación de información y exploración de vulnerabilidades
+  4. Ataques de Ingeniería Social
+  5. Ataques de Ingeniería Social
+  6. Explotación de vulnerabilidades basadas en aplicaciones
+  7. Seguridad en la nube, móvil e IoT
+  8. Realización de técnicas de post-explotación
+  … (+2 módulos/clases)
+
+#### CONCEPTOS BÁSICOS DE REDES — `ctt-7`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 32 · **Modalidad:** Presencial
+- **Inscripción:** ? → ?
+- **Curso:** 2025-04-19 → 2025-05-18
+- **Horario:** n/d
+- **Lugar:** n/d
+- **Precios:** Estudiantes UTA (actuales): $30 · Graduados, Docentes y Administrativos UTA: $40 · Público en general: $50
+- **Requisitos:** Ninguno
+- **Certificado:** n/d
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso7.php
+- **Temario (resumen):**
+  1. Comunicación en un mundo conectado
+  2. Componentes, tipos y conexiones de red
+  3. Redes inalámbricas y móviles
+  4. Crear una red domestica
+  5. Principios de comunicación
+  6. Medios de red
+  7. La capa de acceso
+  8. El protocolo de internet
+  … (+9 módulos/clases)
+
+#### CIBERSEGURIDAD EN DISPOSITIVOS FINALES — `ctt-8`
+- **Estado calculado:** finalizado · **En la web:** cerrado
+- **Horas:** 40 · **Modalidad:** Virtual
+- **Inscripción:** 2025-04-20 → 2025-05-20
+- **Curso:** 2025-05-17 → 2025-06-15
+- **Horario:** n/d
+- **Lugar:** n/d
+- **Precios:** Estudiantes UTA: $30 · Graduados, Docentes y Administrativos UTA: $40 · Público en general: $50
+- **Requisitos:** Ninguno
+- **Certificado:** Curso con certificado digital QR
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso8.php
+- **Temario (resumen):**
+  1. Introducción a la Ciberseguridad
+  1. Introducción a la Ciberseguridad
+  2. Ataques, conceptos y técnicas
+  3. Protegiendo sus datos y su privacidad
+  4. Protegiendo a la organización
+  5. ¿Su futuro estará relacionado con la ciberseguridad?
+  2. Seguridad de Terminales
+  1. Amenazas, vulnerabilidades y ataques a la ciberseguridad
+  … (+8 módulos/clases)
+
+#### ADMINISTRACIÓN Y DEFENSA DE AMENAZAS CIBERNÉTICAS — `ctt-9`
+- **Estado calculado:** finalizado · **En la web:** abierto
+- **Horas:** 50 · **Modalidad:** MOOC
+- **Inscripción:** 2025-05-01 → 2025-06-03
+- **Curso:** 2025-05-31 → 2025-07-05
+- **Horario:** Curso MOOC desarrollado en el aula virtual de los talleres tecnológicos, sin horarios específicos de conexión.
+- **Lugar:** Plataforma: Virtual, plataforma:CISCO
+- **Precios:** Estudiantes UTA (Último periodo): $40 · Graduados, Docentes y Administrativos UTA: $50 · Público en general: $60
+- **Requisitos:** Conocimientos básicos de ciberseguridad.
+Conocimientos básicos de redes
+- **Certificado:** Curso MOOC - certificado digital de aprobación con validación QR
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso9.php
+- **Temario (resumen):**
+  1. Defensa de la Red
+  1. Comprendiendo la Defensa
+  2. Defensa de Sistemas y Redes
+  3. Control de Acceso
+  4. Listas de Control de Acceso
+  5. Tecnologías de Firewall
+  6. Firewalls de Política Basados en Zonas
+  7. Seguridad en la Nube
+  … (+11 módulos/clases)
+
+#### Arduino desde cero: Electrónica, Programación y Automatización — `ctt-13`
+- **Estado calculado:** finalizado · **En la web:** abierto
+- **Horas:** 40 · **Modalidad:** Presencial
+- **Inscripción:** 2025-05-19 → 2025-06-04
+- **Curso:** 2025-06-30 → 2025-06-30
+- **Horario:** 8:00 - 14:00 (Sábados)
+- **Lugar:** Laboratorio asignado - FISEI
+- **Precios:** Estudiantes UTA (Último periodo): $40 · Graduados, Docentes y Administrativos UTA: $50 · Público en general: $60
+- **Requisitos:** • Ninguno
+- **Certificado:** Certificado digital de asistencia y aprobación con validación QR
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso13.php
+- **Temario (resumen):**
+  1. Clase 1
+  2. Clase 2
+  3. Clase 3
+  4. Clase 4
+
+#### La Ley de Protección de Datos en el Ecuador: Claves Legales y Técnicas para el Cumplimiento Normativo — `ctt-14`
+- **Estado calculado:** finalizado · **En la web:** abierto
+- **Horas:** 32 · **Modalidad:** Presencial
+- **Inscripción:** 2025-05-15 → 2025-06-04
+- **Curso:** 2025-06-30 → 2025-06-30
+- **Horario:** 8:00 - 13:00 (Sábados)
+- **Lugar:** CTT – FISEI / Laboratorio asignado
+- **Precios:** Estudiantes UTA (Último periodo): $40 · Graduados, Docentes y Administrativos UTA: $50 · Público en general: $60
+- **Requisitos:** • Ninguno
+- **Certificado:** Certificado digital de asistencia y aprobación con validación QR
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso14.php
+- **Temario (resumen):**
+  1. Fundamentos de la Protección de Datos Personales: Contexto Nacional e Internacional
+  2. Derechos del Titular y Obligaciones de los Responsables del Tratamiento
+  3. Gestión y Seguridad de los Datos en Organizaciones
+  4. Aplicación Práctica y Casos Reales
+
+#### Inteligencia Artificial para la Gestión de Recursos Humanos — `ctt-15`
+- **Estado calculado:** finalizado · **En la web:** abierto
+- **Horas:** 32 · **Modalidad:** Virtual
+- **Inscripción:** 2025-05-14 → 2025-06-03
+- **Curso:** 2025-06-30 → 2025-06-30
+- **Horario:** 7:00 PM - 10:00 PM (Miércoles y Jueves)
+- **Lugar:** Virtual
+- **Precios:** Estudiantes UTA (Último periodo): $40 · Graduados, Docentes y Administrativos UTA: $60 · Público en general: $80
+- **Requisitos:** • Ninguno
+- **Certificado:** Certificado digital de asistencia y aprobación con validación QR
+- **Instructores:** n/d
+- **URL:** https://ctt-talleresfisei.uta.edu.ec/curso15.php
+- **Temario (resumen):**
+  1. Introducción a la Inteligencia Artificial
+  2. Prompt Engineering
+  3. Creación de Presentaciones con IA
+  4. Extensiones para la productividad con IA
+  5. La IA como motor de selección del personal
+  6. Inteligencia Artificial generativa: innovación y aplicaciones
+  7. Consideraciones éticas sobre IA
+
+## Fuente y regeneración
+
+1. `node apps/api/scripts/scrape-ctt.mjs`
+2. Aplicar en Supabase: `supabase/migrations/003_real_catalog.sql` y luego `supabase/seed_ctt.sql`
+3. Los cursos ficticios CodeAndes (`python-fundamentos`, …) y promos `PRONTO15`/`COMBO20` quedan con `active = false` (sin DELETE).

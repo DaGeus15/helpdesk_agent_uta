@@ -1,10 +1,10 @@
-# Arquitectura — CodeAndes Academy · Agente de ventas + Panel de mando
+# Arquitectura — CTT-FISEI · Talleres Tecnológicos UTA · Agente de ventas + Panel de mando
 
-Decisiones confirmadas en la Fase 0 (29-oct-2026):
+Decisiones confirmadas en la Fase 0 (29-oct-2026) y actualizadas con el catálogo real:
 
 | Tema | Decisión |
 |---|---|
-| Centro ficticio | **CodeAndes Academy** (Ambato, Ecuador). Catálogo en `docs/CATALOGO.md` |
+| Centro | **Talleres Tecnológicos CTT-FISEI** (UTA, Campus Huachi, Ambato). Catálogo real en `docs/CATALOGO.md` |
 | LLM | **Google Gemini** detrás de la interfaz `LlmProvider` (cambiable con `LLM_PROVIDER`). Cadena de respaldo `gemini-2.5-flash` → `2.5-flash-lite` → `2.0-flash` ante 429/503 |
 | API | **NestJS** en **Render** (web service, HTTPS → webhook de Telegram) |
 | Dashboard | **React + Vite + Tailwind + shadcn/ui** en **Vercel** |
@@ -85,23 +85,34 @@ sequenceDiagram
 
 ## 3. Modelo de datos (Supabase)
 
-Archivos: `supabase/migrations/001_init.sql` y `supabase/seed.sql` (catálogo).
+Archivos: `supabase/migrations/001_init.sql`, `003_real_catalog.sql` y `supabase/seed_ctt.sql` (catálogo real CTT-FISEI).
 
 ```sql
 create extension if not exists pgcrypto;
 
 create table courses (
-  id               text primary key,            -- 'python-fundamentos'
+  id               text primary key,            -- 'ctt-16'
   name             text not null,
-  level            text not null check (level in ('inicial','intermedio','avanzado')),
-  duration_weeks   int  not null,
-  hours_per_week   int  not null,
-  price_usd        numeric(10,2) not null,
+  level            text,                        -- opcional (nullable tras 003)
+  duration_weeks   int,
+  hours_per_week   int,
+  total_hours      int,
+  price_usd        numeric(10,2) not null,      -- público general
+  price_tiers      jsonb not null default '[]', -- [{audience, price_usd}]
   modality         text not null,
-  start_date       date not null,
-  schedules        jsonb not null,              -- ["Lun-Mié 19:00-21:00", ...]
-  syllabus         jsonb not null,              -- [{module:1,title,topics:[...]}]
+  start_date       date,
+  end_date         date,
+  enrollment_start date,
+  enrollment_end   date,
+  schedules        jsonb not null,
+  syllabus         jsonb not null,
   outcomes         text not null,
+  location         text,
+  instructors      text,
+  prerequisites    text,
+  certificate      text,
+  source_url       text,
+  site_status      text,                        -- abierto | cerrado (web)
   active           boolean not null default true
 );
 
@@ -226,7 +237,7 @@ const AgentOutput = z.object({
 
 El prompt se arma en este orden, de más estable a más variable (aprovecha el caché implícito de Gemini):
 
-1. **System prompt fijo** (~600 tokens): rol de asesora "Andrea" de CodeAndes, tono, reglas inmutables, política comercial, formato de salida.
+1. **System prompt fijo** (~600 tokens): rol de asesora "Andrea" de los Talleres CTT-FISEI (UTA), tono, reglas inmutables, política comercial, formato de salida.
 2. **Catálogo compacto** (~900 tokens): generado desde `catalog` en formato denso (una línea por curso + módulos), cacheado en memoria.
 3. **Perfil del lead** (JSON estructurado, ~50 tokens) y **resumen acumulado** (≤ 120 palabras).
 4. **Ventana de los últimos N = 12 mensajes** (user / assistant / operator, este último marcado como "asesor humano").

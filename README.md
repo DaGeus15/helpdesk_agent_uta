@@ -1,8 +1,8 @@
-# CodeAndes Academy — Agente de ventas en Telegram + Panel de mando
+# CTT-FISEI · Talleres Tecnológicos UTA — Agente de ventas en Telegram + Panel de mando
 
-Proyecto para la **Hackathon UTA 2026 · Ecosistema Multi-Agente para Ventas** (FISEI). Modelo híbrido IA–humano para un centro de capacitación tecnológica ficticio, **CodeAndes Academy** (Ambato):
+Proyecto para la **Hackathon UTA 2026 · Ecosistema Multi-Agente para Ventas** (FISEI). Modelo híbrido IA–humano para los **Talleres Tecnológicos CTT-FISEI** de la Universidad Técnica de Ambato:
 
-- **Módulo A — Agente en Telegram:** asesora "Andrea" con tono humano: perfila al prospecto, resuelve dudas del pénsum con el catálogo oficial, maneja objeciones y guía la inscripción. Entiende notas de voz.
+- **Módulo A — Agente en Telegram:** asesora "Andrea" con tono humano: perfila al prospecto, resuelve dudas con el catálogo real de CTT-FISEI, maneja objeciones y guía la inscripción. Entiende notas de voz.
 - **Módulo B — Panel de mando:** dashboard web en tiempo real con todos los chats concurrentes, termómetro del lead (interesado, dudoso, frustrado, lead caliente), toma de control, envío como bot y "Devolver a la IA".
 
 Producción: bot [@HelpdeskUTA15Bot](https://t.me/HelpdeskUTA15Bot) · panel https://helpdesk-agent-uta.vercel.app (usuario `admin`, contraseña `admin`) · API https://codeandes-api.onrender.com/health
@@ -40,8 +40,11 @@ apps/
   api/          NestJS: telegram, agent, guardrails, llm, conversations, operator, catalog, supabase
   dashboard/    React + Vite + Tailwind + shadcn/ui (Supabase Realtime)
 supabase/
-  migrations/001_init.sql   esquema, RLS de solo lectura y publicación Realtime
-  seed.sql                  catálogo oficial (7 cursos, 2 promociones)
+  migrations/001_init.sql          esquema base, RLS y Realtime
+  migrations/003_real_catalog.sql  campos del catálogo CTT-FISEI
+  seed.sql                         seed ficticio legacy (desactivado por seed_ctt)
+  seed_ctt.sql                     catálogo real (18 cursos CTT-FISEI)
+  data/ctt-cursos.json             dump del scraper
 docs/           arquitectura, plan, catálogo, pruebas y demo
 render.yaml     blueprint del despliegue de la API
 ```
@@ -50,7 +53,7 @@ render.yaml     blueprint del despliegue de la API
 
 Requisitos: Node ≥ 20 y pnpm (`corepack enable`).
 
-1. **Supabase:** crea un proyecto y, en el *SQL Editor*, ejecuta `supabase/migrations/001_init.sql` y luego `supabase/seed.sql`.
+1. **Supabase:** crea un proyecto y, en el *SQL Editor*, ejecuta en orden `supabase/migrations/001_init.sql`, `supabase/migrations/003_real_catalog.sql` y `supabase/seed_ctt.sql`. (Opcional: regenerar el seed con `node apps/api/scripts/scrape-ctt.mjs`.)
 2. **Bot:** crea uno con @BotFather (`/newbot`) y guarda el token.
 3. **Gemini:** crea una API key en https://aistudio.google.com/apikey.
 4. **Variables:** copia `apps/api/.env.example` → `apps/api/.env` y `apps/dashboard/.env.example` → `apps/dashboard/.env` y complétalas (tablas abajo).

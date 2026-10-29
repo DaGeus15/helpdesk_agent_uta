@@ -124,6 +124,6 @@ export class MessageRouterService {
 }
 
 const HOLDING_MESSAGE =
-  '¡Recibido! 🙌 Un asesor del equipo de CodeAndes ya está revisando tu conversación y te responde en unos minutos.';
+  '¡Recibido! 🙌 Un asesor del equipo de los Talleres CTT-FISEI ya está revisando tu conversación y te responde en unos minutos.';
 const HOLDING_COOLDOWN_MS = 5 * 60 * 1000;
 const OPERATOR_ACTIVE_MS = 3 * 60 * 1000;
