@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api, ApiError } from '@/lib/api'
 import { cn, formatRelativeTime } from '@/lib/utils'
 import { getLeadStateMeta } from '@/lib/lead-state'
@@ -53,6 +54,28 @@ function roleLabel(role: Message['role']): string | null {
   return null
 }
 
+const EMPTY_PROFILE_VALUES = new Set([
+  'unknown',
+  'desconocido',
+  'n/a',
+  'no especificado',
+])
+
+const SUMMARY_LINE_LABELS = [
+  'Lead',
+  'Interés',
+  'Objeciones',
+  'Estado',
+  'Siguiente paso',
+] as const
+
+function isMeaningfulProfileValue(value: string | undefined): value is string {
+  if (value == null) return false
+  const trimmed = value.trim()
+  if (!trimmed) return false
+  return !EMPTY_PROFILE_VALUES.has(trimmed.toLowerCase())
+}
+
 function profileChips(profile: LeadProfile): Array<{ label: string; value: string }> {
   const entries: Array<[string, string | undefined]> = [
     ['Nombre', profile.name],
@@ -63,8 +86,61 @@ function profileChips(profile: LeadProfile): Array<{ label: string; value: strin
     ['Contacto', profile.contact],
   ]
   return entries
-    .filter(([, v]) => Boolean(v))
-    .map(([label, value]) => ({ label, value: value! }))
+    .filter(([, v]) => isMeaningfulProfileValue(v))
+    .map(([label, value]) => ({ label, value: value!.trim() }))
+}
+
+function ProfileChipsRow({
+  chips,
+  className,
+}: {
+  chips: Array<{ label: string; value: string }>
+  className?: string
+}) {
+  if (chips.length === 0) {
+    return (
+      <p className={cn('text-[11px] text-[var(--uta-text-muted)]', className)}>
+        Aún sin datos del perfil
+      </p>
+    )
+  }
+  return (
+    <div className={cn('flex flex-wrap gap-1.5', className)}>
+      {chips.map((chip) => (
+        <span
+          key={chip.label}
+          className="inline-flex items-center gap-1 rounded-md border border-[var(--uta-border)] bg-[var(--uta-bg)] px-2 py-0.5 text-[11px] text-[var(--uta-text)]"
+        >
+          <span className="font-medium text-[var(--uta-text-muted)]">{chip.label}:</span>
+          {chip.value}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function renderSummaryText(text: string): ReactNode {
+  const cleaned = text.replace(/\*+/g, '')
+  const lines = cleaned.split('\n')
+  return lines.map((line, index) => {
+    const match = SUMMARY_LINE_LABELS.find((label) =>
+      line.startsWith(`${label}:`),
+    )
+    if (match) {
+      const rest = line.slice(match.length + 1)
+      return (
+        <p key={index} className="leading-relaxed">
+          <strong className="font-semibold">{match}:</strong>
+          {rest}
+        </p>
+      )
+    }
+    return (
+      <p key={index} className="leading-relaxed">
+        {line.length > 0 ? line : '\u00A0'}
+      </p>
+    )
+  })
 }
 
 function dayKey(iso: string): string {
@@ -433,35 +509,48 @@ export function ChatView({
                 @{conversation.telegram_username}
               </p>
             )}
-            {chips.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {chips.map((chip) => (
-                  <span
-                    key={chip.label}
-                    className="inline-flex items-center gap-1 rounded-md border border-[var(--uta-border)] bg-[var(--uta-bg)] px-2 py-0.5 text-[11px] text-[var(--uta-text)]"
-                  >
-                    <span className="font-medium text-[var(--uta-text-muted)]">{chip.label}:</span>
-                    {chip.value}
-                  </span>
-                ))}
-              </div>
-            )}
+            <ProfileChipsRow chips={chips} className="mt-2" />
           </div>
 
           <div className="flex shrink-0 gap-2">
-            <Button
-              type="button"
-              size="sm"
-              className="bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
-              onClick={() => void handleTakeover()}
-              disabled={takingOver || conversation.ai_paused}
-            >
-              {takingOver ? 'Tomando…' : 'Tomar control'}
-            </Button>
+            {conversation.ai_paused ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex cursor-not-allowed">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="bg-[var(--uta-primary)] opacity-40 grayscale hover:bg-[var(--uta-primary)]"
+                      disabled
+                      aria-disabled
+                    >
+                      Tomar control
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Ya estás atendiendo esta conversación
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <Button
+                type="button"
+                size="sm"
+                className="bg-[var(--uta-primary)] hover:bg-[var(--uta-primary-mid)]"
+                onClick={() => void handleTakeover()}
+                disabled={takingOver}
+              >
+                {takingOver ? 'Tomando…' : 'Tomar control'}
+              </Button>
+            )}
             <Button
               type="button"
               size="sm"
               variant="outline"
+              className={cn(
+                !conversation.ai_paused &&
+                  'cursor-not-allowed opacity-40 grayscale hover:bg-background hover:text-foreground',
+              )}
               onClick={() => void handleRelease()}
               disabled={releasing || !conversation.ai_paused}
             >
@@ -485,10 +574,14 @@ export function ChatView({
           </button>
           <div className="summary-collapse" data-open={summaryOpen ? 'true' : 'false'}>
             <div>
-              <div className="px-4 pb-3">
-                <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-amber-950/90">
-                  {summaryText}
-                </p>
+              <div className="space-y-2 px-4 pb-3">
+                <ProfileChipsRow
+                  chips={chips}
+                  className="[&_span]:border-amber-200/80 [&_span]:bg-white/70"
+                />
+                <div className="space-y-0.5 text-[13px] text-amber-950/90">
+                  {renderSummaryText(summaryText)}
+                </div>
               </div>
             </div>
           </div>
