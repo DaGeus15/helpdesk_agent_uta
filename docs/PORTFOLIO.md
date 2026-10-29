@@ -26,9 +26,45 @@ Reto oficial de la Hackathon 2026 FISEI-UTA, *"Ecosistema Multi-Agente para Vent
 - **Requisitos críticos:** handover transparente (la IA se pausa ante frustración o cuando interviene el operador, y el operador responde con la misma identidad del bot), "termómetro" del estado del lead (interesado / dudoso / frustrado / lead caliente) y resistencia a prompt injection (cursos gratis, descuentos falsos).
 - **Rúbrica (100 pts):** comportamiento del agente (30), panel e intervención humana (30), arquitectura y eficiencia de tokens (20), innovación y demo (20).
 
+## Contexto: una hackathon contrarreloj
+
+Proyecto construido en la **Hackathon UTA 2026** (Facultad de Ingeniería en Sistemas, Electrónica e Industrial, FISEI, Universidad Técnica de Ambato), el **29 de octubre de 2026**, con aliados como GDG Quito y Supabase. La planificación arrancó a las **11:36** y la entrega era a las **13:00**: unos **85 minutos** para pasar de cero a un bot desplegado y un panel en una URL pública. La primera versión funcional (bot en producción, panel en vivo y handover) quedó desplegada antes del corte. Después el proyecto siguió puliéndose el mismo día: catálogo real, identidad visual del CTT, robustez, tests y CI.
+
 ## Mi rol
 
-Planifiqué y dirigí todo el proyecto: requisitos, arquitectura, modelo de datos, guardrails, despliegue y demo. Usé un flujo **IA-orquestada**: Claude Code como arquitecto y revisor (dividía el trabajo en tareas, escribía especificaciones precisas, revisaba cada diff, compilaba, probaba y hacía un commit por tarea) y el **Cursor Agent CLI** como implementador, con varios agentes en paralelo sobre carpetas disjuntas. Resultado: **48 commits** en un día, de la planificación (11:36) al producto desplegado y verificado.
+Fui el responsable de producto y arquitectura de punta a punta: entendí el reto y la rúbrica, tomé las decisiones técnicas y de alcance (qué recortar para llegar a tiempo, qué canal usar, qué datos son la fuente de verdad), configuré las cuentas y credenciales (Telegram, Gemini, Supabase, Render, Vercel), probé el bot en Telegram como usuario real y di feedback de UX en cada iteración. La construcción la hice con un equipo de **agentes de IA que orquesté**, como se explica a continuación.
+
+## Cómo se construyó: orquestación de agentes de IA
+
+En vez de escribir el código línea a línea, usé un esquema **orquestador → implementadores**:
+
+| Rol | Herramienta | Qué hacía |
+|---|---|---|
+| **Orquestador / arquitecto / revisor** | **Claude Code** (Claude Opus, en la app de escritorio) | Planificaba por fases, diseñaba la arquitectura y el modelo de datos, dividía el trabajo en tareas pequeñas, escribía la especificación de cada una, lanzaba a los implementadores, revisaba cada diff, compilaba, corría pruebas, aplicaba migraciones SQL, hacía un commit por tarea, desplegaba y verificaba en producción |
+| **Implementadores** | **Cursor Agent CLI** en modo headless (`agent -p --trust --force --workspace <repo>`), invocado desde la terminal por Claude | Escribían el código de cada tarea siguiendo la especificación y verificaban con `pnpm build` |
+| **Auditor** | Cursor Agent CLI en modo solo lectura (`--mode ask`) | Auditorías del repositorio (bugs, riesgos, huecos) sin modificar archivos |
+| **Humano en el bucle** | Yo | Decisiones de producto, credenciales, pruebas reales en Telegram y aprobación de cada fase |
+
+**El ciclo de cada tarea:**
+1. **Especificación.** Claude escribía un archivo `.cursor-tasks/Tn-*.md` con: objetivo, archivos permitidos, contratos (endpoints, columnas, tipos), qué NO tocar, reglas (no ejecutar SQL, no arrancar servidores, sin dependencias nuevas) y criterio de terminado.
+2. **Lanzamiento.** Claude ejecutaba el CLI de Cursor en segundo plano y le pasaba la especificación. Los prompts largos iban por archivo para no chocar con el límite de longitud de la línea de comandos de Windows.
+3. **Paralelismo seguro.** Varios agentes trabajaban a la vez sobre **carpetas disjuntas** (por ejemplo, uno en `apps/api` y otro en `apps/dashboard`), coordinados por contratos definidos de antemano en `docs/ARCHITECTURE.md`.
+4. **Encadenamiento.** Cuando una tarea dependía de otra, un pequeño script esperaba a que terminara la anterior y lanzaba la siguiente (por ejemplo: catálogo real → vista de cursos y QR → rediseño del layout).
+5. **Revisión y control de calidad.** Claude revisaba el diff, compilaba los dos proyectos, corría la batería de evaluación del agente y, si algo fallaba, mandaba una corrección concreta o hacía él mismo el arreglo de 1-2 líneas.
+6. **Integración.** Claude aplicaba las migraciones SQL en Supabase (los agentes tenían prohibido tocar la base), hacía commit y push, y Render y Vercel desplegaban solos.
+7. **Verificación en producción.** Claude comprobaba salud, login, métricas y webhook, y navegaba el panel con un navegador automatizado para capturar pantallas y detectar bugs visuales o de datos.
+
+**Cifras:**
+- **23 tareas** delegadas a Cursor (T1-T23), cada una con su especificación versionada.
+- Hasta **3 agentes en paralelo** en este repo.
+- Un commit por tarea, de la planificación a las 11:36 al cierre del día (ver historial de git).
+
+**Por qué funcionó:**
+- **Especificaciones cerradas:** con archivos permitidos y criterio de terminado, cada agente tenía poco margen para desviarse.
+- **Contratos primero:** los endpoints, las tablas y los tipos se definieron antes de implementar, y eso permitió trabajar en paralelo sin conflictos.
+- **Separación de responsabilidades:** el implementador nunca tocaba la base ni el despliegue; eso quedaba en manos del orquestador, que verificaba antes de integrar.
+- **Coste repartido:** la edición pesada consumía créditos de Cursor y los tokens de Claude se reservaban para planificar, revisar y verificar.
+- **Bugs reales detectados por el orquestador:** un modelo de Gemini retirado que cortaba las respuestas, falsos positivos del guardrail, una carrera en el handover, una cadena TLS incompleta en la web del CTT y confusiones entre ediciones de cursos. Cada uno se diagnosticó y se corrigió con evidencia.
 
 ## Funcionalidades
 
