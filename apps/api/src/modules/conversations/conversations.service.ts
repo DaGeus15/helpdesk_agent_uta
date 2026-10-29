@@ -298,6 +298,9 @@ export class ConversationsService {
   }
 }
 
+const UNKNOWN_VALUE =
+  /^(|unknown|desconocid[oa]|no (especificad[oa]|definid[oa]|indicad[oa])|n\/?a|null|none|-+|\?+)$/i;
+
 function mergeProfile(
   current: LeadProfile,
   updates: Partial<LeadProfile>,
@@ -308,7 +311,8 @@ function mergeProfile(
     if (value === undefined || value === null) {
       continue;
     }
-    if (typeof value === 'string' && value.trim() === '') {
+    // El LLM a veces rellena con "unknown"/"desconocido": no es un dato del lead.
+    if (typeof value === 'string' && UNKNOWN_VALUE.test(value.trim())) {
       continue;
     }
     next[key] = value;

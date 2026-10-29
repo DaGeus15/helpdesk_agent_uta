@@ -7,7 +7,14 @@ import {
   type LlmProvider,
 } from '../llm/llm-provider.interface';
 
-const SUMMARY_SYSTEM = `Eres un asistente interno. Resume conversaciones de ventas de CodeAndes Academy en español, máximo 120 palabras. Incluye: perfil del lead, interés, objeciones, estado emocional/comercial y compromisos del asesor humano si los hay. Sé factual y compacto.`;
+const SUMMARY_SYSTEM = `Eres un asistente interno. Resume conversaciones de ventas de CodeAndes Academy en español, máximo 100 palabras, para que un asesor humano retome el chat en segundos.
+Formato: texto plano SIN markdown ni asteriscos, 4-5 líneas que empiecen así:
+Lead: quién es (solo datos confirmados).
+Interés: cursos o temas.
+Objeciones: dudas o resistencias (o "ninguna").
+Estado: ánimo y temperatura comercial.
+Siguiente paso: qué conviene hacer ahora.
+"Andrea" es la asistente IA, no un humano; los mensajes marcados como [Asesor humano] son del equipo. Si un dato no se conoce, omítelo: nunca escribas "unknown". Sé factual.`;
 
 @Injectable()
 export class SummaryService {
@@ -71,7 +78,7 @@ export class SummaryService {
 
     try {
       const { text } = await this.llm.generateText(SUMMARY_SYSTEM, prompt);
-      const summary = text.trim().slice(0, 800);
+      const summary = text.replace(/\*\*?/g, '').trim().slice(0, 800);
       await this.conversations.updateSummary(conversationId, summary);
       return summary;
     } catch (error) {
