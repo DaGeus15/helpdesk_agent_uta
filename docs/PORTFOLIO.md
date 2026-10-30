@@ -193,13 +193,15 @@ flowchart LR
 | | |
 |:---:|:---:|
 | ![Bandeja en vivo](capturas/panel-bandeja.jpg) | ![Chat](capturas/panel-chat.jpg) |
-| Bandeja en vivo con termómetro y filtros | Chat: cabecera con estado del lead, burbujas IA/usuario, plantillas del operador |
+| Bandeja en vivo con termómetro y filtros | Chat de una conversación de demo: perfil del lead en chips, objeción manejada, separador "IA en pausa · Pidió un asesor" y plantillas del operador |
 | ![Resumen](capturas/panel-resumen.jpg) | ![Métricas](capturas/panel-metricas.jpg) |
 | Resumen automático para el asesor | Métricas: termómetro, distribución, leads calientes, LLM |
 | ![Cursos](capturas/panel-cursos.jpg) | ![Login](capturas/login-escritorio.jpg) |
 | Cursos sincronizados con la web oficial (estado calculado) | Login del operador con estados en vivo |
 | ![Landing](capturas/landing-contacto.jpg) | ![Login móvil](capturas/login-movil.jpg) |
 | Landing pública con QR al bot | Login en móvil |
+| ![Landing cursos](capturas/landing-proximamente.jpg) | |
+| Cursos con inscripción abierta: fechas, horarios, precios por audiencia y formulario | |
 
 > Sugerido: añadir capturas del bot en Telegram (conversación, nota de voz, intento de manipulación rechazado).
 
