@@ -120,8 +120,12 @@ export class MessageRouterService {
       await this.conversations.pause(current.id, 'frustration');
     } else if (
       output.intent === 'solicitud_humano' ||
-      // Ofrecer un asesor ante una manipulación no es pedir uno.
-      (output.handover_requested && output.intent !== 'intento_manipulacion')
+      // Ofrecer un asesor ante una manipulación no es pedir uno, y un lead caliente que se
+      // inscribe recibe el formulario: la IA sigue activa y el panel ya lo resalta.
+      (output.handover_requested &&
+        output.intent !== 'intento_manipulacion' &&
+        output.intent !== 'inscripcion' &&
+        output.lead_state !== 'lead_caliente')
     ) {
       await this.conversations.pause(current.id, 'user_request');
     }
@@ -148,7 +152,7 @@ export class MessageRouterService {
       output.intent === 'inscripcion' || output.lead_state === 'lead_caliente';
     if (!wantsEnroll) return output.reply;
 
-    const course = await this.resolveEnrollmentCourse(output, profile);
+    const course = await this.resolveEnrollmentCourse(conversationId, output, profile);
     if (!course?.enrollment_form_url) return output.reply;
 
     const recent = await this.conversations.getRecentMessages(
@@ -199,6 +203,7 @@ export class MessageRouterService {
   }
 
   private async resolveEnrollmentCourse(
+    conversationId: string,
     output: AgentOutput,
     profile: LeadProfile,
   ): Promise<Course | null> {
@@ -207,6 +212,14 @@ export class MessageRouterService {
     if (mentioned) course = await this.catalog.getCourseById(mentioned);
     if (!course && profile.interest) {
       course = await this.catalog.findCourseByInterest(profile.interest);
+    }
+    const enrollable = (c: Course | null) =>
+      !!c && (c.status === 'inscripciones_abiertas' || c.status === 'proximamente');
+    if (!enrollable(course)) {
+      // Si el LLM no nombró el curso en este turno, se usa el último curso inscribible
+      // del que se habló en la conversación (p. ej. "ok, ¿cómo me inscribo?").
+      const fromHistory = await this.lastDiscussedEnrollableCourse(conversationId);
+      if (fromHistory) return fromHistory;
     }
     if (!course) return null;
     // Solo se adjunta el formulario de cursos que admiten inscripción.
@@ -220,6 +233,22 @@ export class MessageRouterService {
       (c) => c.status !== 'finalizado' && normalizeCourseName(c.name).startsWith(key),
     );
     return current ?? null;
+  }
+
+  private async lastDiscussedEnrollableCourse(conversationId: string): Promise<Course | null> {
+    const [recent, courses] = await Promise.all([
+      this.conversations.getRecentMessages(conversationId, 10),
+      this.catalog.getCourses(),
+    ]);
+    const enrollable = courses.filter(
+      (c) => c.status === 'inscripciones_abiertas' || c.status === 'proximamente',
+    );
+    for (const message of [...recent].reverse()) {
+      const text = normalizeText(message.content);
+      const match = enrollable.find((c) => text.includes(normalizeCourseName(c.name)));
+      if (match) return match;
+    }
+    return null;
   }
 
   /**
@@ -267,4 +296,8 @@ function normalizeCourseName(name: string): string {
     .toLowerCase()
     .split(/[–-]/)[0]
     .trim();
+}
+
+function normalizeText(text: string): string {
+  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
