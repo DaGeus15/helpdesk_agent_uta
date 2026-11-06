@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { PanelLeft } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { BarChart3, GraduationCap, Inbox, PanelLeft } from 'lucide-react'
 import { Toaster } from 'sonner'
 import { Header, type DashboardView } from '@/components/Header'
 import { MetricsView } from '@/components/MetricsView'
@@ -36,7 +36,6 @@ export function DashboardShell() {
   const [listCollapsed, setListCollapsed] = useState(
     () => readStorage(LIST_COLLAPSED_KEY) === '1',
   )
-  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const {
     conversations,
@@ -63,7 +62,7 @@ export function DashboardShell() {
     [conversations],
   )
 
-  const showChatOnMobile = Boolean(selectedId)
+  const showChatOnMobile = view === 'conversations' && Boolean(selectedId)
 
   function handleViewChange(next: DashboardView) {
     setView(next)
@@ -80,15 +79,10 @@ export function DashboardShell() {
 
   function selectConversation(id: string) {
     setSelectedId(id)
-    setDrawerOpen(false)
     if (view !== 'conversations') {
       handleViewChange('conversations')
     }
   }
-
-  useEffect(() => {
-    if (view !== 'conversations') setDrawerOpen(false)
-  }, [view])
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -101,14 +95,16 @@ export function DashboardShell() {
             'banner-enter !rounded-lg !border-[var(--line)] !shadow-[var(--uta-shadow-lift)]',
         }}
       />
-      <div className="flex h-dvh flex-col overflow-hidden bg-white">
-        <ConfigBanner missing={missing} />
-        <Header
-          isLive={isLive && configured}
-          view={view}
-          onViewChange={handleViewChange}
-          attentionCount={needsAdvisorCount}
-        />
+      <div className={cn('dashboard-shell flex h-dvh flex-col overflow-hidden bg-white', showChatOnMobile && 'mobile-chat-open')}>
+        <div className={showChatOnMobile ? 'hidden md:contents' : 'contents'}>
+          <ConfigBanner missing={missing} />
+          <Header
+            isLive={isLive && configured}
+            view={view}
+            onViewChange={handleViewChange}
+            attentionCount={needsAdvisorCount}
+          />
+        </div>
 
         {view === 'courses' ? (
           <CoursesView />
@@ -123,21 +119,7 @@ export function DashboardShell() {
           </div>
         ) : (
           <div className="relative flex min-h-0 flex-1">
-            {drawerOpen && (
-              <button
-                type="button"
-                aria-label="Cerrar lista de conversaciones"
-                className="absolute inset-0 z-20 bg-black/30 transition-ui lg:hidden"
-                onClick={() => setDrawerOpen(false)}
-              />
-            )}
-
-            {/*
-              Visibilidad:
-              - < md: pantalla completa si no hay chat seleccionado
-              - md–lg: drawer superpuesto (drawerOpen)
-              - ≥ lg: columna fija salvo listCollapsed
-            */}
+            {/* Móvil: una pantalla; tablet y escritorio: columnas colapsables. */}
             <ConversationList
               conversations={conversations}
               selectedId={selectedId}
@@ -150,43 +132,24 @@ export function DashboardShell() {
                 'transition-ui',
                 // móvil
                 showChatOnMobile ? 'hidden' : 'flex',
-                // tablet drawer
-                'md:absolute md:inset-y-0 md:left-0 md:z-30 md:flex md:shadow-[var(--uta-shadow-lift)]',
-                drawerOpen ? 'md:translate-x-0' : 'md:-translate-x-full md:pointer-events-none',
-                // desktop columna
-                'lg:static lg:z-auto lg:translate-x-0 lg:pointer-events-auto lg:shadow-none',
-                listCollapsed ? 'lg:hidden' : 'lg:flex',
+                listCollapsed ? 'md:hidden' : 'md:flex',
               )}
             />
 
-            <main className="relative flex min-h-0 min-w-0 flex-1 flex-col border-l border-[var(--line)]">
-              <div className="pointer-events-none absolute top-2 left-2 z-10 hidden gap-1 md:flex">
+            <main className={cn('relative min-h-0 min-w-0 flex-1 flex-col border-l border-[var(--line)]', showChatOnMobile ? 'flex' : 'hidden md:flex', listCollapsed && 'list-is-collapsed')}>
+              <div className="list-restore-control pointer-events-none absolute top-2 left-2 z-10 hidden gap-1 md:flex">
                 {listCollapsed && (
                   <Button
                     type="button"
                     size="icon"
                     variant="outline"
-                    className="pointer-events-auto hidden h-8 w-8 rounded-md border-[var(--line)] bg-white/95 shadow-sm lg:inline-flex"
+                    className="pointer-events-auto inline-flex h-11 w-11 rounded-md border-[var(--line)] bg-white/95 shadow-sm lg:h-8 lg:w-8"
                     onClick={toggleListCollapsed}
                     aria-label="Mostrar lista de conversaciones"
                   >
                     <PanelLeft className="size-4" />
                   </Button>
                 )}
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  className="pointer-events-auto h-8 w-8 rounded-md border-[var(--line)] bg-white/95 shadow-sm lg:hidden"
-                  onClick={() => setDrawerOpen((o) => !o)}
-                  aria-label={
-                    drawerOpen
-                      ? 'Cerrar lista de conversaciones'
-                      : 'Abrir lista de conversaciones'
-                  }
-                >
-                  <PanelLeft className="size-4" />
-                </Button>
               </div>
 
               {error && conversations.length === 0 ? (
@@ -210,6 +173,25 @@ export function DashboardShell() {
               )}
             </main>
           </div>
+        )}
+        {!showChatOnMobile && (
+          <nav className="mobile-bottom-nav" aria-label="Secciones del panel">
+            {([
+              ['conversations', 'Bandeja', Inbox],
+              ['metrics', 'Métricas', BarChart3],
+              ['courses', 'Cursos', GraduationCap],
+            ] as const).map(([id, label, Icon]) => (
+              <button key={id} type="button" onClick={() => handleViewChange(id)}
+                aria-current={view === id ? 'page' : undefined}>
+                <span className="relative"><Icon className="size-5" />
+                  {id === 'conversations' && needsAdvisorCount > 0 && (
+                    <span className="mobile-attention-badge">{needsAdvisorCount > 99 ? '99+' : needsAdvisorCount}</span>
+                  )}
+                </span>
+                <span>{label}</span>
+              </button>
+            ))}
+          </nav>
         )}
       </div>
     </TooltipProvider>

@@ -45,6 +45,7 @@ En vez de escribir el código línea a línea, usé un esquema **orquestador →
 | **Orquestador / arquitecto / revisor** | **Claude Code** (Claude Opus, en la app de escritorio) | Planificaba por fases, diseñaba la arquitectura y el modelo de datos, dividía el trabajo en tareas pequeñas, escribía la especificación de cada una, lanzaba a los implementadores, revisaba cada diff, compilaba, corría pruebas, aplicaba migraciones SQL, hacía un commit por tarea, desplegaba y verificaba en producción |
 | **Implementadores** | **Cursor Agent CLI** en modo headless (`agent -p --trust --force --workspace <repo>`), invocado desde la terminal por Claude | Escribían el código de cada tarea siguiendo la especificación y verificaban con `pnpm build` |
 | **Auditor** | Cursor Agent CLI en modo solo lectura (`--mode ask`) | Auditorías del repositorio (bugs, riesgos, huecos) sin modificar archivos |
+| **Especialista puntual** | Codex CLI (`gpt-6.1-sol`) en modo `exec` | Adaptación responsive del panel a partir de una auditoría medida en celular |
 | **Humano en el bucle** | Yo | Decisiones de producto, credenciales, pruebas reales en Telegram y aprobación de cada fase |
 
 **El ciclo de cada tarea:**
@@ -88,6 +89,7 @@ En vez de escribir el código línea a línea, usé un esquema **orquestador →
 - Vistas de Bandeja, Métricas (conversaciones activas, distribución por estado, leads calientes, handovers, inyecciones, latencia, tokens, respaldos del LLM) y Cursos (sincronizados con la web oficial, con botón "Actualizar ahora").
 - Login del operador rediseñado nivel agencia (split editorial, estados en vivo, tarjeta de doble bisel), con token HMAC, límite de intentos e **identidad visual oficial del CTT-FISEI** (azul marino `#012e5a`, carmesí `#ad272e`, Poppins).
 - **Landing pública** `/contacto` con QR al bot y los cursos abiertos, próximos y en curso, pensada para proyectar en la demo.
+- **Totalmente responsive:** en celular el panel usa barra de navegación inferior, chat a pantalla completa con resumen en hoja inferior y objetivos táctiles de 40-44 px; verificado de 320 a 1440 px sin scroll horizontal.
 
 ## Arquitectura
 

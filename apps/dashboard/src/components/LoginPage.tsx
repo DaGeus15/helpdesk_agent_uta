@@ -135,7 +135,7 @@ export function LoginPage() {
   const errorId = useId()
 
   useEffect(() => {
-    usernameRef.current?.focus()
+    if (window.matchMedia('(min-width: 768px)').matches) usernameRef.current?.focus()
   }, [])
 
   useEffect(() => {
@@ -231,7 +231,7 @@ export function LoginPage() {
   const botValue = stats.botOnline == null ? '—' : 'Bot en línea'
 
   return (
-    <div className="relative flex min-h-[100dvh] w-full flex-col md:flex-row">
+    <div className="login-page relative flex min-h-[100dvh] w-full flex-col md:flex-row">
       {/* Grain overlay */}
       <div className="login-grain pointer-events-none fixed inset-0 z-50" aria-hidden />
 
@@ -337,7 +337,7 @@ export function LoginPage() {
                     onChange={setUsername}
                     onKeyEvent={handleCaps}
                     autoComplete="username"
-                    autoFocus
+                    autoFocus={window.matchMedia('(min-width: 768px)').matches}
                     disabled={loading}
                     inputRef={usernameRef}
                     icon={<User className="size-[18px]" strokeWidth={1.25} />}

@@ -20,7 +20,7 @@ export function ContactCard({
   return (
     <section
       className={cn(
-        'rounded-lg border border-[var(--line)] bg-white',
+        'contact-card rounded-lg border border-[var(--line)] bg-white',
         compact ? 'p-4' : 'p-5 sm:p-6',
         className,
       )}

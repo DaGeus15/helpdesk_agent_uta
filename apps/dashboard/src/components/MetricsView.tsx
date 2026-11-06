@@ -42,7 +42,7 @@ function MetricCard({
   return (
     <div
       title={title}
-      className="rounded-lg bg-[var(--mist)] px-4 py-4"
+      className="metric-card rounded-lg bg-[var(--mist)] px-4 py-4"
     >
       <span className="text-[13px] text-[var(--text)]">{label}</span>
       <strong className="mt-0.5 block text-[30px] font-bold tabular-nums text-[var(--ink)]">
@@ -63,9 +63,9 @@ export function MetricsView({
   const maxState = Math.max(...STATES.map((s) => metrics.byState[s] ?? 0), 1)
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto bg-white">
+    <div className="metrics-view min-h-0 flex-1 overflow-y-auto bg-white">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
+        <div className="metrics-grid grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
           <MetricCard
             label="Personas atendidas"
             value={metrics.active}
@@ -141,7 +141,7 @@ export function MetricsView({
                 const pct = Math.round((count / totalStates) * 100)
                 const width = `${Math.max((count / maxState) * 100, count > 0 ? 4 : 0)}%`
                 return (
-                  <div key={state} className="grid grid-cols-[140px_1fr_48px] items-center gap-3">
+                  <div key={state} className="metric-bar-row grid grid-cols-[140px_1fr_48px] items-center gap-3">
                     <span className="truncate text-sm text-[var(--ink)]">
                       {meta.emoji} {meta.label}
                     </span>

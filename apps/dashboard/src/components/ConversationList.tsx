@@ -198,7 +198,7 @@ export function ConversationList({
   return (
     <aside
       className={cn(
-        'flex h-full min-h-0 w-full shrink-0 flex-col bg-[var(--mist)] md:w-[360px]',
+        'conversation-list flex h-full min-h-0 w-full shrink-0 flex-col bg-[var(--mist)] md:w-[300px] lg:w-[360px]',
         className,
       )}
     >
@@ -210,14 +210,14 @@ export function ConversationList({
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por nombre o mensaje"
             aria-label="Buscar conversación"
-            className="h-10 min-h-10 rounded-md border-[var(--line)] bg-white text-[var(--ink)] shadow-none focus-visible:ring-[var(--red)]"
+            className="h-11 min-h-11 rounded-md border-[var(--line)] bg-white text-base text-[var(--ink)] shadow-none focus-visible:ring-[var(--red)] lg:h-10 lg:min-h-10 lg:text-sm"
           />
           {onToggleCollapse && (
             <Button
               type="button"
               size="icon"
               variant="ghost"
-              className="hidden h-9 w-9 shrink-0 rounded-md lg:inline-flex"
+              className="hidden h-11 w-11 shrink-0 rounded-md md:inline-flex lg:h-9 lg:w-9"
               onClick={onToggleCollapse}
               aria-label="Colapsar lista de conversaciones"
             >
@@ -226,7 +226,7 @@ export function ConversationList({
           )}
         </div>
 
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por estado">
+        <div className="responsive-filter-row flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por estado">
           {FILTERS.map((f) => (
             <button
               key={f.id}

@@ -114,7 +114,7 @@ export function CoursesView() {
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto bg-white">
+    <div className="courses-view min-h-0 flex-1 overflow-y-auto bg-white">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="m-0 text-[var(--ink)]">
@@ -125,7 +125,7 @@ export function CoursesView() {
             type="button"
             disabled={syncing}
             onClick={() => void handleSyncNow()}
-            className="inline-flex items-center gap-2 rounded-md bg-[var(--red)] px-4 py-2.5 text-sm font-semibold text-white transition-ui hover:bg-[var(--crimson)] focus-visible:outline-none disabled:opacity-60"
+            className="course-sync inline-flex items-center gap-2 rounded-md bg-[var(--red)] px-4 py-2.5 text-sm font-semibold text-white transition-ui hover:bg-[var(--crimson)] focus-visible:outline-none disabled:opacity-60"
           >
             {syncing ? <Loader2 className="size-4 animate-spin" /> : null}
             {syncing ? 'Sincronizando…' : 'Sincronizar con la web'}
@@ -142,7 +142,7 @@ export function CoursesView() {
 
         <ContactCard />
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="course-search-filters flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-sm">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--muted)]" />
             <Input
@@ -153,12 +153,13 @@ export function CoursesView() {
               aria-label="Buscar cursos"
             />
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="responsive-filter-row flex flex-wrap gap-1.5" role="group" aria-label="Filtrar cursos por estado">
             {FILTERS.map((f) => (
               <button
                 key={f.id}
                 type="button"
                 onClick={() => setStatusFilter(f.id)}
+                aria-pressed={statusFilter === f.id}
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-ui',
                   statusFilter === f.id
@@ -190,7 +191,7 @@ export function CoursesView() {
             No hay cursos que coincidan con el filtro.
           </p>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {filtered.map((course) => (
               <CourseCard key={course.id} course={course} />
             ))}

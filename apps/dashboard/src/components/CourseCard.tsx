@@ -32,7 +32,7 @@ export function CourseCard({ course, compact = false }: CourseCardProps) {
   return (
     <article
       className={cn(
-        'flex flex-col overflow-hidden rounded-lg bg-[var(--mist)]',
+        'course-card flex flex-col overflow-hidden rounded-lg bg-[var(--mist)]',
         (isPast || isUpcoming) && !isOpen && 'opacity-95',
       )}
     >

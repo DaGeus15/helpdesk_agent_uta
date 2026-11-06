@@ -14,12 +14,15 @@ import {
   ChevronDown,
   ClipboardList,
   Mic,
+  Send,
   ShieldAlert,
+  X,
   Zap,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { ResponsivePanel } from '@/components/ResponsivePanel'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api, ApiError } from '@/lib/api'
 import { cn, formatClockTime, formatLatencyShort } from '@/lib/utils'
@@ -45,6 +48,8 @@ const QUICK_TEMPLATES = [
   'Te comparto los horarios disponibles',
   'Gracias por tu paciencia 🙏',
 ] as const
+
+const COMPACT_CHAT_MEDIA = '(max-width: 767px), (max-width: 1023px) and (max-height: 450px)'
 
 const LINK_RE =
   /(https?:\/\/[^\s<]+[^<.,:;"')\]\s]|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g
@@ -106,7 +111,7 @@ function ProfileChipsRow({
 }) {
   if (chips.length === 0) return null
   return (
-    <div className={cn('flex gap-1 overflow-x-auto whitespace-nowrap', className)}>
+    <div className={cn('profile-chips flex gap-1 overflow-x-auto whitespace-nowrap', className)}>
       {chips.map((chip) => (
         <span
           key={chip.label}
@@ -216,7 +221,7 @@ function MessageBubble({
   return (
     <div
       className={cn(
-        'max-w-[85%] rounded-[10px] px-3 py-2.5 text-[14px] leading-snug text-[var(--ink)] whitespace-pre-wrap break-words sm:max-w-[62%]',
+        'message-bubble max-w-[85%] rounded-[10px] px-3 py-2.5 text-[14px] leading-snug text-[var(--ink)] whitespace-pre-wrap break-words sm:max-w-[62%]',
         sameRoleAsPrev ? 'mt-1' : 'mt-2.5',
         isUser && 'rounded-bl-sm bg-[var(--mist)]',
         (isAssistant || isOperator) && 'ml-auto rounded-br-sm border border-[var(--line)]',
@@ -301,19 +306,19 @@ export function ChatView({
   className,
 }: ChatViewProps) {
   const [draft, setDraft] = useState('')
+  const [mobile, setMobile] = useState(() => window.matchMedia(COMPACT_CHAT_MEDIA).matches)
   const [sending, setSending] = useState(false)
   const [takingOver, setTakingOver] = useState(false)
   const [releasing, setReleasing] = useState(false)
   const [regeneratingSummary, setRegeneratingSummary] = useState(false)
   const [advisorSummary, setAdvisorSummary] = useState<string | null | undefined>(undefined)
   const [summaryOpen, setSummaryOpen] = useState(false)
-  const [templatesOpen, setTemplatesOpen] = useState(true)
+  const [templatesOpen, setTemplatesOpen] = useState(() => !window.matchMedia(COMPACT_CHAT_MEDIA).matches)
   const [stickToBottom, setStickToBottom] = useState(true)
   const [newBelow, setNewBelow] = useState(0)
   const [animateFrom, setAnimateFrom] = useState<number | null>(null)
 
   const scrollRef = useRef<HTMLDivElement | null>(null)
-  const summaryPanelRef = useRef<HTMLDivElement | null>(null)
   const summaryBtnRef = useRef<HTMLButtonElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const prevCountRef = useRef(0)
@@ -329,6 +334,13 @@ export function ChatView({
       ? conversation.summary || null
       : advisorSummary
   const humanMode = conversation.ai_paused
+
+  useEffect(() => {
+    const query = window.matchMedia(COMPACT_CHAT_MEDIA)
+    const update = () => setMobile(query.matches)
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
 
   const items = useMemo(() => {
     const out: TimelineItem[] = []
@@ -394,7 +406,7 @@ export function ChatView({
     setDraft('')
     setAdvisorSummary(undefined)
     setSummaryOpen(false)
-    setTemplatesOpen(true)
+    setTemplatesOpen(!window.matchMedia(COMPACT_CHAT_MEDIA).matches)
     setStickToBottom(true)
     setNewBelow(0)
     setAnimateFrom(null)
@@ -411,7 +423,7 @@ export function ChatView({
     if (next > prev) {
       if (stickToBottom) {
         requestAnimationFrame(() => {
-          bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+          bottomRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
         })
         setNewBelow(0)
       } else {
@@ -428,23 +440,18 @@ export function ChatView({
 
   useEffect(() => {
     if (!summaryOpen) return
-    function onKey(e: globalThis.KeyboardEvent) {
-      if (e.key === 'Escape') setSummaryOpen(false)
-    }
     function onPointer(e: MouseEvent) {
-      const panel = summaryPanelRef.current
+      const panel = document.getElementById('advisor-summary-panel')
       const btn = summaryBtnRef.current
       const target = e.target as Node
       if (panel?.contains(target) || btn?.contains(target)) return
       setSummaryOpen(false)
     }
-    window.addEventListener('keydown', onKey)
     const t = window.setTimeout(() => {
       window.addEventListener('mousedown', onPointer)
     }, 0)
     return () => {
       window.clearTimeout(t)
-      window.removeEventListener('keydown', onKey)
       window.removeEventListener('mousedown', onPointer)
     }
   }, [summaryOpen])
@@ -453,9 +460,9 @@ export function ChatView({
     const el = textareaRef.current
     if (!el) return
     el.style.height = 'auto'
-    const next = Math.min(Math.max(el.scrollHeight, 44), 160)
+    const next = Math.min(Math.max(el.scrollHeight + (mobile ? 2 : 0), 44), mobile ? 116 : 160)
     el.style.height = `${next}px`
-  }, [draft])
+  }, [draft, mobile])
 
   function handleScroll() {
     const el = scrollRef.current
@@ -469,7 +476,7 @@ export function ChatView({
   function scrollToBottom() {
     setStickToBottom(true)
     setNewBelow(0)
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    bottomRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
   }
 
   async function handleTakeover() {
@@ -559,20 +566,20 @@ export function ChatView({
   return (
     <div
       className={cn(
-        'flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-[var(--line)] bg-white',
+        'chat-view flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-[var(--line)] bg-white',
         className,
       )}
     >
       {/* Cabecera compacta navy / carmesí (~88px máx) */}
       <div
         className={cn(
-          'relative z-20 max-h-[88px] shrink-0 overflow-hidden px-4 py-2.5 text-white sm:px-5',
+          'chat-header relative z-20 max-h-[88px] shrink-0 overflow-hidden px-4 py-2.5 text-white sm:px-5',
           humanMode ? 'bg-[var(--crimson)]' : 'bg-[var(--navy)]',
         )}
       >
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+        <div className="chat-header-layout flex items-center justify-between gap-3">
+          <div className="chat-identity min-w-0 flex-1">
+            <div className="chat-title-row flex items-center gap-2">
               {onBack && (
                 <Button
                   type="button"
@@ -588,9 +595,10 @@ export function ChatView({
               <h2 className="truncate text-lg font-semibold tracking-tight text-white sm:text-xl">
                 {name}
               </h2>
+              <span className="size-2 shrink-0 rounded-full md:hidden" role="img" aria-label={meta.label} title={meta.label} style={{ backgroundColor: meta.colorHex }} />
             </div>
 
-            <div className="mt-1 flex flex-wrap items-center gap-1">
+            <div className="chat-chips mt-1 flex flex-wrap items-center gap-1">
               <span className="rounded bg-white px-2 py-px text-[10px] font-bold tracking-wide text-[var(--navy)] uppercase">
                 {meta.emoji} {meta.label}
               </span>
@@ -609,25 +617,26 @@ export function ChatView({
                 </span>
               )}
               {chips.length > 0 && (
-                <ProfileChipsRow chips={chips.slice(0, 3)} className="ml-0.5" />
+                <ProfileChipsRow chips={chips} className="ml-0.5" />
               )}
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+          <div className="chat-actions flex shrink-0 flex-wrap items-center justify-end gap-1.5">
             <button
               ref={summaryBtnRef}
               type="button"
               onClick={() => setSummaryOpen((o) => !o)}
               aria-expanded={summaryOpen}
               aria-controls="advisor-summary-panel"
-              className="inline-flex h-8 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-[var(--navy)] transition-ui hover:bg-white/90 focus-visible:outline-none"
+              aria-label="Resumen de la conversación"
+              className="chat-summary-button inline-flex h-8 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-[var(--navy)] transition-ui hover:bg-white/90 focus-visible:outline-none"
             >
               <ClipboardList className="size-3.5" />
-              Resumen
+              <span className="hidden md:inline">Resumen</span>
               <ChevronDown
                 className={cn(
-                  'size-3.5 transition-ui',
+                  'hidden size-3.5 transition-ui md:block',
                   summaryOpen && 'rotate-180',
                 )}
               />
@@ -637,7 +646,7 @@ export function ChatView({
               <>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="inline-flex cursor-not-allowed">
+                    <span className="chat-disabled-action inline-flex cursor-not-allowed">
                       <button
                         type="button"
                         disabled
@@ -655,7 +664,7 @@ export function ChatView({
                   type="button"
                   onClick={() => void handleRelease()}
                   disabled={releasing}
-                  className="h-8 rounded-md bg-white px-3 text-xs font-semibold text-[var(--crimson)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
+                  className="chat-primary-action h-8 rounded-md bg-white px-3 text-xs font-semibold text-[var(--crimson)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
                 >
                   {releasing ? 'Devolviendo…' : 'Devolver a la IA'}
                 </button>
@@ -665,7 +674,7 @@ export function ChatView({
                 type="button"
                 onClick={() => void handleTakeover()}
                 disabled={takingOver}
-                className="h-8 rounded-md bg-white px-3 text-xs font-semibold text-[var(--red)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
+                className="chat-primary-action h-8 rounded-md bg-white px-3 text-xs font-semibold text-[var(--red)] transition-ui hover:bg-white/90 focus-visible:outline-none disabled:opacity-60"
               >
                 {takingOver ? 'Tomando…' : 'Tomar control'}
               </button>
@@ -676,13 +685,19 @@ export function ChatView({
 
       <div className="relative min-h-0 flex-1">
         {summaryOpen && (
-          <div
+          <ResponsivePanel
             id="advisor-summary-panel"
-            ref={summaryPanelRef}
-            role="dialog"
-            aria-label="Resumen para el asesor"
-            className="absolute inset-x-0 top-0 z-20 max-h-[45%] overflow-y-auto border-b border-[var(--line)] bg-white px-4 py-3 shadow-[var(--uta-shadow-lift)] banner-enter sm:px-5"
+            label="Resumen para el asesor"
+            media="(max-width: 767px)"
+            onClose={() => setSummaryOpen(false)}
+            backdropClassName="summary-backdrop"
+            className="advisor-summary absolute inset-x-0 top-0 z-20 max-h-[45%] overflow-y-auto border-b border-[var(--line)] bg-white px-4 py-3 shadow-[var(--uta-shadow-lift)] banner-enter sm:px-5"
           >
+            <div className="summary-sheet-heading md:hidden">
+              <span className="summary-handle" aria-hidden="true" />
+              <strong className="text-[var(--navy)]">Resumen</strong>
+              <button type="button" className="grid size-11 place-items-center rounded-md text-[var(--navy)]" onClick={() => setSummaryOpen(false)} aria-label="Cerrar resumen"><X className="size-5" /></button>
+            </div>
             {summaryMissing ? (
               <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--ink)]">
                 <p>No se pudo generar el resumen; puedes regenerarlo</p>
@@ -704,7 +719,7 @@ export function ChatView({
                 Aún no hay suficiente conversación para resumir.
               </p>
             )}
-          </div>
+          </ResponsivePanel>
         )}
 
         <div
@@ -748,7 +763,7 @@ export function ChatView({
           <button
             type="button"
             onClick={scrollToBottom}
-            className="absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--navy)] shadow-sm transition-ui hover:bg-[var(--mist)]"
+            className="chat-jump-bottom absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--navy)] shadow-sm transition-ui hover:bg-[var(--mist)]"
             aria-label="Ir al final del chat"
           >
             <ArrowDown className="size-3.5" />
@@ -764,23 +779,24 @@ export function ChatView({
 
       <form
         onSubmit={(e) => void handleSubmit(e)}
-        className="shrink-0 border-t border-[var(--line)] bg-white"
+        className="chat-composer shrink-0 border-t border-[var(--line)] bg-white"
       >
-        <div className="flex items-center gap-2 px-4 pt-2 sm:px-5">
+        <div className="chat-templates flex items-center gap-2 px-4 pt-2 sm:px-5">
           <Button
             type="button"
             size="sm"
             variant="ghost"
-            className="h-7 shrink-0 gap-1 px-2 text-[11px] text-[var(--ink)]"
+            className="chat-template-toggle h-7 shrink-0 gap-1 px-2 text-[11px] text-[var(--ink)]"
             onClick={() => setTemplatesOpen((o) => !o)}
             aria-expanded={templatesOpen}
+            aria-controls="chat-template-list"
             aria-label={templatesOpen ? 'Ocultar plantillas' : 'Mostrar plantillas'}
           >
             <Zap className="size-3" />
             Plantillas
           </Button>
           {templatesOpen && (
-            <div className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto">
+            <div id="chat-template-list" className="chat-template-list flex min-w-0 flex-1 gap-1.5 overflow-x-auto">
               {QUICK_TEMPLATES.map((t) => (
                 <button
                   key={t}
@@ -795,28 +811,32 @@ export function ChatView({
           )}
         </div>
 
-        <div className="flex items-end gap-2 px-4 pt-1.5 pb-1 sm:px-5">
+        <div className="chat-compose-row flex items-end gap-2 px-4 pt-1.5 pb-1 sm:px-5">
           <Textarea
             ref={textareaRef}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Escribe como el bot… (Enter envía, Shift+Enter nueva línea)"
+            placeholder={mobile ? 'Escribe un mensaje…' : 'Escribe como el bot… (Enter envía, Shift+Enter nueva línea)'}
+            aria-label="Mensaje al prospecto"
             rows={1}
-            className="min-h-[44px] max-h-[160px] flex-1 resize-none rounded-md border-[var(--line)] py-2.5 text-[14px] shadow-none focus-visible:ring-[var(--red)]"
+            className="chat-textarea min-h-[44px] max-h-[160px] flex-1 resize-none rounded-md border-[var(--line)] py-2.5 text-[14px] shadow-none focus-visible:ring-[var(--red)]"
             disabled={sending}
           />
           <Button
             type="submit"
-            className="h-11 shrink-0 self-end rounded-md bg-[var(--red)] px-5 font-semibold text-white hover:bg-[var(--crimson)]"
+            className="chat-send h-11 shrink-0 self-end rounded-md bg-[var(--red)] px-5 font-semibold text-white hover:bg-[var(--crimson)]"
+            aria-label={sending ? 'Enviando mensaje' : 'Enviar mensaje'}
             disabled={sending || !draft.trim()}
           >
-            Enviar
+            <Send className="size-5 md:hidden" />
+            <span className="hidden md:inline">Enviar</span>
           </Button>
         </div>
 
         <p className="px-4 pb-2.5 text-[11px] text-[var(--muted)] sm:px-5">
-          Al enviar, la IA se pausa y tu mensaje llega por el mismo bot.
+          <span className="md:hidden">Al enviar, se pausa la IA.</span>
+          <span className="hidden md:inline">Al enviar, la IA se pausa y tu mensaje llega por el mismo bot.</span>
         </p>
       </form>
     </div>

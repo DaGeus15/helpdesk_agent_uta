@@ -34,8 +34,8 @@ export function ContactLanding() {
   const nextEnrollmentLabel = formatSpanishDayMonth(nextEnrollmentDate)
 
   return (
-    <div className="min-h-screen bg-[var(--mist)]">
-      <header className="border-b border-[#e6e4ec] bg-white px-4 py-5 sm:px-6">
+    <div className="contact-landing min-h-dvh bg-[var(--mist)]">
+      <header className="contact-landing-header border-b border-[#e6e4ec] bg-white px-4 py-5 sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <img
             src="/logo-ctt.png"

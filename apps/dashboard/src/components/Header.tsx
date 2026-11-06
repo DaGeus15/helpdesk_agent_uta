@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { GraduationCap, LogOut, Menu, Send, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { ResponsivePanel } from '@/components/ResponsivePanel'
 import { useAuth } from '@/hooks/useAuth'
 import { useCourses } from '@/hooks/useCourses'
 import { api, type CatalogSyncStatus } from '@/lib/api'
@@ -68,15 +69,15 @@ export function Header({
   }
 
   return (
-    <header className="relative z-30 w-full shrink-0 bg-white">
+    <header className="dashboard-header relative z-30 w-full shrink-0 bg-white">
       {/* Placa superior blanca con logo CTT */}
       <div className="border-b border-[#e6e4ec] bg-white">
-        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <div className="header-row flex flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <a
             href="https://ctt-talleresfisei.uta.edu.ec/"
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 focus-visible:outline-none"
+            className="header-logo shrink-0 focus-visible:outline-none"
           >
             <img
               src="/logo-ctt.png"
@@ -87,8 +88,8 @@ export function Header({
             />
           </a>
 
-          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-x-6 gap-y-3 sm:gap-x-8">
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2" aria-label="Estado de los canales">
+          <div className="header-tools flex min-w-0 flex-1 flex-wrap items-center justify-end gap-x-6 gap-y-3 sm:gap-x-8">
+            <div className="header-channels flex flex-wrap items-center gap-x-6 gap-y-2" aria-label="Estado de los canales">
               <ChannelStatus
                 icon={<Send className="size-5" />}
                 color="var(--telegram)"
@@ -122,7 +123,7 @@ export function Header({
               />
             </div>
 
-            <div className="hidden items-center gap-3 sm:flex">
+            <div className="hidden items-center gap-3 lg:flex">
               {username ? (
                 <span className="max-w-[140px] truncate text-sm font-medium text-[var(--ink)]">
                   {username}
@@ -137,6 +138,8 @@ export function Header({
               </button>
             </div>
 
+            <span className="mobile-live-dot md:hidden" role="status" aria-label={isLive ? 'En vivo' : 'Sin conexión'} title={isLive ? 'En vivo' : 'Sin conexión'}
+              style={{ backgroundColor: isLive ? 'var(--good)' : 'var(--muted)' }} />
             <Button
               type="button"
               size="icon"
@@ -144,7 +147,8 @@ export function Header({
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={menuOpen}
-              className="h-9 w-9 rounded-md border-[var(--line)] text-[var(--ink)] md:hidden"
+              aria-controls="dashboard-menu"
+              className="h-11 w-11 rounded-md border-[var(--line)] text-[var(--ink)] lg:hidden"
             >
               {menuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
             </Button>
@@ -153,7 +157,7 @@ export function Header({
       </div>
 
       {/* Barra de pestañas */}
-      <nav className="border-b border-[var(--line)] bg-white" aria-label="Secciones">
+      <nav className="hidden border-b border-[var(--line)] bg-white md:block" aria-label="Secciones">
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-1.5 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-1" role="tablist">
             <TabButton
@@ -189,7 +193,18 @@ export function Header({
       </nav>
 
       {menuOpen && (
-        <div className="border-b border-[var(--line)] px-4 py-3 md:hidden">
+        <ResponsivePanel id="dashboard-menu" label="Menú del operador" media="(max-width: 1023px)"
+          onClose={() => setMenuOpen(false)} className="header-menu-panel lg:hidden"
+          backdropClassName="header-menu-backdrop lg:hidden">
+          <div className="flex items-center justify-between gap-3 pb-3">
+            <strong className="min-w-0 truncate text-[var(--navy)]">{username || 'Operador'}</strong>
+            <button type="button" onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="grid size-11 shrink-0 place-items-center rounded-md text-[var(--navy)]"><X className="size-5" /></button>
+          </div>
+          <div className="mb-4 space-y-3 border-b border-[var(--line)] pb-4 text-sm text-[var(--ink)]">
+            <a className="flex min-h-11 items-center gap-2" href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer"><Send className="size-5 shrink-0" />Telegram · {TELEGRAM_HANDLE}</a>
+            <p>{openCourses} cursos con inscripción vigente</p>
+            <p className="text-xs text-[var(--muted)]">de {published} publicados · sincronizado {formatSyncClock(syncedAt)}</p>
+          </div>
           <div className="flex flex-col gap-1">
             <MobileNavItem
               active={view === 'conversations'}
@@ -219,7 +234,7 @@ export function Header({
               ) : null}
             </button>
           </div>
-        </div>
+        </ResponsivePanel>
       )}
     </header>
   )
