@@ -58,7 +58,7 @@ Plan vivo: cada tarea = un prompt a Cursor = un commit. Se marca `[x]` al pasar 
 ## URLs de producción
 
 - Bot: https://t.me/HelpdeskUTA15Bot
-- Dashboard: https://helpdesk-agent-uta.vercel.app
+- Dashboard: https://helpdesk.dayle.dev
 - API: https://codeandes-api.onrender.com (`/health`)
 
 ## Extras añadidos al final (12:25 → 12:35)

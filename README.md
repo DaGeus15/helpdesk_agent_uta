@@ -7,7 +7,7 @@ Proyecto para la **Hackathon UTA 2026 · Ecosistema Multi-Agente para Ventas** (
 - **Módulo A — Agente en Telegram:** asesora "Andrea" con tono humano: perfila al prospecto, resuelve dudas con el catálogo real de CTT-FISEI, maneja objeciones y guía la inscripción. Entiende notas de voz.
 - **Módulo B — Panel de mando:** dashboard web en tiempo real con todos los chats concurrentes, termómetro del lead (interesado, dudoso, frustrado, lead caliente), toma de control, envío como bot y "Devolver a la IA".
 
-Producción: bot [@HelpdeskUTA15Bot](https://t.me/HelpdeskUTA15Bot) · panel https://helpdesk-agent-uta.vercel.app (usuario `admin`, contraseña `admin`) · API https://codeandes-api.onrender.com/health
+Producción: bot [@HelpdeskUTA15Bot](https://t.me/HelpdeskUTA15Bot) · panel https://helpdesk.dayle.dev (usuario `admin`, contraseña `admin`) · API https://codeandes-api.onrender.com/health
 
 Documentación: [arquitectura](docs/ARCHITECTURE.md) · [plan](docs/PLAN.md) · [catálogo](docs/CATALOGO.md) · [batería de pruebas](docs/PRUEBAS.md) · [guion de demo](docs/DEMO.md) · [decisiones y seguridad](docs/DECISIONES.md) · [runbook](docs/RUNBOOK.md) · [reto](docs/RETO.md)
 

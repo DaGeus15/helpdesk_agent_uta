@@ -9,8 +9,8 @@
 | Qué | Enlace |
 |---|---|
 | Bot de Telegram (en producción) | https://t.me/HelpdeskUTA15Bot |
-| Panel del operador | https://helpdesk-agent-uta.vercel.app (demo: usuario `admin`, contraseña `admin`) |
-| Landing pública con QR | https://helpdesk-agent-uta.vercel.app/contacto |
+| Panel del operador | https://helpdesk.dayle.dev (demo: usuario `admin`, contraseña `admin`) |
+| Landing pública con QR | https://helpdesk.dayle.dev/contacto |
 | API (salud) | https://codeandes-api.onrender.com/health |
 | Repositorio | https://github.com/DaGeus15/helpdesk_agent_uta |
 | Fuente oficial del catálogo | https://ctt-talleresfisei.uta.edu.ec/course.php |

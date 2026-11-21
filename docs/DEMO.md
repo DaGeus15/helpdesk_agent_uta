@@ -1,6 +1,6 @@
 # Guion de demo (5 minutos) — CTT-FISEI · Talleres Tecnológicos UTA
 
-**Preparación (antes de subir):** dashboard abierto en https://helpdesk-agent-uta.vercel.app con sesión iniciada (`admin` / `admin`) en el proyector; bot @HelpdeskUTA15Bot; dos teléfonos (o Telegram Desktop + móvil) con el bot abierto; despertar la API de Render con `GET /health` 2 minutos antes; tener a mano los mensajes de `docs/PRUEBAS.md`.
+**Preparación (antes de subir):** dashboard abierto en https://helpdesk.dayle.dev con sesión iniciada (`admin` / `admin`) en el proyector; bot @HelpdeskUTA15Bot; dos teléfonos (o Telegram Desktop + móvil) con el bot abierto; despertar la API de Render con `GET /health` 2 minutos antes; tener a mano los mensajes de `docs/PRUEBAS.md`.
 
 ## 0:00 – 0:30 · El problema y la propuesta
 "Los Talleres Tecnológicos CTT-FISEI de la UTA reciben consultas a cualquier hora. Los bots de menú espantan y responder tarde pierde inscripciones. Construimos un modelo híbrido: Andrea, una asesora con IA en Telegram, y un panel de mando donde un humano ve todos los chats en vivo y entra cuando hace falta, sin que el interesado note el cambio."
